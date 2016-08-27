@@ -105,7 +105,7 @@ public class Bot {
                 .buildBlocking(); // Finally establish a connection to Discord's servers!
 
         jda.getTextChannelById("168160579322642432").getManager() // Hardcoded  #welcome channel in @deeBot Central
-                .setTopic("**deeBot** | *Author:* <@" + Info.AUTHOR_ID + "> | *Latest Ver:* " + Info.VERSION);
+                .setTopic("**deeBot** | *Author:* <@" + Info.AUTHOR_ID + "> | *Latest Ver:* " + Info.VERSION).update();
     }
 
     private static class ThreadedEventManager extends InterfacedEventManager {
