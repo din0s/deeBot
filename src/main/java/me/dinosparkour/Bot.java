@@ -13,6 +13,7 @@ import me.dinosparkour.commands.guild.actions.WelcomeMessageCommand;
 import me.dinosparkour.commands.guild.roles.AddRoleCommand;
 import me.dinosparkour.commands.guild.roles.RemoveRoleCommand;
 import me.dinosparkour.commands.guild.roles.RoleCommand;
+import me.dinosparkour.managers.LogManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.managers.listeners.ActionManager;
 import me.dinosparkour.managers.listeners.CustomCmdManager;
@@ -106,6 +107,8 @@ public class Bot {
 
         jda.getTextChannelById("168160579322642432").getManager() // Hardcoded  #welcome channel in @deeBot Central
                 .setTopic("**deeBot** | *Author:* <@" + Info.AUTHOR_ID + "> | *Latest Ver:* " + Info.VERSION).update();
+
+        LogManager.init(); // Initialize the log manager after everything's been set up
     }
 
     private static class ThreadedEventManager extends InterfacedEventManager {
