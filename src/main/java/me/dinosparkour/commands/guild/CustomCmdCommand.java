@@ -111,7 +111,7 @@ public class CustomCmdCommand extends GuildCommand {
 
     private boolean isNotAuthorized(User u, Guild g) {
         if (!PermissionUtil.checkPermission(g, u, Permission.MANAGE_SERVER)) {
-            sendMessage("You need `[ADMINISTRATOR]` to modify the Custom Commands on this guild!");
+            sendMessage("You need `[MANAGE_SERVER]` to modify the Custom Commands on this guild!");
             return true;
         } else return false;
     }

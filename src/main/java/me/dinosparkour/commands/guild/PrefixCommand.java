@@ -6,6 +6,7 @@ import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +17,11 @@ public class PrefixCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e) {
+        if (!PermissionUtil.checkPermission(e.getGuild(), e.getAuthor(), Permission.ADMINISTRATOR)) {
+            sendMessage("You need `[ADMINISTRATOR]` to modify this guild's prefix!");
+            return;
+        }
+
         String allArgs = String.join(" ", Arrays.asList(args));
         ServerManager sm = new ServerManager(e.getGuild());
         if (allArgs.equalsIgnoreCase("reset")) {
@@ -59,10 +65,5 @@ public class PrefixCommand extends GuildCommand {
     @Override
     public int getArgMin() {
         return 1;
-    }
-
-    @Override
-    public List<Permission> requiredPermissions() {
-        return Collections.singletonList(Permission.ADMINISTRATOR);
     }
 }
