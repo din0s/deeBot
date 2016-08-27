@@ -34,33 +34,30 @@ public class ServerManager {
 
     // Database Initializer
     public static void init() {
-        if (!DATA_FOLDER.exists() && !DATA_FOLDER.mkdir()) {
-            System.err.println("Failed to create the data folder!");
-            return;
-        }
-        IOUtil.readDataFileBlocking("Guild Data", () -> {
-            try {
-                Files.walk(Paths.get(DATA_FOLDER.getPath()))
-                        .filter(path -> path.getFileName().toString().endsWith(".json")) // Collect readable JSON files
-                        .forEach(path -> {
-                            String fileName = path.getFileName().toString();
-                            String guildId = fileName.substring(0, fileName.length() - ".json".length()); // Exctract the id by removing the extension
-                            DATABASE.put(guildId, IOUtil.readJsonFromFile(path.toFile()));
+        if (IOUtil.createFolder(DATA_FOLDER))
+            IOUtil.readDataFileBlocking("Guild Data", () -> {
+                try {
+                    Files.walk(Paths.get(DATA_FOLDER.getPath()))
+                            .filter(path -> path.getFileName().toString().endsWith(".json")) // Collect readable JSON files
+                            .forEach(path -> {
+                                String fileName = path.getFileName().toString();
+                                String guildId = fileName.substring(0, fileName.length() - ".json".length()); // Exctract the id by removing the extension
+                                DATABASE.put(guildId, IOUtil.readJsonFromFile(path.toFile()));
 
-                            // Add the prefix to our map
-                            String prefix = DATABASE.get(guildId).has(DataType.PREFIX.configEntry)
-                                    ? DATABASE.get(guildId).getString(DataType.PREFIX.configEntry) : null;
-                            if (prefix != null) PREFIXES.put(guildId, prefix);
+                                // Add the prefix to our map
+                                String prefix = DATABASE.get(guildId).has(DataType.PREFIX.configEntry)
+                                        ? DATABASE.get(guildId).getString(DataType.PREFIX.configEntry) : null;
+                                if (prefix != null) PREFIXES.put(guildId, prefix);
 
-                            // Add the custom commands to our map
-                            JSONArray array = DATABASE.get(guildId).has(DataType.COMMANDS.configEntry)
-                                    ? DATABASE.get(guildId).getJSONArray(DataType.COMMANDS.configEntry) : null;
-                            if (array != null) CUSTOM_COMMANDS.put(guildId, array);
-                        });
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+                                // Add the custom commands to our map
+                                JSONArray array = DATABASE.get(guildId).has(DataType.COMMANDS.configEntry)
+                                        ? DATABASE.get(guildId).getJSONArray(DataType.COMMANDS.configEntry) : null;
+                                if (array != null) CUSTOM_COMMANDS.put(guildId, array);
+                            });
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            });
     }
 
     // Static Getters

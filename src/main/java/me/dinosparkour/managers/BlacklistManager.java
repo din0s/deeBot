@@ -7,7 +7,6 @@ import net.dv8tion.jda.entities.PrivateChannel;
 import net.dv8tion.jda.entities.TextChannel;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,15 +18,8 @@ public class BlacklistManager {
     private static final File BLACKLIST_FILE = new File(ServerManager.getDataDir() + "blacklist.txt");
 
     public static void init() {
-        try {
-            if (!BLACKLIST_FILE.exists() && !BLACKLIST_FILE.createNewFile()) {
-                System.err.println("Failed to create the blacklist file!");
-                return;
-            }
+        if (IOUtil.createFile(BLACKLIST_FILE))
             BLACKLIST.addAll(IOUtil.readLinesFromFile(BLACKLIST_FILE));
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     public static boolean isBlacklisted(MessageChannel channel) {

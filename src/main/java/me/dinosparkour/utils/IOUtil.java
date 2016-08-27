@@ -114,6 +114,29 @@ public class IOUtil {
             task.run();
     }
 
+    // Folder Creator
+    public static boolean createFolder(File folder) {
+        if (!folder.exists() && !folder.mkdir()) {
+            System.err.println("Failed to create the " + folder.getName() + " folder!");
+            return false;
+        }
+        return true;
+    }
+
+    // File Creator
+    public static boolean createFile(File file) {
+        try {
+            if (!file.exists() && !file.createNewFile()) {
+                System.err.println("Failed to create " + file.getName());
+                return false;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     // File Deleter
     public static void deleteFile(File file) {
         try {

@@ -10,7 +10,6 @@ import net.dv8tion.jda.events.ReconnectedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.io.File;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,29 +26,21 @@ public abstract class TimerCommandImpl extends Command {
     private JDA jda;
 
     public TimerCommandImpl() {
-        try {
-            if (!getFile().exists() && !getFile().createNewFile()) {
-                System.err.println("Failed to create the " + getFile().getName().substring(0, ".txt".length()) + " file!");
-                return;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        IOUtil.readDataFileBlocking(getFile().getName(), () ->
-                IOUtil.readLinesFromFile(getFile()).forEach(s -> {
-                    String[] constructors = s.split("\\|");
-                    String time = constructors[0];
-                    OffsetDateTime odt = OffsetDateTime.parse(constructors[0]);
-                    String authorId = constructors[1];
-                    String targetId = constructors[2];
-                    String message = s.substring(time.length() + 1 + authorId.length() + 1 + targetId.length() + 1);
-                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
-                    if (impl.getTimeLeft() < 0)
-                        IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
-                    else addEntry(impl); // Add a new entry if the reminder is valid
-                })
-        );
+        if (IOUtil.createFile(getFile()))
+            IOUtil.readDataFileBlocking(getFile().getName(), () ->
+                    IOUtil.readLinesFromFile(getFile()).forEach(s -> {
+                        String[] constructors = s.split("\\|");
+                        String time = constructors[0];
+                        OffsetDateTime odt = OffsetDateTime.parse(constructors[0]);
+                        String authorId = constructors[1];
+                        String targetId = constructors[2];
+                        String message = s.substring(time.length() + 1 + authorId.length() + 1 + targetId.length() + 1);
+                        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
+                        if (impl.getTimeLeft() < 0)
+                            IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
+                        else addEntry(impl); // Add a new entry if the reminder is valid
+                    })
+            );
     }
 
     protected abstract Type getType();
