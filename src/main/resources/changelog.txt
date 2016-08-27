@@ -1,7 +1,9 @@
 ```diff
+- [v 2.0.2]
++ Fix for a time formatting issue
++ Internal fix for the log directory creation
 - [v 2.0.1]
 + Internal fix for short messages
-+ Fix for a time formatting issue
 + Auto-update the welcome channel with latest info
 + Created an internal log manager
 - [v 2.0.0]
