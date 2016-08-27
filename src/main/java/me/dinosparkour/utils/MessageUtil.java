@@ -38,10 +38,10 @@ public class MessageUtil {
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(time);
 
-        return (days > 0 ? days + (days != 1L ? " days" : " day") : "") +
-                (hours > 0 ? ", " + hours + (hours != 1L ? " hours" : " hour") : "") +
-                (minutes > 0 ? ", " + minutes + (minutes != 1L ? " minutes" : " minute") : "") +
-                (seconds > 0 ? " and " + seconds + (seconds != 1L ? " seconds" : " second") : "");
+        return (days > 0 ? days + " " + (days != 1L ? "days" : "day") + " " : "") +
+                (hours > 0 ? hours + " " + (hours != 1L ? "hours" : "hour") + " " : "") +
+                (minutes > 0 ? minutes + " " + (minutes != 1L ? "minutes" : "minute") + " " : "") +
+                (seconds > 0 ? seconds + " " + (seconds != 1L ? "seconds" : "second") : "");
     }
 
     public static String formatMap(Map<String, String> map, String separator, boolean codeKey) {
