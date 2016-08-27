@@ -8,12 +8,16 @@ import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class PurgeCommand extends GuildCommand {
+
+    private final ScheduledExecutorService ratelimitScheduler = Executors.newScheduledThreadPool(1);
+    private final Set<String> ratelimitedGuilds = new HashSet<>();
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e) {
@@ -60,7 +64,14 @@ public class PurgeCommand extends GuildCommand {
         if (history.size() == 1)
             history.get(0).deleteMessage();
         else if (!history.isEmpty())
-            e.getTextChannel().deleteMessages(history);
+            if (ratelimitedGuilds.contains(e.getGuild().getId())) {
+                sendMessage("**Please wait a second before deleting more messages!** [Rate limits]");
+                return;
+            } else {
+                e.getTextChannel().deleteMessages(history);
+                ratelimitedGuilds.add(e.getGuild().getId());
+                ratelimitScheduler.schedule(() -> ratelimitedGuilds.remove(e.getGuild().getId()), 1, TimeUnit.SECONDS);
+            }
 
         sendMessage("Succesfully deleted "
                 + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
