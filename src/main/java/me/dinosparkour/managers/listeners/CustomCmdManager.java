@@ -15,7 +15,7 @@ public class CustomCmdManager extends ListenerAdapter {
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
-        String cmdName = rawContent.isEmpty() ? null : rawContent.substring(prefix.length());
+        String cmdName = rawContent.length() <= prefix.length() ? null : rawContent.substring(prefix.length());
         if (!sm.isValid(cmdName))
             return; // Only listen for valid custom commands
 
