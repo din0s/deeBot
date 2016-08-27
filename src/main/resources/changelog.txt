@@ -1,0 +1,6 @@
+```diff
+- [v 2.0.0]
++ Complete rewrite of the bot.
++
++
+```
