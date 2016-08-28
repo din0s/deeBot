@@ -48,13 +48,15 @@ public class WhoisCommand extends GlobalCommand {
                 .append("**Creation Date**: ").append(creationDate).append("\n")
                 .append("**Avatar**: ").append(avatar).append("\n\n");
 
-        String joinDate, roles;
         if (!e.isPrivate()) {
-            joinDate = MessageUtil.formatDate(e.getGuild().getJoinDateForUser(lookup));
-            roles = String.join(", ", e.getGuild().getRolesForUser(lookup).stream().map(Role::getName).collect(Collectors.toList()));
+            String nickname = e.getGuild().getNicknameForUser(lookup);
+            if (nickname != null) nickname = MessageUtil.stripFormatting(nickname);
+            String joinDate = MessageUtil.formatDate(e.getGuild().getJoinDateForUser(lookup));
+            String roles = String.join(", ", e.getGuild().getRolesForUser(lookup).stream().map(Role::getName).collect(Collectors.toList()));
 
-            sb.append("**__GUILD__**\n")
-                    .append("**Join Date**: ").append(joinDate).append("\n")
+            sb.append("**__GUILD__**\n");
+            if (nickname != null) sb.append("**Nickname**: ").append(nickname).append("\n");
+            sb.append("**Join Date**: ").append(joinDate).append("\n")
                     .append("**Roles**: ").append(roles.isEmpty() ? "@everyone" : roles);
         }
 
