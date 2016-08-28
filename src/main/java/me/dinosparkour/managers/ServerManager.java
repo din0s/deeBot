@@ -146,15 +146,8 @@ public class ServerManager {
 
     // Custom Command Existence Check
     public boolean isValid(String name) {
-        if (name == null || name.isEmpty())
-            return false;
-        if (!CUSTOM_COMMANDS.containsKey(guildId))
-            return false;
-        for (Object o : CUSTOM_COMMANDS.get(guildId)) {
-            if (((JSONObject) o).getString("name").equalsIgnoreCase(name))
-                return true;
-        }
-        return false;
+        return !(name == null || name.isEmpty())
+                && getCommands().keySet().stream().anyMatch(cmdName -> cmdName.equalsIgnoreCase(name));
     }
 
     // Custom Command Getters
