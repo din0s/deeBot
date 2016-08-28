@@ -61,7 +61,7 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
                             }
                             e.getGuild().getManager().removeRoleFromUser(user, role).update();
                         }
-                        chat.sendMessage(MessageUtil.stripFormatting("Succesfully " + getTask().perfect + " " + role.getName() + " to " + MessageUtil.userDiscrimSet(user) + "!"));
+                        chat.sendMessage(MessageUtil.stripFormatting("Successfully " + getTask().perfect + " " + role.getName() + " to " + MessageUtil.userDiscrimSet(user) + "!"));
                         break;
                 }
                 break;

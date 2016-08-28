@@ -73,7 +73,7 @@ public class PurgeCommand extends GuildCommand {
                 ratelimitScheduler.schedule(() -> ratelimitedGuilds.remove(e.getGuild().getId()), 1, TimeUnit.SECONDS);
             }
 
-        chat.sendMessage("Succesfully deleted "
+        chat.sendMessage("Successfully deleted "
                 + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
                 : "**" + MessageUtil.stripFormatting(user.getUsername()) + "**'s messages from the past " + input + " lines!"));
     }

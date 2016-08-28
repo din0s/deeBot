@@ -45,7 +45,7 @@ public class HelpCommand extends GlobalCommand {
                 return;
             }
 
-            if (!NumberUtils.isDigits(allArgs)) { // Non-existant command passed as parameter
+            if (!NumberUtils.isDigits(allArgs)) { // Non-existent command passed as parameter
                 chat.sendMessage("**That's not a valid command!**");
                 return;
             }

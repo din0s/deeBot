@@ -33,6 +33,6 @@ public class GoodShitCommand extends GlobalCommand {
 
     @Override
     public String getDescription() {
-        return "Returns the 'good shit' coypasta.";
+        return "Returns the 'good shit' copypasta.";
     }
 }

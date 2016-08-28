@@ -281,7 +281,7 @@ public class RoleCommand extends RoleCommandImpl {
     private boolean cannotInteract(MessageSender chat, Message msg, List<Role> mentionedRoles) {
         Role targetRole = getTargetRole(mentionedRoles);
         if (!PermissionUtil.canInteract(msg.getAuthor(), targetRole)) {
-            chat.sendMessage("You cannot interract with a role higher in the hierarchy than your top role!");
+            chat.sendMessage("You cannot interact with a role higher in the hierarchy than your top role!");
             return true;
             }
 

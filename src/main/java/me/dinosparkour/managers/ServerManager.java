@@ -41,7 +41,7 @@ public class ServerManager {
                             .filter(path -> path.getFileName().toString().endsWith(".json")) // Collect readable JSON files
                             .forEach(path -> {
                                 String fileName = path.getFileName().toString();
-                                String guildId = fileName.substring(0, fileName.length() - ".json".length()); // Exctract the id by removing the extension
+                                String guildId = fileName.substring(0, fileName.length() - ".json".length()); // Extract the id by removing the extension
                                 DATABASE.put(guildId, IOUtil.readJsonFromFile(path.toFile()));
 
                                 // Add the prefix to our map

@@ -30,7 +30,7 @@ public class HttpRequestUtil {
     public static JSONObject getData(String url, Map<String, String> params) {
         JSONObject obj = null;
         GetRequest req = Unirest.get(url); // Create a GET request
-        params.entrySet().forEach(set -> req.routeParam(set.getKey(), set.getValue())); // Add params for each entryset
+        params.entrySet().forEach(set -> req.routeParam(set.getKey(), set.getValue())); // Add params for each set
         try {
             obj = req.asJson().getBody().getObject(); // Send the request
         } catch (UnirestException ignored) {

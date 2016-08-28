@@ -91,7 +91,7 @@ abstract class ActionCommandImpl extends GuildCommand {
 
     @Override
     public String getDescription() {
-        return "Manages the message being broadcasted when a new user " + getAction().name().toLowerCase() + "s the guild.";
+        return "Manages the message being broadcast when a new user " + getAction().name().toLowerCase() + "s the guild.";
     }
 
     @Override

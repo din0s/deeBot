@@ -96,7 +96,7 @@ public abstract class Command extends ListenerAdapter {
             return; // Ignore if the command is meant to be used by the owner only
         if (!e.isPrivate() && !PermissionUtil.canTalk(e.getJDA().getSelfInfo(), e.getTextChannel()))
             return; // Ignore if we cannot talk in the channel anyway
-        if (BlacklistManager.isBlacklisted(e.getChannel())                                         // Ignonre if the channel is blacklisted
+        if (BlacklistManager.isBlacklisted(e.getChannel())                                         // Ignore if the channel is blacklisted
                 && (!e.getTextChannel().checkPermission(e.getAuthor(), Permission.MESSAGE_MANAGE)  // except for the people with MESSAGE_MANAGE
                 || !getName().equals("blacklist")))                                                // when the blacklist command is executed
             return;
@@ -123,7 +123,7 @@ public abstract class Command extends ListenerAdapter {
             return false; // It's not a command if it doesn't start with our prefix
         String cmdName = msg.getRawContent().substring(prefix.length());
         if (cmdName.contains(" "))
-            cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are paremeters, remove them
+            cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are parameters, remove them
         return getAlias().contains(cmdName.toLowerCase());
     }
 

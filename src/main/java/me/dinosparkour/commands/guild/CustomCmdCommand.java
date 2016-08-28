@@ -65,7 +65,7 @@ public class CustomCmdCommand extends GuildCommand {
                 else if (inputArgs.equals("")) chat.sendUsageMessage();
                 else if (sm.isValid(inputArgs)) {
                     sm.deleteCommand(inputArgs).update();
-                    chat.sendMessage(getSuccessMessage("delted", inputArgs));
+                    chat.sendMessage(getSuccessMessage("deleted", inputArgs));
                 } else chat.sendMessage("That's not a valid command name!");
                 break;
         }
@@ -117,6 +117,6 @@ public class CustomCmdCommand extends GuildCommand {
     }
 
     private String getSuccessMessage(String action, String commandName) {
-        return "Succesfully " + action + " the command \"" + MessageUtil.stripFormatting(commandName) + "\"!";
+        return "Successfully " + action + " the command \"" + MessageUtil.stripFormatting(commandName) + "\"!";
     }
 }
