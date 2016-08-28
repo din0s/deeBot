@@ -1,4 +1,6 @@
 ```diff
+- [v 2.1.2]
++ Fixed an internal concurrency issue when handling commands
 - [v 2.1.1]
 + Added an empty name check on custom command creation
 + Fixed an internal issue occurring when saving custom commands
@@ -8,7 +10,4 @@
 + The meme command now warns for insufficient permissions to attach images
 + Fixed concurrency issues in the role command
 + Fixed multiple typos
-- [v 2.0.2]
-+ Fix for a time formatting issue
-+ Internal fix for the log directory creation
 ```
