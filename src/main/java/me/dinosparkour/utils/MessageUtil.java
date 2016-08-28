@@ -18,9 +18,13 @@ public class MessageUtil {
 
     public static void sendMessage(String message, MessageChannel channel) {
         if (channel instanceof TextChannel && !PermissionUtil.canTalk((TextChannel) channel)) return;
-        if (message.length() > 2000)
-            message = "The output message is over 2000 characters.";
-        channel.sendMessageAsync(message, null);
+        channel.sendMessageAsync(MessageUtil.filter(message), null);
+    }
+
+    public static String filter(String msgContent) {
+        return msgContent.length() > 2000
+                ? "*The output message is over 2000 characters!*"
+                : msgContent.replace("@everyone", "@\u180Eeveryone").replace("@here", "@\u180Ehere");
     }
 
     public static String formatDate(OffsetDateTime date) {

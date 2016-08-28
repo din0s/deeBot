@@ -3,6 +3,7 @@ package me.dinosparkour.commands.impls;
 import me.dinosparkour.Info;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
+import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.*;
@@ -155,13 +156,9 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> callback) {
-            msgContent = msgContent.length() > 2000
-                    ? "*The output message is over 2000 characters!*"
-                    : msgContent.replace("@everyone", "@\u180Eeveryone").replace("@here", "@\u180Ehere");
-
             if (tChannel == null || (tChannel.getClass().equals(TextChannel.class) && !PermissionUtil.canTalk((TextChannel) tChannel)))
                 return;
-            tChannel.sendMessageAsync(msgContent, callback);
+            tChannel.sendMessageAsync(MessageUtil.filter(msgContent), callback);
             sent++;
         }
 
