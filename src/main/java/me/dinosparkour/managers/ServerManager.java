@@ -214,9 +214,8 @@ public class ServerManager {
                 .filter(set -> set.getValue() != null)
                 .forEach(set -> obj.put(set.getKey().configEntry, set.getValue()));
 
-        Map<String, List<String>> cmds = getCommands();
-        if (cmds != null)
-            cmds.values().forEach(array -> obj.put(DataType.COMMANDS.configEntry, array));
+        if (CUSTOM_COMMANDS.containsKey(guildId))
+            obj.put(DataType.COMMANDS.configEntry, CUSTOM_COMMANDS.get(guildId));
 
         File guildFile = new File(DATA_FOLDER.getAbsolutePath() + File.separator + guildId + ".json");
         if (obj.length() != 0) { // JSONObject isn't empty
