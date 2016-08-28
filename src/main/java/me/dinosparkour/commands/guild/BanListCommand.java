@@ -13,21 +13,21 @@ import java.util.List;
 public class BanListCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         List<User> bannedUsers = e.getGuild().getManager().getBans();
         if (!bannedUsers.isEmpty()) {
             StringBuilder sb = new StringBuilder("```xl\n");
             bannedUsers.stream().map(MessageUtil::userDiscrimSet).forEach(user -> {
                 if (sb.length() + user.length() > 2000 - "```".length()) {
-                    sendMessage(sb.append("```").toString());
+                    chat.sendMessage(sb.append("```").toString());
                     sb.setLength(0);
                 } else
                     sb.append(user).append("\n");
             });
             if (sb.length() > 0)
-                sendMessage(sb.append("```").toString());
+                chat.sendMessage(sb.append("```").toString());
         } else
-            sendMessage("*The banlist is empty!*");
+            chat.sendMessage("*The banlist is empty!*");
     }
 
     @Override

@@ -10,7 +10,7 @@ import java.util.List;
 public class ShutdownCommand extends AdminCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         if (args[0].equalsIgnoreCase(Info.VERSION)) {
             e.getJDA().shutdown();
             System.exit(0);

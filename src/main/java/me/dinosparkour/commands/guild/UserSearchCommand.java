@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class UserSearchCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         boolean includeNicks = args[args.length - 1].equalsIgnoreCase("--N");
         boolean isGlobal = args[args.length - 1].equalsIgnoreCase("--G");
@@ -27,11 +27,11 @@ public class UserSearchCommand extends GuildCommand {
                 .collect(Collectors.toList());
 
         if (results.size() > 20)
-            sendMessage("Your query returned " + results.size() + " users! Please narrow down your search.");
+            chat.sendMessage("Your query returned " + results.size() + " users! Please narrow down your search.");
         else if (results.size() == 0)
-            sendMessage("Your query returned no results!");
+            chat.sendMessage("Your query returned no results!");
         else
-            sendMessage((isGlobal ? "Global " : "") + (includeNicks ? "Nicknamed " : "")
+            chat.sendMessage((isGlobal ? "Global " : "") + (includeNicks ? "Nicknamed " : "")
                     + "Users matching \"" + MessageUtil.stripFormatting(query) + "\":\n" + String.join("\n", results));
     }
 

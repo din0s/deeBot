@@ -2,6 +2,7 @@ package me.dinosparkour.utils;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.utils.ApplicationUtil;
@@ -15,10 +16,10 @@ import java.util.stream.Collectors;
 
 public class MessageUtil {
 
-    public static void sendMessage(TextChannel channel, String message) {
-        if (!PermissionUtil.canTalk(channel)) return;
+    public static void sendMessage(String message, MessageChannel channel) {
+        if (channel instanceof TextChannel && !PermissionUtil.canTalk((TextChannel) channel)) return;
         if (message.length() > 2000)
-            message = "The welome message is over 2000 characters. A moderator should probably fix this!";
+            message = "The output message is over 2000 characters.";
         channel.sendMessageAsync(message, null);
     }
 

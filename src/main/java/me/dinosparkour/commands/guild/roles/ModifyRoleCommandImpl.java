@@ -17,11 +17,11 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
     protected abstract Task getTask();
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args, e.getGuild().getUsers(), false);
         switch (userList.size()) {
             case 0:
-                sendMessage(getNotEnoughArguments("user"));
+                chat.sendMessage(getNotEnoughArguments("user"));
                 break;
 
             case 1:
@@ -34,40 +34,40 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
                 List<Role> roleList = new RoleUtil().getMentionedRoles(e.getMessage(), stripUser);
                 switch (roleList.size()) {
                     case 0:
-                        sendMessage(getNotEnoughArguments("role"));
+                        chat.sendMessage(getNotEnoughArguments("role"));
                         break;
 
                     case 1:
                         Role role = roleList.get(0);
                         if (e.getGuild().getRolesForUser(e.getJDA().getSelfInfo()).get(0).equals(role)) {
-                            sendMessage("The bot cannot interact with its own highest role!");
+                            chat.sendMessage("The bot cannot interact with its own highest role!");
                             return;
                         }
                         if (!PermissionUtil.canInteract(e.getJDA().getSelfInfo(), role)) {
-                            sendMessage("The bot doesn't have enough permissions to interact with that role!\n"
+                            chat.sendMessage("The bot doesn't have enough permissions to interact with that role!\n"
                                     + "To fix this issue, drag the bot's role to the top of the role list.");
                             return;
                         }
                         if (isPlus()) {
                             if (e.getGuild().getRolesForUser(user).contains(role)) {
-                                sendMessage("That user already has the role specified!");
+                                chat.sendMessage("That user already has the role specified!");
                                 return;
                             }
                             e.getGuild().getManager().addRoleToUser(user, role).update();
                         } else {
                             if (!e.getGuild().getRolesForUser(user).contains(role)) {
-                                sendMessage("That user doesn't have the role specified!");
+                                chat.sendMessage("That user doesn't have the role specified!");
                                 return;
                             }
                             e.getGuild().getManager().removeRoleFromUser(user, role).update();
                         }
-                        sendMessage(MessageUtil.stripFormatting("Succesfully " + getTask().perfect + " " + role.getName() + " to " + MessageUtil.userDiscrimSet(user) + "!"));
+                        chat.sendMessage(MessageUtil.stripFormatting("Succesfully " + getTask().perfect + " " + role.getName() + " to " + MessageUtil.userDiscrimSet(user) + "!"));
                         break;
                 }
                 break;
 
             default:
-                sendMessage(getTooManyArguments("user"));
+                chat.sendMessage(getTooManyArguments("user"));
                 break;
         }
     }

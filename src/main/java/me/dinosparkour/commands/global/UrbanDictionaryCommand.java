@@ -16,8 +16,8 @@ import java.util.List;
 public class UrbanDictionaryCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage(getUrbanDefinition(String.join(" ", Arrays.asList(args))));
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage(getUrbanDefinition(String.join(" ", Arrays.asList(args))));
     }
 
     @Override

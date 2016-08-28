@@ -12,11 +12,11 @@ public class EchoCommand extends GlobalCommand {
     private static final String ZWSP = "\u180E";
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         if (e.getMessage().getMentionedUsers().size() > 5)
-            sendMessage("Please don't mention so many users! \uD83E\uDD10");
+            chat.sendMessage("Please don't mention so many users! \uD83E\uDD10");
         else
-            sendMessage(ZWSP + String.join(" ", Arrays.asList(args)));
+            chat.sendMessage(ZWSP + String.join(" ", Arrays.asList(args)));
     }
 
     @Override

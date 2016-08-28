@@ -10,8 +10,8 @@ import java.util.List;
 public class InviteCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage(MessageUtil.getAuthInvite(e.getJDA(), null));
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage(MessageUtil.getAuthInvite(e.getJDA(), null));
     }
 
     @Override

@@ -20,14 +20,14 @@ public class PurgeCommand extends GuildCommand {
     private final Set<String> ratelimitedGuilds = new HashSet<>();
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         int input;
         try {
             input = Integer.parseInt(args[0]);
             if (input > 100 || input <= 0)
                 throw new NumberFormatException();
         } catch (NumberFormatException ex) {
-            sendMessage("**That's not a valid amount!** [1-100]");
+            chat.sendMessage("**That's not a valid amount!** [1-100]");
             return;
         }
 
@@ -43,7 +43,7 @@ public class PurgeCommand extends GuildCommand {
                     break;
 
                 default:
-                    sendMessage("You can only purge 1 user's messages at a time!");
+                    chat.sendMessage("You can only purge 1 user's messages at a time!");
                     return;
             }
         }
@@ -65,7 +65,7 @@ public class PurgeCommand extends GuildCommand {
             history.get(0).deleteMessage();
         else if (!history.isEmpty())
             if (ratelimitedGuilds.contains(e.getGuild().getId())) {
-                sendMessage("**Please wait a second before deleting more messages!** [Rate limits]");
+                chat.sendMessage("**Please wait a second before deleting more messages!** [Rate limits]");
                 return;
             } else {
                 e.getTextChannel().deleteMessages(history);
@@ -73,7 +73,7 @@ public class PurgeCommand extends GuildCommand {
                 ratelimitScheduler.schedule(() -> ratelimitedGuilds.remove(e.getGuild().getId()), 1, TimeUnit.SECONDS);
             }
 
-        sendMessage("Succesfully deleted "
+        chat.sendMessage("Succesfully deleted "
                 + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
                 : "**" + MessageUtil.stripFormatting(user.getUsername()) + "**'s messages from the past " + input + " lines!"));
     }

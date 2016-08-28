@@ -5,10 +5,7 @@ import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.entities.*;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -23,7 +20,6 @@ public abstract class Command extends ListenerAdapter {
 
     private static int read = 0;
     private static int sent = 0;
-    private MessageReceivedEvent e;
 
     protected static int amountRead() {
         return read;
@@ -33,7 +29,7 @@ public abstract class Command extends ListenerAdapter {
         return sent;
     }
 
-    public abstract void executeCommand(String[] args, MessageReceivedEvent e);
+    public abstract void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat);
 
     public abstract String getName();
 
@@ -83,18 +79,18 @@ public abstract class Command extends ListenerAdapter {
                 .map(param -> "(" + param + ")").collect(Collectors.toList())) : "");
     }
 
-    protected final String getPrefix() {
-        return !e.isPrivate() && ServerManager.getPrefixes().containsKey(e.getGuild().getId())
-                ? ServerManager.getPrefixes().get(e.getGuild().getId())
+    protected final String getPrefix(Guild guild) {
+        return guild != null && ServerManager.getPrefixes().containsKey(guild.getId())
+                ? ServerManager.getPrefixes().get(guild.getId())
                 : Info.DEFAULT_PREFIX;
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
-        this.e = e;
         read++;
+        String prefix = getPrefix(e.isPrivate() ? null : e.getGuild());
 
-        if (e.getAuthor().isBot() || !isValidCommand(e.getMessage()))
+        if (e.getAuthor().isBot() || !isValidCommand(prefix, e.getMessage()))
             return; // Ignore message if it's not a command or sent by a bot
         if (authorExclusive() && !e.getAuthor().getId().equals(Info.AUTHOR_ID))
             return; // Ignore if the command is meant to be used by the owner only
@@ -105,93 +101,104 @@ public abstract class Command extends ListenerAdapter {
                 || !getName().equals("blacklist")))                                                // when the blacklist command is executed
             return;
 
-        String[] args = commandArgs(e.getMessage());
+        String[] args = commandArgs(prefix, e.getMessage());
+        MessageSender chat = new MessageSender(e);
 
         if (e.isPrivate() && !allowsPrivate()) // Check if the command is guild-only
-            sendMessage("**This command can only be used in a guild!**");
-        else if (permissionCheck(e.getAuthor())) { // Check if the user is authorized to execute the command
-            if (!permissionCheck(e.getJDA().getSelfInfo())) // Check if the bot can execute the actions needed
-                sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
+            chat.sendMessage("**This command can only be used in a guild!**");
+        else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
+            if (!permissionCheck(e, e.getJDA().getSelfInfo())) // Check if the bot can execute the actions needed
+                chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
             if ((getArgMax() > -1                 // A maximum argument limit has been set AND
                     && args.length > getArgMax()) // There are more arguments than we expected, OR
                     || args.length < getArgMin()) // There are fewer arguments than we required
-                sendUsageMessage();
-            else executeCommand(args, e);
+                chat.sendUsageMessage();
+            else executeCommand(args, e, chat);
         } else
-            sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
+            chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
     }
 
-    private boolean isValidCommand(Message msg) {
-        if (!msg.getRawContent().startsWith(getPrefix()))
+    private boolean isValidCommand(String prefix, Message msg) {
+        if (!msg.getRawContent().startsWith(prefix))
             return false; // It's not a command if it doesn't start with our prefix
-        String cmdName = msg.getRawContent().substring(getPrefix().length());
+        String cmdName = msg.getRawContent().substring(prefix.length());
         if (cmdName.contains(" "))
             cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are paremeters, remove them
         return getAlias().contains(cmdName.toLowerCase());
     }
 
-    private String[] commandArgs(Message msg) {
-        String noPrefix = msg.getRawContent().substring(getPrefix().length());
+    private String[] commandArgs(String prefix, Message msg) {
+        String noPrefix = msg.getRawContent().substring(prefix.length());
         if (!noPrefix.contains(" ")) // No whitespaces -> No args
             return new String[]{};
         return noPrefix.substring(noPrefix.indexOf(" ") + 1).split("\\s+");
     }
 
-    protected void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> callback) {
-        msgContent = msgContent.length() > 2000
-                ? "*The output message is over 2000 characters!*"
-                : msgContent.replace("@everyone", "@\u180Eeveryone").replace("@here", "@\u180Ehere");
-
-        if (tChannel == null || (tChannel.getClass().equals(TextChannel.class) && !PermissionUtil.canTalk((TextChannel) tChannel)))
-            return;
-        tChannel.sendMessageAsync(msgContent, callback);
-        sent++;
-    }
-
-    protected void sendMessage(String msgContent, Consumer<Message> callback) {
-        sendMessage(msgContent, e.getChannel(), callback);
-    }
-
-    protected void sendMessage(String msgContent, MessageChannel channel) {
-        sendMessage(msgContent, channel, null);
-    }
-
-    protected void sendMessage(String msgContent) {
-        sendMessage(msgContent, e.getChannel());
-    }
-
-    protected void sendUsageMessage() {
-        sendMessage("**Usage:** " + getPrefix() + getUsage());
-    }
-
-    protected void sendTargettedMessage(String content, String[] args) {
-        List<User> base = e.isPrivate() ? Collections.singletonList(e.getAuthor()) : e.getGuild().getUsers();
-        List<User> mentionedUsers = new UserUtil().getMentionedUsers(e.getMessage(), args, base);
-        if (mentionedUsers.isEmpty())
-            sendMessage(content);
-        else if (mentionedUsers.size() > 5)
-            sendMessage("Please don't mention so many users! \uD83E\uDD10");
-        else {
-            StringBuilder sb = new StringBuilder();
-            mentionedUsers.stream()
-                    .map(u -> " <@" + u.getId() + ">")
-                    .forEach(sb::append);
-            sendMessage(sb.append(": ").append(content).toString());
-        }
-    }
-
-    protected void sendPrivateMessage(String content, TextChannel fallbackChannel) {
-        sendMessage(content, e.getAuthor().getPrivateChannel(), m -> {
-            if (m == null) // Something went wrong while sending the message
-                sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
-            else sendMessage("✅ Check your DMs!", fallbackChannel);
-        });
-    }
-
-    private boolean permissionCheck(User u) {
+    private boolean permissionCheck(MessageReceivedEvent e, User u) {
         return e.isPrivate() // Private Commands have no permissions
                 || requiredPermissions() == null // No permissions are required to execute the command
                 || requiredPermissions().stream().noneMatch(p -> !PermissionUtil.checkPermission(e.getTextChannel(), u, p)) // The user has all permissions needed
                 || u.getId().equals(Info.AUTHOR_ID); // The user is the bot's author
+    }
+
+    // Credits to Kantenkugel for wasting his time on me
+    protected class MessageSender {
+
+        private final MessageReceivedEvent event;
+
+        MessageSender(MessageReceivedEvent event) {
+            this.event = event;
+        }
+
+        public void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> callback) {
+            msgContent = msgContent.length() > 2000
+                    ? "*The output message is over 2000 characters!*"
+                    : msgContent.replace("@everyone", "@\u180Eeveryone").replace("@here", "@\u180Ehere");
+
+            if (tChannel == null || (tChannel.getClass().equals(TextChannel.class) && !PermissionUtil.canTalk((TextChannel) tChannel)))
+                return;
+            tChannel.sendMessageAsync(msgContent, callback);
+            sent++;
+        }
+
+        public void sendMessage(String msgContent, Consumer<Message> callback) {
+            sendMessage(msgContent, event.getChannel(), callback);
+        }
+
+        public void sendMessage(String msgContent, MessageChannel channel) {
+            sendMessage(msgContent, channel, null);
+        }
+
+        public void sendMessage(String msgContent) {
+            sendMessage(msgContent, event.getChannel());
+        }
+
+        public void sendUsageMessage() {
+            sendMessage("**Usage:** " + getPrefix(event.getGuild()) + getUsage());
+        }
+
+        public void sendMessageWithMentions(String content, String[] args) {
+            List<User> base = event.isPrivate() ? Collections.singletonList(event.getAuthor()) : event.getGuild().getUsers();
+            List<User> mentionedUsers = new UserUtil().getMentionedUsers(event.getMessage(), args, base);
+            if (mentionedUsers.isEmpty())
+                sendMessage(content);
+            else if (mentionedUsers.size() > 5)
+                sendMessage("Please don't mention so many users! \uD83E\uDD10");
+            else {
+                StringBuilder sb = new StringBuilder();
+                mentionedUsers.stream()
+                        .map(u -> " <@" + u.getId() + ">")
+                        .forEach(sb::append);
+                sendMessage(sb.append(": ").append(content).toString());
+            }
+        }
+
+        public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
+            sendMessage(content, event.getAuthor().getPrivateChannel(), m -> {
+                if (m == null) // Something went wrong while sending the message
+                    sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
+                else sendMessage("✅ Check your DMs!", fallbackChannel);
+            });
+        }
     }
 }

@@ -4,6 +4,9 @@ import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -13,26 +16,23 @@ import java.util.List;
 
 public class KickCommand extends GuildCommand {
 
-    private MessageReceivedEvent e;
-
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        this.e = e;
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args);
         switch (userList.size()) {
             case 0:
-                sendMessage("No users were found that meet the criteria!");
+                chat.sendMessage("No users were found that meet the criteria!");
                 return;
 
             case 1:
                 User u = userList.get(0);
-                if (!canKick(u)) return;
+                if (!canKick(chat, u, e.getMessage())) return;
                 e.getGuild().getManager().kick(u);
-                sendMessage("**" + MessageUtil.userDiscrimSet(u) + "** got \uD83D\uDC62'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
+                chat.sendMessage("**" + MessageUtil.userDiscrimSet(u) + "** got \uD83D\uDC62'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
                 break;
 
             default:
-                sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
+                chat.sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
         }
     }
 
@@ -66,16 +66,17 @@ public class KickCommand extends GuildCommand {
         return Collections.singletonList(Permission.KICK_MEMBERS);
     }
 
-    private boolean canKick(User target) {
-        User selfInfo = e.getJDA().getSelfInfo();
-        if (!PermissionUtil.canInteract(e.getAuthor(), target, e.getGuild())) {
-            sendMessage("Your role is lower in hierarchy than the given user's!");
+    private boolean canKick(MessageSender chat, User target, Message msg) {
+        Guild guild = ((TextChannel) msg.getChannel()).getGuild();
+        User selfInfo = msg.getJDA().getSelfInfo();
+        if (!PermissionUtil.canInteract(msg.getAuthor(), target, guild)) {
+            chat.sendMessage("Your role is lower in hierarchy than the given user's!");
             return false;
         } else if (target == selfInfo) {
-            sendMessage("Please use " + getPrefix() + "leave to remove the bot from the server.");
+            chat.sendMessage("Please use " + getPrefix(guild) + "leave to remove the bot from the server.");
             return false;
-        } else if (!PermissionUtil.canInteract(selfInfo, target, e.getGuild())) {
-            sendMessage("The bot's role is lower in hierarchy than the given user's!");
+        } else if (!PermissionUtil.canInteract(selfInfo, target, guild)) {
+            chat.sendMessage("The bot's role is lower in hierarchy than the given user's!");
             return false;
         } else return true;
     }

@@ -12,8 +12,8 @@ public class ChangelogCommand extends GlobalCommand {
     private final List<String> changelogContents = IOUtil.readLinesFromResource("changelog.txt");
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage(String.join("\n", changelogContents));
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage(String.join("\n", changelogContents));
     }
 
     @Override

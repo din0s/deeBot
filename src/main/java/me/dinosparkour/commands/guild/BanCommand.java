@@ -4,6 +4,9 @@ import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.managers.GuildManager;
@@ -15,11 +18,8 @@ import java.util.List;
 
 public class BanCommand extends GuildCommand {
 
-    private MessageReceivedEvent e;
-
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        this.e = e;
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         int days;
         String userTag;
         GuildManager gm = e.getGuild().getManager();
@@ -30,7 +30,7 @@ public class BanCommand extends GuildCommand {
             case 0:
                 String id = args[0];
                 days = args.length > 1 ? parseDays(allArgs.replace(id, "").trim()) : 0;
-                if (invalidDays(days)) return;
+                if (invalidDays(chat, days)) return;
 
                 try {
                     if (id.length() < 17 || id.length() > 18)
@@ -38,7 +38,7 @@ public class BanCommand extends GuildCommand {
                     gm.ban(id, days);
                     userTag = "U(" + id + ")";
                 } catch (IllegalArgumentException ex) {
-                    sendMessage("**That's not a valid user!**");
+                    chat.sendMessage("**That's not a valid user!**");
                     return;
                 }
                 break;
@@ -46,17 +46,17 @@ public class BanCommand extends GuildCommand {
             case 1:
                 User u = userList.get(0);
                 days = allArgs.contains(" ") ? parseDays(allArgs.substring(allArgs.lastIndexOf(" ") + 1)) : 0;
-                if (invalidDays(days) || !canBan(u)) return;
+                if (invalidDays(chat, days) || !canBan(chat, u, e.getMessage())) return;
 
                 gm.ban(u, days);
                 userTag = MessageUtil.userDiscrimSet(u);
                 break;
 
             default:
-                sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
+                chat.sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
                 return;
         }
-        sendMessage("**" + userTag + "** got \uD83C\uDF4C'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
+        chat.sendMessage("**" + userTag + "** got \uD83C\uDF4C'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
     }
 
     @Override
@@ -102,29 +102,30 @@ public class BanCommand extends GuildCommand {
         }
     }
 
-    private boolean invalidDays(int days) {
+    private boolean invalidDays(MessageSender chat, int days) {
         if (days < 0) {
-            sendMessage("**That's not a valid amount of days to purge!**");
+            chat.sendMessage("**That's not a valid amount of days to purge!**");
             return true;
         } else if (days > 7) {
-            sendMessage("**You can only purge a maximum of 7 days worth of messages!**");
+            chat.sendMessage("**You can only purge a maximum of 7 days worth of messages!**");
             return true;
         }
         return false;
     }
 
-    private boolean canBan(User target) {
-        User selfInfo = e.getJDA().getSelfInfo();
-        if (!e.getGuild().getUsers().contains(target))
+    private boolean canBan(MessageSender chat, User target, Message msg) {
+        Guild guild = ((TextChannel) msg.getChannel()).getGuild();
+        User selfInfo = msg.getJDA().getSelfInfo();
+        if (!guild.getUsers().contains(target))
             return true;
-        else if (!PermissionUtil.canInteract(e.getAuthor(), target, e.getGuild())) {
-            sendMessage("Your role is lower in hierarchy than the given user's!");
+        else if (!PermissionUtil.canInteract(msg.getAuthor(), target, guild)) {
+            chat.sendMessage("Your role is lower in hierarchy than the given user's!");
             return false;
         } else if (target == selfInfo) {
-            sendMessage("Please use " + getPrefix() + "leave to remove the bot from the server.");
+            chat.sendMessage("Please use " + getPrefix(guild) + "leave to remove the bot from the server.");
             return false;
-        } else if (!PermissionUtil.canInteract(selfInfo, target, e.getGuild())) {
-            sendMessage("The bot's role is lower in hierarchy than the given user's!");
+        } else if (!PermissionUtil.canInteract(selfInfo, target, guild)) {
+            chat.sendMessage("The bot's role is lower in hierarchy than the given user's!");
             return false;
         } else return true;
     }

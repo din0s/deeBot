@@ -10,9 +10,9 @@ import java.util.List;
 public class StatsCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JDA jda = e.getJDA();
-        sendMessage("__Connections__\n"
+        chat.sendMessage("__Connections__\n"
                 + "**\u00b7 " + jda.getGuilds().size() + "** guilds\n"
                 + "**\u00b7 " + jda.getTextChannels().size() + "** text channels\n"
                 + "**\u00b7 " + jda.getVoiceChannels().size() + "** voice channels\n"

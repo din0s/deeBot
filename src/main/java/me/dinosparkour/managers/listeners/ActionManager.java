@@ -40,7 +40,7 @@ public class ActionManager extends ListenerAdapter {
             TextChannel channel = e.getJDA().getTextChannelById(isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId());
             if (channel == null || !guild.getTextChannels().contains(channel)) // Make sure we always have a channel
                 channel = guild.getPublicChannel();
-            MessageUtil.sendMessage(channel, message);
+            MessageUtil.sendMessage(message, channel);
         }
 
         if (isJoin && role != null) {
@@ -57,7 +57,7 @@ public class ActionManager extends ListenerAdapter {
                 return;
             } else reason = "the role's position being higher in the hierarchy.\n"
                     + "Please move the bot's role to the top in order to fix this issue";
-            guild.getPublicChannel().sendMessageAsync(unableToGiveRole(role, e.getUser(), reason), null); // Hopefully we don't reach this statement!!
+            MessageUtil.sendMessage(unableToGiveRole(role, e.getUser(), reason), guild.getPublicChannel()); // Hopefully we don't reach this statement!!
         }
     }
 

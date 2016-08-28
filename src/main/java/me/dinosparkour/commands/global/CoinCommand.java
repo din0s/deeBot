@@ -10,8 +10,8 @@ import java.util.Random;
 public class CoinCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("**" + (new Random().nextDouble() > 0.5 ? "Heads!" : "Tails!") + "**");
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("**" + (new Random().nextDouble() > 0.5 ? "Heads!" : "Tails!") + "**");
     }
 
     @Override

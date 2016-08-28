@@ -13,11 +13,6 @@ public class AnnouncementCommand extends TimerCommandImpl {
     }
 
     @Override
-    protected String getTargetId() {
-        return e.getTextChannel().getId();
-    }
-
-    @Override
     public List<String> getAlias() {
         return Arrays.asList(getName(), "announce");
     }

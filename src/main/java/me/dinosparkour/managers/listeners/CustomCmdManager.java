@@ -21,6 +21,6 @@ public class CustomCmdManager extends ListenerAdapter {
 
         List<String> responses = sm.getCommandResponses(cmdName);
         String message = responses.get(new Random().nextInt(responses.size()));
-        MessageUtil.sendMessage(e.getChannel(), MessageUtil.parseVariables(message, e.getAuthor()));
+        MessageUtil.sendMessage(MessageUtil.parseVariables(message, e.getAuthor()), e.getChannel());
     }
 }

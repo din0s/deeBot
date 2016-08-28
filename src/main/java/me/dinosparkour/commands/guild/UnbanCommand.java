@@ -13,21 +13,21 @@ import java.util.List;
 public class UnbanCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args, e.getGuild().getManager().getBans());
         switch (userList.size()) {
             case 0:
-                sendMessage("No users were found that meet the criteria!");
+                chat.sendMessage("No users were found that meet the criteria!");
                 break;
 
             case 1:
                 User u = userList.get(0);
                 e.getGuild().getManager().unBan(u);
-                sendMessage("**" + MessageUtil.userDiscrimSet(u) + "** was \uD83D\uDE4C\uD83C\uDFFD'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
+                chat.sendMessage("**" + MessageUtil.userDiscrimSet(u) + "** was \uD83D\uDE4C\uD83C\uDFFD'd by **" + MessageUtil.userDiscrimSet(e.getAuthor()) + "**");
                 break;
 
             default:
-                sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
+                chat.sendMessage("More than one users were found that meet the criteria!\nPlease narrow down your query.");
                 break;
         }
     }

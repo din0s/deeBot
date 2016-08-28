@@ -10,8 +10,8 @@ import java.util.List;
 public class UptimeCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("**Current Uptime:** `" + Info.getUptime() + "`");
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("**Current Uptime:** `" + Info.getUptime() + "`");
     }
 
     @Override

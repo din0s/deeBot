@@ -11,9 +11,9 @@ import java.util.List;
 public class GuildInfoCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         Guild guild = e.getGuild();
-        sendMessage("**``Guild Information`` [** " + MessageUtil.stripFormatting(guild.getName()) + " (" + guild.getId() + ") **]**\n\n"
+        chat.sendMessage("**``Guild Information`` [** " + MessageUtil.stripFormatting(guild.getName()) + " (" + guild.getId() + ") **]**\n\n"
                 + "**Owner**: " + MessageUtil.userDiscrimSet(guild.getOwner()) + " (" + guild.getOwnerId() + ")\n"
                 + "**Verification Level**: " + guild.getVerificationLevel() + "\n"
                 + "\n"

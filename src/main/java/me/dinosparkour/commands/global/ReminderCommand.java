@@ -13,11 +13,6 @@ public class ReminderCommand extends TimerCommandImpl {
     }
 
     @Override
-    protected String getTargetId() {
-        return e.getAuthor().getPrivateChannel().getId();
-    }
-
-    @Override
     public List<String> getAlias() {
         return Collections.singletonList(getName());
     }

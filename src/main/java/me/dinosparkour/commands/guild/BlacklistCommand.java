@@ -18,13 +18,13 @@ public class BlacklistCommand extends GuildCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         switch (args.length) {
             case 0:
                 TextChannel tc = e.getTextChannel();
                 if (!tc.checkPermission(e.getAuthor(), Permission.MESSAGE_MANAGE)) {
-                    sendMessage("You need `[MESSAGE_MANAGE]` in order to modify the blacklist!");
+                    chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to modify the blacklist!");
                     return;
                 }
 
@@ -36,7 +36,7 @@ public class BlacklistCommand extends GuildCommand {
                     BlacklistManager.addToBlacklist(tc);
                     sb.append("Added ").append(tc.getAsMention()).append(" to");
                 }
-                sendMessage(sb.append(" the blacklist!").toString());
+                chat.sendMessage(sb.append(" the blacklist!").toString());
                 break;
 
             default:
@@ -44,8 +44,8 @@ public class BlacklistCommand extends GuildCommand {
                     List<String> blacklist = BlacklistManager.getBlacklistedChannelIds(e.getGuild()).stream()
                             .map(id -> e.getJDA().getTextChannelById(id).getAsMention())
                             .collect(Collectors.toList());
-                    sendMessage("Blacklisted channels: " + (blacklist.isEmpty() ? "None" : String.join(", ", blacklist)));
-                } else sendUsageMessage();
+                    chat.sendMessage("Blacklisted channels: " + (blacklist.isEmpty() ? "None" : String.join(", ", blacklist)));
+                } else chat.sendUsageMessage();
                 break;
         }
     }

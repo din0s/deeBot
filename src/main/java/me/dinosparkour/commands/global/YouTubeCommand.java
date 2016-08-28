@@ -15,7 +15,7 @@ public class YouTubeCommand extends GlobalCommand {
     private static final String API_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={q}&type=video&key={key}";
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         Map<String, String> params = new HashMap<>();
         try {
@@ -26,10 +26,10 @@ public class YouTubeCommand extends GlobalCommand {
         JSONArray arr = HttpRequestUtil.getData(API_URL, params).getJSONArray("items");
 
         if (arr.length() == 0)
-            sendMessage("Your query returned zero results from YouTube!");
+            chat.sendMessage("Your query returned zero results from YouTube!");
         else {
             String watchUrl = arr.getJSONObject(0).getJSONObject("id").getString("videoId");
-            sendMessage("https://youtu.be/" + watchUrl);
+            chat.sendMessage("https://youtu.be/" + watchUrl);
         }
     }
 

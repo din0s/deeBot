@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 public class WhoisCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         User lookup;
         if (args.length > 0) {
             List<User> users = new UserUtil().getMentionedUsers(e.getMessage(), args, e.isPrivate() ? Collections.singletonList(e.getAuthor()) : e.getGuild().getUsers());
             switch (users.size()) {
                 case 0:
-                    sendMessage("No users match the criteria!");
+                    chat.sendMessage("No users match the criteria!");
                     return;
 
                 case 1:
@@ -30,7 +30,7 @@ public class WhoisCommand extends GlobalCommand {
                     break;
 
                 default:
-                    sendMessage("Your query returned too many users!\nPlease narrow down your search.");
+                    chat.sendMessage("Your query returned too many users!\nPlease narrow down your search.");
                     return;
             }
         } else lookup = e.getAuthor();
@@ -58,7 +58,7 @@ public class WhoisCommand extends GlobalCommand {
                     .append("**Roles**: ").append(roles.equals("") ? "@everyone" : roles);
         }
 
-        sendMessage(sb.toString());
+        chat.sendMessage(sb.toString());
     }
 
     @Override

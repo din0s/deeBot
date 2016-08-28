@@ -9,8 +9,8 @@ import java.util.List;
 public class WeedCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("(:̲̅:̲̅:̲̅м̲̅a̲̅я̲̅i̲̅j̲̅u̲̅a̲̅n̲̅a̲̅:̲̅:̲̅:̲̅()ด้็็็็");
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("(:̲̅:̲̅:̲̅м̲̅a̲̅я̲̅i̲̅j̲̅u̲̅a̲̅n̲̅a̲̅:̲̅:̲̅:̲̅()ด้็็็็");
     }
 
     @Override

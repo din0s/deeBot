@@ -9,9 +9,9 @@ import java.util.List;
 public class PingCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         long start = System.currentTimeMillis();
-        sendMessage("Pinging..", m -> m.updateMessageAsync("Ping: **" + (System.currentTimeMillis() - start) / 2 + "ms**", null));
+        chat.sendMessage("Pinging..", m -> m.updateMessageAsync("Ping: **" + (System.currentTimeMillis() - start) / 2 + "ms**", null));
     }
 
     @Override

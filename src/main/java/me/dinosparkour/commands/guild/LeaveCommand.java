@@ -11,12 +11,12 @@ import java.util.List;
 public class LeaveCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         if (!PermissionUtil.checkPermission(e.getGuild(), e.getAuthor(), Permission.KICK_MEMBERS)
                 && !PermissionUtil.checkPermission(e.getGuild(), e.getAuthor(), Permission.BAN_MEMBERS))
-            sendMessage("You do not have the required permissions to execute this command!\n`[KICK_MEMBERS || BAN_MEMBERS]`");
+            chat.sendMessage("You do not have the required permissions to execute this command!\n`[KICK_MEMBERS || BAN_MEMBERS]`");
         else
-            sendMessage("\uD83D\uDC4B\uD83C\uDFFD Leaving the server!", m -> e.getGuild().getManager().leave());
+            chat.sendMessage("\uD83D\uDC4B\uD83C\uDFFD Leaving the server!", m -> e.getGuild().getManager().leave());
     }
 
     @Override

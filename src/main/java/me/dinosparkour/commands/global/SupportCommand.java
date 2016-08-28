@@ -9,8 +9,8 @@ import java.util.List;
 public class SupportCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage(e.getAuthor().getAsMention() + ": Follow the invite below to join my support server."
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage(e.getAuthor().getAsMention() + ": Follow the invite below to join my support server."
                 + "\nhttps://discord.gg/0wEZsVCXid2URhDY");
     }
 

@@ -26,7 +26,7 @@ public class EvalCommand extends AdminCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         engine.put("e", e);
         engine.put("e", e);
@@ -47,7 +47,7 @@ public class EvalCommand extends AdminCommand {
             try {
                 out = engine.eval("(function() { with (imports) {\n" + allArgs + "\n} })();");
             } catch (Exception ex) {
-                sendMessage("**Exception**: ```\n" + ex.getLocalizedMessage() + "```");
+                chat.sendMessage("**Exception**: ```\n" + ex.getLocalizedMessage() + "```");
                 return;
             }
 
@@ -60,14 +60,14 @@ public class EvalCommand extends AdminCommand {
             if (outputS.length() > 2000)
                 outputS = "The output is longer than 2000 chars!";
 
-            sendMessage(outputS);
+            chat.sendMessage(outputS);
         }, 0, TimeUnit.MILLISECONDS);
 
         try {
             future.get(10, TimeUnit.SECONDS);
         } catch (TimeoutException ex) {
             future.cancel(true);
-            sendMessage("Your task exceeds the time limit!");
+            chat.sendMessage("Your task exceeds the time limit!");
         } catch (ExecutionException | InterruptedException ex) {
             ex.printStackTrace();
         }

@@ -11,12 +11,12 @@ import java.util.List;
 public class ChuckNorrisCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JSONObject obj = HttpRequestUtil.getData("http://api.icndb.com/jokes/random");
         if (obj != null && obj.getString("type").equals("success"))
-            sendMessage(obj.getJSONObject("value").getString("joke"));
+            chat.sendMessage(obj.getJSONObject("value").getString("joke"));
         else // GET request returned error, use static joke.
-            sendMessage("Chuck Norris had a car accident. We have yet to find out if the car survived after the crash..");
+            chat.sendMessage("Chuck Norris had a car accident. We have yet to find out if the car survived after the crash..");
     }
 
     @Override

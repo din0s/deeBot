@@ -17,14 +17,14 @@ import java.util.*;
 public class CustomCmdCommand extends GuildCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         ServerManager sm = new ServerManager(e.getGuild());
         String inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
         switch (args[0].toLowerCase()) {
             case "create": // Create new command
-                if (isNotAuthorized(e.getAuthor(), e.getGuild())) return;
+                if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
                 else if (!String.join(" ", Arrays.asList(args)).contains("|")) {
-                    sendUsageMessage();
+                    chat.sendUsageMessage();
                     return;
                 } else {
                     String name = inputArgs.substring(0, inputArgs.indexOf("|"));
@@ -32,14 +32,14 @@ public class CustomCmdCommand extends GuildCommand {
                     name = name.trim();
 
                     if (CommandRegistry.getCommand(name) != null) {
-                        sendMessage("You cannot override the default commands! "
-                                + "**" + MessageUtil.stripFormatting(getPrefix()) + "help " + name + "**");
+                        chat.sendMessage("You cannot override the default commands! "
+                                + "**" + MessageUtil.stripFormatting(getPrefix(e.getGuild())) + "help " + name + "**");
                         return;
                     } else if (sm.isValid(name)) {
-                        sendMessage("You already have a command registered by that name!");
+                        chat.sendMessage("You already have a command registered by that name!");
                         return;
                     } else if (allResponses.equals("")) {
-                        sendMessage("**Please include at least one response!**");
+                        chat.sendMessage("**Please include at least one response!**");
                         return;
                     }
 
@@ -48,7 +48,7 @@ public class CustomCmdCommand extends GuildCommand {
                     obj.put("name", name);
                     obj.put("responses", new JSONArray(responses));
                     sm.addCommand(obj).update();
-                    sendMessage(getSuccessMessage("created", name));
+                    chat.sendMessage(getSuccessMessage("created", name));
                 }
                 break;
 
@@ -57,16 +57,16 @@ public class CustomCmdCommand extends GuildCommand {
                 sm.getCommands().entrySet().stream()
                         .map(set -> "Command \"" + MessageUtil.stripFormatting(set.getKey()) + "\" - Responses " + set.getValue() + "\n")
                         .forEach(sb::append);
-                sendMessage(sb.length() > 0 ? sb.toString() : "No custom commands have been registered!");
+                chat.sendMessage(sb.length() > 0 ? sb.toString() : "No custom commands have been registered!");
                 break;
 
             case "delete": // Delete a command
-                if (isNotAuthorized(e.getAuthor(), e.getGuild())) return;
-                else if (inputArgs.equals("")) sendUsageMessage();
+                if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
+                else if (inputArgs.equals("")) chat.sendUsageMessage();
                 else if (sm.isValid(inputArgs)) {
                     sm.deleteCommand(inputArgs).update();
-                    sendMessage(getSuccessMessage("delted", inputArgs));
-                } else sendMessage("That's not a valid command name!");
+                    chat.sendMessage(getSuccessMessage("delted", inputArgs));
+                } else chat.sendMessage("That's not a valid command name!");
                 break;
         }
     }
@@ -109,9 +109,9 @@ public class CustomCmdCommand extends GuildCommand {
         return 1;
     }
 
-    private boolean isNotAuthorized(User u, Guild g) {
+    private boolean isNotAuthorized(MessageSender chat, User u, Guild g) {
         if (!PermissionUtil.checkPermission(g, u, Permission.MANAGE_SERVER)) {
-            sendMessage("You need `[MANAGE_SERVER]` to modify the Custom Commands on this guild!");
+            chat.sendMessage("You need `[MANAGE_SERVER]` to modify the Custom Commands on this guild!");
             return true;
         } else return false;
     }

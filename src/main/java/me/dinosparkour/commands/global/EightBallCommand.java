@@ -28,12 +28,12 @@ public class EightBallCommand extends GlobalCommand {
             "It's scientifically proven!");
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         String question = allArgs.endsWith("?") ? allArgs : allArgs.trim() + "?";
         int i = new Random().nextInt(REPLIES.size());
         String answer = REPLIES.get(i);
-        sendMessage((randomBool() ? "\uD83D\uDCAB" : "\uD83C\uDF1F") + " `"
+        chat.sendMessage((randomBool() ? "\uD83D\uDCAB" : "\uD83C\uDF1F") + " `"
                 + MessageUtil.stripFormatting(question.replace("`", "")) + "` "
                 + answer + " " + (randomBool() ? "\uD83C\uDFB1" : "\uD83D\uDD2E"));
     }

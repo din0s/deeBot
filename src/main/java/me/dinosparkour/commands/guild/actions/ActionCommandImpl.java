@@ -13,13 +13,13 @@ abstract class ActionCommandImpl extends GuildCommand {
     protected abstract Action getAction();
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         ServerManager sm = new ServerManager(e.getGuild());
         switch (args.length) {
             case 0: // Get the current message
                 String message = isJoin() ? sm.getWelcomeMessage() : sm.getFarewellMessage();
-                sendMessage("__Current message sent upon user " + getAction().gerund + " the guild__: "
+                chat.sendMessage("__Current message sent upon user " + getAction().gerund + " the guild__: "
                         + (message == null ? "None" : message));
                 break;
 
@@ -30,7 +30,7 @@ abstract class ActionCommandImpl extends GuildCommand {
                             sm.setWelcomeMessage(null).update();
                         else
                             sm.setFarewellMessage(null).update();
-                        sendMessage("__Reset the " + getAction().noun + " message!__");
+                        chat.sendMessage("__Reset the " + getAction().noun + " message!__");
                     } else if (args[0].equalsIgnoreCase("channel")) { // Set the broadcast channel
                         List<TextChannel> textChannels = e.getMessage().getMentionedChannels();
                         switch (textChannels.size()) {
@@ -40,14 +40,14 @@ abstract class ActionCommandImpl extends GuildCommand {
                                         sm.setWelcomeChannel(null).update();
                                     else
                                         sm.setFarewellChannel(null).update();
-                                    sendMessage("__Reset the " + getAction().noun + " channel!__");
+                                    chat.sendMessage("__Reset the " + getAction().noun + " channel!__");
                                 } else {
                                     TextChannel tc = e.getGuild().getTextChannels().stream() // Get the current channel
                                             .filter(textChannel ->
                                                     textChannel.getId().equals(isJoin()
                                                             ? sm.getWelcomeChannelId() : sm.getFarewellChannelId()))
                                             .findFirst().orElse(null);
-                                    sendMessage("__Current " + getAction().noun + " channel__: "
+                                    chat.sendMessage("__Current " + getAction().noun + " channel__: "
                                             + (tc == null ? e.getGuild().getPublicChannel() : tc.getAsMention()));
                                 }
                                 break;
@@ -57,11 +57,11 @@ abstract class ActionCommandImpl extends GuildCommand {
                                     sm.setWelcomeChannel(textChannels.get(0)).update();
                                 else
                                     sm.setFarewellChannel(textChannels.get(0)).update();
-                                sendMessage("__Set the " + getAction().noun + " channel to__: " + textChannels.get(0).getAsMention());
+                                chat.sendMessage("__Set the " + getAction().noun + " channel to__: " + textChannels.get(0).getAsMention());
                                 break;
 
                             default: // Too many mentioned channels
-                                sendUsageMessage();
+                                chat.sendUsageMessage();
                                 break;
                         }
                     } else { // Set the broadcast message
@@ -69,10 +69,10 @@ abstract class ActionCommandImpl extends GuildCommand {
                             sm.setWelcomeMessage(allArgs).update();
                         else if (!isJoin() && (sm.getFarewellMessage() == null || !sm.getFarewellMessage().equals(allArgs)))
                             sm.setFarewellMessage(allArgs).update();
-                        sendMessage("__Set the message sent upon " + getAction().gerund + " to__:\n" + allArgs);
+                        chat.sendMessage("__Set the message sent upon " + getAction().gerund + " to__:\n" + allArgs);
                     }
                 } else // No permission to set msg
-                    sendMessage("You need `[MESSAGE_MANAGE]` in order to set the " + getAction().noun + " message!");
+                    chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to set the " + getAction().noun + " message!");
                 break;
         }
     }

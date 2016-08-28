@@ -5,6 +5,7 @@ import me.dinosparkour.utils.IOUtil;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.MessageChannel;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.ReconnectedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
@@ -14,15 +15,19 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 public abstract class TimerCommandImpl extends Command {
 
-    private final List<TimerImpl> announcements = new ArrayList<>();
-    private final List<TimerImpl> reminders = new ArrayList<>();
-    private final Map<String, Timer> announcementTimers = new HashMap<>();
-    private final Map<String, Timer> reminderTimers = new HashMap<>();
+    private final ScheduledExecutorService timerScheduler = Executors.newScheduledThreadPool(1);
+    private final List<TimerImpl> announcementList = new ArrayList<>();
+    private final List<TimerImpl> reminderList = new ArrayList<>();
+    private final Map<String, ScheduledFuture> scheduledAnnouncements = new HashMap<>(); // Map<AuthorId, Runnable>
+    private final Map<String, ScheduledFuture> scheduledReminders = new HashMap<>();     // Map<AuthorId, Runnable>
     private final String noTimers = "You have no " + getType().name().toLowerCase() + "s set!";
-    protected MessageReceivedEvent e;
     private JDA jda;
 
     public TimerCommandImpl() {
@@ -36,7 +41,7 @@ public abstract class TimerCommandImpl extends Command {
                         String targetId = constructors[2];
                         String message = s.substring(time.length() + 1 + authorId.length() + 1 + targetId.length() + 1);
                         TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
-                        if (impl.getTimeLeft() < 0)
+                        if (impl.getSecondsLeft() < 0)
                             IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
                         else addEntry(impl); // Add a new entry if the reminder is valid
                     })
@@ -44,8 +49,6 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     protected abstract Type getType();
-
-    protected abstract String getTargetId();
 
     private void init(JDA jda) {
         this.jda = jda;
@@ -62,34 +65,33 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        this.e = e;
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        String targetId = isReminder() ? e.getAuthor().getPrivateChannel().getId() : e.getTextChannel().getId();
         String allArgs = String.join(" ", Arrays.asList(args));
         String typeName = getType().name().toLowerCase();
         String typeSet = getType().pronoun + typeName;
 
         switch (args.length) {
             case 0:
-                if (hasSetTimer()) { // The user has a timer set
-                    TimerImpl timer = getSetTimer();
-                    sendMessage("You have " + typeSet + " set for `" + timer.getTimeLeftFormatted() + "`"
+                if (hasSetTimer(e.getAuthor())) { // The user has a timer set
+                    TimerImpl timer = getSetTimer(e.getAuthor());
+                    chat.sendMessage("You have " + typeSet + " set for `" + timer.getTimeLeftFormatted() + "`"
                             + (timer.getMessage() == null ? "." : (" with the following message:\n" + timer.getMessage())));
-                } else sendMessage(noTimers); // No timer has been set
+                } else chat.sendMessage(noTimers); // No timer has been set
                 break;
 
             case 1:
                 if (args[0].equalsIgnoreCase("reset")) {
-                    if (hasSetTimer()) {
-                        e.getChannel().sendTyping();
-                        removeEntry(getSetTimer());
-                        sendMessage("Successfully deleted your " + typeName + "!");
+                    if (hasSetTimer(e.getAuthor())) {
+                        chat.sendMessage("Successfully deleted your " + typeName + "!");
+                        removeEntry(getSetTimer(e.getAuthor()));
                     } else
-                        sendMessage(noTimers);
-                } else sendUsageMessage();
+                        chat.sendMessage(noTimers);
+                } else chat.sendUsageMessage();
                 break;
 
             default:
-                if (!hasSetTimer()) {
+                if (!hasSetTimer(e.getAuthor())) {
                 /*
                  * timer [duration] [time unit] (timer text)
                  *        args[0]    args[1]     args[...]
@@ -98,30 +100,28 @@ public abstract class TimerCommandImpl extends Command {
                     try {
                         duration = Integer.parseInt(args[0]);
                     } catch (NumberFormatException ex) {
-                        sendMessage("That's not a valid duration amount!");
+                        chat.sendMessage("That's not a valid duration amount!");
                         return;
                     }
 
                     Unit unit = Unit.get(args[1]);
                     ChronoUnit chronoUnit;
                     if (unit == null) {
-                        sendMessage("**That's not a valid time unit!** (seconds, minutes, hours, days)");
+                        chat.sendMessage("**That's not a valid time unit!** (seconds, minutes, hours, days)");
                         return;
                     } else chronoUnit = unit.chronoUnit;
 
                     OffsetDateTime odt = OffsetDateTime.now().plus(duration, chronoUnit);
                     String authorId = e.getAuthor().getId();
                     String message = allArgs.substring(args[0].length() + 1 + args[1].length()).trim();
-                    TimerImpl impl = new TimerImpl(odt, authorId, getTargetId(), message);
+                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
 
                     // Add the entry
-                    e.getChannel().sendTyping();
+                    chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());
                     addEntry(impl);
                     IOUtil.writeTextToFile(getFile(), getEntryLine(impl), true);
-                    sendMessage("Your " + typeName + " has been set!");
-
                 } else
-                    sendMessage("You already have " + typeSet + " set! Use " + getPrefix() + getName() + " to review it.");
+                    chat.sendMessage("You already have " + typeSet + " set! Use " + getPrefix(e.getGuild()) + getName() + " to review it.");
                 break;
         }
     }
@@ -137,11 +137,11 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private List<TimerImpl> getList() {
-        return isReminder() ? reminders : announcements;
+        return isReminder() ? reminderList : announcementList;
     }
 
-    private Map<String, Timer> getMap() {
-        return isReminder() ? reminderTimers : announcementTimers;
+    private Map<String, ScheduledFuture> getMap() {
+        return isReminder() ? scheduledReminders : scheduledAnnouncements;
     }
 
     private String getEntryLine(TimerImpl impl) {
@@ -149,46 +149,42 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private void addEntry(TimerImpl impl) {
-        Timer timer = new Timer();
-        timer.schedule(timerTask(impl), impl.getTimeLeft());
+        ScheduledFuture future = timerScheduler.schedule(timerRunnable(impl), impl.getSecondsLeft(), TimeUnit.SECONDS);
         getList().add(impl);
-        getMap().put(impl.getAuthorId(), timer);
+        getMap().put(impl.getAuthorId(), future);
     }
 
     private void removeEntry(TimerImpl impl) {
-        getMap().get(impl.getAuthorId()).cancel(); // Cancel the timer thread
+        getMap().get(impl.getAuthorId()).cancel(true); // Cancel the scheduled future
         getMap().remove(impl.getAuthorId());
         getList().remove(impl); // Remove the timer from the set
         IOUtil.removeTextFromFile(getFile(), getEntryLine(impl));
     }
 
-    private boolean timerAuthorMatchesEvent(TimerImpl t) {
-        return t.getAuthorId().equals(e.getAuthor().getId());
+    private boolean userMatch(TimerImpl impl, User u) {
+        return impl.getAuthorId().equals(u.getId());
     }
 
-    private boolean hasSetTimer() {
-        return getList().stream().anyMatch(this::timerAuthorMatchesEvent);
+    private boolean hasSetTimer(User u) {
+        return getList().stream().anyMatch(impl -> userMatch(impl, u));
     }
 
-    private TimerImpl getSetTimer() {
-        return getList().stream().filter(this::timerAuthorMatchesEvent).findFirst().orElse(null);
+    private TimerImpl getSetTimer(User u) {
+        return getList().stream().filter(impl -> userMatch(impl, u)).findFirst().orElse(null);
     }
 
     private File getFile() {
         return new File(ServerManager.getDataDir() + getType().name().toLowerCase() + "s.txt");
     }
 
-    private TimerTask timerTask(TimerImpl impl) {
-        return new TimerTask() {
-            @Override
-            public void run() {
-                String msg = impl.getMessage().equals("") ? "⏰  Time's up!" : impl.getMessage();
-                MessageChannel channel = isReminder()
-                        ? jda.getPrivateChannelById(impl.getTargetId())
-                        : jda.getTextChannelById(impl.getTargetId());
-                if (channel != null) sendMessage(msg, channel);
-                removeEntry(impl);
-            }
+    private Runnable timerRunnable(TimerImpl impl) {
+        return () -> {
+            String msg = impl.getMessage().equals("") ? "⏰  Time's up!" : impl.getMessage();
+            MessageChannel channel = isReminder()
+                    ? jda.getPrivateChannelById(impl.getTargetId())
+                    : jda.getTextChannelById(impl.getTargetId());
+            if (channel != null) MessageUtil.sendMessage(msg, channel);
+            removeEntry(impl);
         };
     }
 
@@ -247,12 +243,12 @@ public abstract class TimerCommandImpl extends Command {
             return odt;
         }
 
-        long getTimeLeft() {
-            return Duration.between(OffsetDateTime.now(), odt).getSeconds() * 1000;
+        long getSecondsLeft() {
+            return Duration.between(OffsetDateTime.now(), odt).getSeconds();
         }
 
         String getTimeLeftFormatted() {
-            return MessageUtil.formatTime(getTimeLeft());
+            return MessageUtil.formatTime(getSecondsLeft() * 1000);
         }
 
         public String getAuthorId() {

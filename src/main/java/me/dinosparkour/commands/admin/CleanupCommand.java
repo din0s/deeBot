@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class CleanupCommand extends AdminCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         int amount = 5;
         User selfInfo = e.getJDA().getSelfInfo();
         boolean bulk = PermissionUtil.checkPermission(e.getTextChannel(), selfInfo, Permission.MESSAGE_MANAGE);
@@ -26,7 +26,7 @@ public class CleanupCommand extends AdminCommand {
                 if (amount > 100)
                     throw new NumberFormatException();
             } catch (NumberFormatException ex) {
-                sendMessage("**That's not a valid amount!** [1 - 100]");
+                chat.sendMessage("**That's not a valid amount!** [1 - 100]");
                 return;
             }
 

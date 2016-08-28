@@ -9,8 +9,8 @@ import java.util.List;
 public class SaltCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▄██████▄\n" +
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("▒▒▒▒▒▒▒▒▒▒▒▒▒▒▄▄██████▄\n" +
                 "▒▒▒▒▒▒▒▒▒▒▄▄████████████▄\n" +
                 "▒▒▒▒▒▒▄▄██████████████████\n" +
                 "▒▒▒▄████▀▀▀██▀██▌███▀▀▀████\n" +

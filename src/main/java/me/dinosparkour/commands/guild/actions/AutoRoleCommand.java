@@ -19,13 +19,13 @@ public class AutoRoleCommand extends GuildCommand {
     private static final String SUCCESS = "__Set the role given upon joining to__: ";
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         ServerManager sm = new ServerManager(e.getGuild());
         switch (args.length) {
             case 0: // Get the current autorole
                 Role joinRole = e.getGuild().getRoleById(sm.getAutoRoleId());
-                sendMessage("__Current role given upon joining__: " + (joinRole == null ? "None" : MessageUtil.stripFormatting(joinRole.getName())));
+                chat.sendMessage("__Current role given upon joining__: " + (joinRole == null ? "None" : MessageUtil.stripFormatting(joinRole.getName())));
                 break;
 
             case 1:
@@ -33,7 +33,7 @@ public class AutoRoleCommand extends GuildCommand {
                 Role tmpRole = e.getGuild().getRoleById(args[0]);
                 if (tmpRole != null) {
                     sm.setAutoRole(tmpRole).update();
-                    sendMessage(SUCCESS + MessageUtil.stripFormatting(tmpRole.getName()));
+                    chat.sendMessage(SUCCESS + MessageUtil.stripFormatting(tmpRole.getName()));
                     break;
                 }
                 // It's not an ID, continue;
@@ -41,7 +41,7 @@ public class AutoRoleCommand extends GuildCommand {
             default:
                 if (allArgs.equalsIgnoreCase("reset")) { // Clear the autorole
                     sm.setAutoRole(null).update();
-                    sendMessage("__Reset the role given upon joining!__");
+                    chat.sendMessage("__Reset the role given upon joining!__");
                     return;
                 }
 
@@ -50,16 +50,16 @@ public class AutoRoleCommand extends GuildCommand {
                         .collect(Collectors.toList());
 
                 if (roles.size() > 1) // More than one roles share the given name
-                    sendMessage("There are more than 1 roles that meet the criteria! Please use IDs.");
+                    chat.sendMessage("There are more than 1 roles that meet the criteria! Please use IDs.");
                 else if (roles.size() == 0) // No roles have the given name
-                    sendMessage("No roles were found that meet the criteria!");
+                    chat.sendMessage("No roles were found that meet the criteria!");
                 else { // A unique role has been found
                     Role newRole = roles.get(0);
                     User selfInfo = e.getJDA().getSelfInfo();
 
                     StringBuilder sb = new StringBuilder();
                     if (!PermissionUtil.canInteract(e.getAuthor(), newRole)) {
-                        sendMessage("**ERROR:** You cannot select a role that's higher in the hierarchy than your own top role!");
+                        chat.sendMessage("**ERROR:** You cannot select a role that's higher in the hierarchy than your own top role!");
                         return;
                     } else if (!PermissionUtil.canInteract(selfInfo, newRole))
                         sb.append("**➤ WARNING \uD83C\uDD98**\n")
@@ -69,7 +69,7 @@ public class AutoRoleCommand extends GuildCommand {
 
                     if (sm.getAutoRoleId() == null || !sm.getAutoRoleId().equals(newRole.getId()))
                         sm.setAutoRole(newRole).update();
-                    sendMessage(sb.append(SUCCESS).append(MessageUtil.stripFormatting(newRole.getName())).toString());
+                    chat.sendMessage(sb.append(SUCCESS).append(MessageUtil.stripFormatting(newRole.getName())).toString());
                 }
                 break;
         }

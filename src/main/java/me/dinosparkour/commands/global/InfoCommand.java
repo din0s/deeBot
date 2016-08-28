@@ -10,14 +10,14 @@ import java.util.List;
 public class InfoCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         Runtime runtime = Runtime.getRuntime();
         int unit = 1024;
         long memoryTotal = runtime.totalMemory() / unit;       // in KB
         long memoryFree = runtime.freeMemory() / unit;         // in KB
         long memoryInUse = (memoryTotal - memoryFree) / unit;  // in MB
 
-        sendMessage("__Bot Info__:\n"
+        chat.sendMessage("__Bot Info__:\n"
                 + "**Bot Creator**: dinos#0649\n"
                 + "**Bot Version**: v" + Info.VERSION + "\n"
                 + "**Library**: " + Info.LIBRARY + "\n"

@@ -9,8 +9,8 @@ import java.util.List;
 public class GoodShitCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("\ud83d\udc4c\ud83c\udffd\uD83D\uDC40\ud83d\udc4c\ud83c\udffd\uD83D\uDC40\ud83d\udc4c\ud83c\udffd" +
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("\ud83d\udc4c\ud83c\udffd\uD83D\uDC40\ud83d\udc4c\ud83c\udffd\uD83D\uDC40\ud83d\udc4c\ud83c\udffd" +
                 "\uD83D\uDC40\ud83d\udc4c\ud83c\udffd\uD83D\uDC40\ud83d\udc4c\ud83c\udffd\uD83D\uDC40 good shit go౦ԁ sHit" +
                 "\ud83d\udc4c\ud83c\udffd thats ✔ some good\ud83d\udc4c\ud83c\udffd\ud83d\udc4c\ud83c\udffdshit right\ud83d" +
                 "\udc4c\ud83c\udffd\ud83d\udc4c\ud83c\udffdthere\ud83d\udc4c\ud83c\udffd\ud83d\udc4c\ud83c\udffd\ud83d\udc4c" +

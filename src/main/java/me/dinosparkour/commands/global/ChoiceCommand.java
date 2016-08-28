@@ -9,10 +9,10 @@ import java.util.*;
 public class ChoiceCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         if (!allArgs.contains(";") || allArgs.equals(":"))
-            sendUsageMessage();
+            chat.sendUsageMessage();
         else {
             List<String> choices = new ArrayList<>();
             for (String s : allArgs.split(";"))
@@ -20,11 +20,11 @@ public class ChoiceCommand extends GlobalCommand {
                     choices.add(s.trim());
             int count = choices.size();
             if (count == 1)
-                sendMessage("Please give me more than 1 option to choose from..");
+                chat.sendMessage("Please give me more than 1 option to choose from..");
             else {
                 int rand = new Random().nextInt(count);
                 String choice = choices.get(rand).replace("`", "");
-                sendMessage("\ud83e\udd14 *I'd say..* `" + MessageUtil.stripFormatting(choice) + "`!");
+                chat.sendMessage("\ud83e\udd14 *I'd say..* `" + MessageUtil.stripFormatting(choice) + "`!");
             }
         }
     }

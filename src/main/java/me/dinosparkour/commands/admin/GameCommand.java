@@ -12,18 +12,18 @@ import java.util.List;
 public class GameCommand extends AdminCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         AccountManager am = e.getJDA().getAccountManager();
         switch (allArgs) {
             case "reset":
                 am.setGame(null);
-                sendMessage("Reset the game!");
+                chat.sendMessage("Reset the game!");
                 break;
 
             default:
                 am.setGame(allArgs);
-                sendMessage("Set the game to \"" + MessageUtil.stripFormatting(e.getJDA().getSelfInfo().getCurrentGame().getName()) + "\"");
+                chat.sendMessage("Set the game to \"" + MessageUtil.stripFormatting(e.getJDA().getSelfInfo().getCurrentGame().getName()) + "\"");
                 break;
         }
     }

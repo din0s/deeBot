@@ -9,8 +9,8 @@ import java.util.List;
 public class RektCommand extends GlobalCommand {
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
-        sendMessage("REKT checklist"
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
+        chat.sendMessage("REKT checklist"
                 + "\n"
                 + "\n⬜ Not Rekt"
                 + "\n✅ REKT"

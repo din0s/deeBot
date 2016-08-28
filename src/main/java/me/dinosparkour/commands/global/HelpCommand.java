@@ -24,19 +24,20 @@ public class HelpCommand extends GlobalCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         int pageNum = 1;
         int cmdSize = CommandRegistry.getPublicCommands().size();
         int totalPageCount = cmdSize % 5 == 0 ? cmdSize / 5 : Math.floorDiv(cmdSize, 5) + 1;
         StringBuilder page = new StringBuilder("```diff\n");
         String allArgs = String.join(" ", Arrays.asList(args));
+        String prefix = getPrefix(e.getGuild());
 
         if (args.length > 0) {
-            String cmdName = args[0].toLowerCase().startsWith(getPrefix()) && !args[0].equalsIgnoreCase(getPrefix())
-                    ? args[0].substring(getPrefix().length()).trim() : args[0];
+            String cmdName = args[0].toLowerCase().startsWith(prefix) && !args[0].equalsIgnoreCase(prefix)
+                    ? args[0].substring(prefix.length()).trim() : args[0];
             Command argCmd = CommandRegistry.getCommand(cmdName);
             if (argCmd != null) { // Valid command passed as parameter
-                sendMessage("**Usage: `" + getPrefix() + argCmd.getUsage() + "`**"
+                chat.sendMessage("**Usage: `" + prefix + argCmd.getUsage() + "`**"
                         + "\n\n**Info:** " + argCmd.getDescription().replace("\n", " ")
                         + (argCmd.getAlias().size() > 1 ? "\n\n**Alias:** `" + String.join("`, `", argCmd.getAlias()) + "`" : "")
                         + (argCmd.getFlags() != null ? "\n\n**Flags:** " + MessageUtil.formatMap(argCmd.getFlags(), ", ", true) : "")
@@ -45,7 +46,7 @@ public class HelpCommand extends GlobalCommand {
             }
 
             if (!NumberUtils.isDigits(allArgs)) { // Non-existant command passed as parameter
-                sendMessage("**That's not a valid command!**");
+                chat.sendMessage("**That's not a valid command!**");
                 return;
             }
 
@@ -55,7 +56,7 @@ public class HelpCommand extends GlobalCommand {
                 if (pageNum > totalPageCount)
                     throw new NumberFormatException();
             } catch (NumberFormatException ex) {
-                sendMessage("**That's not a valid page number!** [1 - " + totalPageCount + "]");
+                chat.sendMessage("**That's not a valid page number!** [1 - " + totalPageCount + "]");
                 return;
             }
         }
@@ -63,10 +64,10 @@ public class HelpCommand extends GlobalCommand {
         for (int i = 0; i < 5; i++) {
             int index = i + (pageNum - 1) * 5;
             if (index >= helpList.size()) break;
-            page.append(helpList.get(index).replace("%PREFIX%", MessageUtil.breakCodeBlocks(getPrefix())));
+            page.append(helpList.get(index).replace("%PREFIX%", MessageUtil.breakCodeBlocks(prefix)));
         }
         page.append("! Page ").append(pageNum).append("/").append(totalPageCount).append("```");
-        sendMessage(page.toString());
+        chat.sendMessage(page.toString());
     }
 
     @Override

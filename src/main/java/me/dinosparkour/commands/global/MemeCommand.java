@@ -29,17 +29,17 @@ public class MemeCommand extends GlobalCommand {
     }
 
     @Override
-    public void executeCommand(String[] args, MessageReceivedEvent e) {
+    public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         this.allArgs = String.join(" ", Arrays.asList(args));
         String type = args[0].contains("|") ? args[0].substring(0, args[0].indexOf("|")) : args[0];
         if (type.equalsIgnoreCase("help") || type.equalsIgnoreCase("list") || invalidType(type)) {
-            sendMessage("Here are the valid meme types.```xl\n"
+            chat.sendMessage("Here are the valid meme types.```xl\n"
                     + String.join(", ", MEMES.stream().collect(Collectors.toList())) + "```");
             return;
         }
 
         if (!enoughArgs()) { // Make sure there are exactly two separators
-            sendUsageMessage();
+            chat.sendUsageMessage();
             return;
         }
 
