@@ -55,7 +55,7 @@ public class WhoisCommand extends GlobalCommand {
 
             sb.append("**__GUILD__**\n")
                     .append("**Join Date**: ").append(joinDate).append("\n")
-                    .append("**Roles**: ").append(roles.equals("") ? "@everyone" : roles);
+                    .append("**Roles**: ").append(roles.isEmpty() ? "@everyone" : roles);
         }
 
         chat.sendMessage(sb.toString());

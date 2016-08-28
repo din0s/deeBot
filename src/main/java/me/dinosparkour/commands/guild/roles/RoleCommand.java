@@ -190,7 +190,7 @@ public class RoleCommand extends RoleCommandImpl {
                         if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
-                        if (newName.equals("")) {
+                        if (newName.isEmpty()) {
                             chat.sendMessage("Please select a valid name.");
                             return;
                         } else targetRole.getManager().setName(newName).update();

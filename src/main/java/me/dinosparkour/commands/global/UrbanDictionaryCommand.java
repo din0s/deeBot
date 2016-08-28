@@ -71,7 +71,7 @@ public class UrbanDictionaryCommand extends GlobalCommand {
         StringBuilder definition = new StringBuilder("__**`-=Urban Dictionary: " + word + "=-`**__\n");
         definition.append("\n**Definition:**\n").append(def).append("\n");
         assert example != null;
-        if (!example.equals(""))
+        if (!example.isEmpty())
             definition.append("\n**Example:**\n").append(example).append("\n");
         //definition.append("\n[**+**] " + thumbsUp + " / [**-**] " + thumbsDown);
 

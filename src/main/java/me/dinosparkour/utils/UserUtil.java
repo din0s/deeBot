@@ -31,7 +31,7 @@ public class UserUtil {
 
         for (String s : args) {
             check(s);
-            if (!unmatchedArgs.equals("")) check(unmatchedArgs + s);
+            if (!unmatchedArgs.isEmpty()) check(unmatchedArgs + s);
         }
         return new ArrayList<>(results);
     }

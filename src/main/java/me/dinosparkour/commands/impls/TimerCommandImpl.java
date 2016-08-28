@@ -179,7 +179,7 @@ public abstract class TimerCommandImpl extends Command {
 
     private Runnable timerRunnable(TimerImpl impl) {
         return () -> {
-            String msg = impl.getMessage().equals("") ? "⏰  Time's up!" : impl.getMessage();
+            String msg = impl.getMessage().isEmpty() ? "⏰  Time's up!" : impl.getMessage();
             MessageChannel channel = isReminder()
                     ? jda.getPrivateChannelById(impl.getTargetId())
                     : jda.getTextChannelById(impl.getTargetId());

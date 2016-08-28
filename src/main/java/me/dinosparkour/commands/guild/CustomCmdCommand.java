@@ -41,7 +41,7 @@ public class CustomCmdCommand extends GuildCommand {
                     } else if (sm.isValid(name)) {
                         chat.sendMessage("You already have a command registered by that name!");
                         return;
-                    } else if (allResponses.equals("")) {
+                    } else if (allResponses.isEmpty()) {
                         chat.sendMessage("**Please include at least one response!**");
                         return;
                     }
@@ -65,7 +65,7 @@ public class CustomCmdCommand extends GuildCommand {
 
             case "delete": // Delete a command
                 if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
-                else if (inputArgs.equals("")) chat.sendUsageMessage();
+                else if (inputArgs.isEmpty()) chat.sendUsageMessage();
                 else if (sm.isValid(inputArgs)) {
                     sm.deleteCommand(inputArgs).update();
                     chat.sendMessage(getSuccessMessage("deleted", inputArgs));

@@ -96,7 +96,7 @@ public class BanCommand extends GuildCommand {
 
     private int parseDays(String days) {
         try {
-            return days.equals("") ? 0 : Integer.parseInt(days);
+            return days.isEmpty() ? 0 : Integer.parseInt(days);
         } catch (NumberFormatException ex) {
             return -1;
         }
