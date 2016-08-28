@@ -11,6 +11,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.managers.GuildManager;
 import net.dv8tion.jda.utils.PermissionUtil;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class BanCommand extends GuildCommand {
                 if (invalidDays(chat, days)) return;
 
                 try {
-                    if (id.length() < 17 || id.length() > 18)
+                    if (id.length() < 17 || id.length() > 18 || !NumberUtils.isDigits(id))
                         throw new IllegalArgumentException();
                     gm.ban(id, days);
                     userTag = "U(" + id + ")";
