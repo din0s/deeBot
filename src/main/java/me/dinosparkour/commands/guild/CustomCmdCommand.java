@@ -34,6 +34,9 @@ public class CustomCmdCommand extends GuildCommand {
                     if (name.isEmpty()) {
                         chat.sendMessage("Your command's name cannot be null!");
                         return;
+                    } else if (name.contains(" ")) {
+                        chat.sendMessage("Your command's name cannot contain spaces!");
+                        return;
                     } else if (CommandRegistry.getCommand(name) != null) {
                         chat.sendMessage("You cannot override the default commands! "
                                 + "**" + MessageUtil.stripFormatting(getPrefix(e.getGuild())) + "help " + name + "**");
