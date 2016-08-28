@@ -1,13 +1,8 @@
 ```diff
-- [v 2.1.2]
+- [v 2.1.3]
 + Fixed an internal concurrency issue when handling commands
-- [v 2.1.1]
-+ Added an empty name check on custom command creation
-+ Fixed an internal issue occurring when saving custom commands
-+ Internal fix for the role command
-- [v 2.1.0]
-+ Addressed critical internal issue with command execution
-+ The meme command now warns for insufficient permissions to attach images
-+ Fixed concurrency issues in the role command
-+ Fixed multiple typos
++ Applied the blacklist over to custom commands as well
++ Added nickname information in !!whois
++ !!joinmsg and !!leavemsg now allow for newlines
++ Added %input% variable to custom commands
 ```
