@@ -1,5 +1,6 @@
 package me.dinosparkour.managers.listeners;
 
+import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
@@ -12,6 +13,8 @@ public class CustomCmdManager extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
+        if (BlacklistManager.isBlacklisted(e.getChannel()))
+            return; // Ignore channel if the channel is blacklisted
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
