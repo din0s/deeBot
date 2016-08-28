@@ -99,23 +99,23 @@ public class RoleCommand extends RoleCommandImpl {
                         break;
 
                     case "delete": // Delete existing role
-                        if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
+                        assert targetRole != null;
                         targetRole.getManager().delete();
                         break;
 
                     case "hoist":
                     case "separate": // Toggle userlist separation
-                        if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
+                        assert targetRole != null;
                         targetRole.getManager().setGrouped(!targetRole.isGrouped()).update();
                         chat.sendMessage("Now set to **" + targetRole.isGrouped() + "**.");
                         return;
 
                     case "getperms":
                     case "info": // Get role info
-                        if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
+                        assert targetRole != null;
                         if (!targetRole.getPermissions().isEmpty()) {
                             StringBuilder rolePerms = new StringBuilder("```");
                             targetRole.getPermissions().stream().map(p -> p + "\n").forEach(rolePerms::append);
@@ -159,7 +159,6 @@ public class RoleCommand extends RoleCommandImpl {
                     case "color": // (Re)Set role color
                         if (insufficientArgs(chat, args)) return;
                         mentionedRoles = loadRoles(e.getMessage(), stripFirstArg(inputArgs));
-                        if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
                         int colorHex;
@@ -173,6 +172,7 @@ public class RoleCommand extends RoleCommandImpl {
                                 return;
                             } else colorHex = 0;
                         }
+                        assert targetRole != null;
                         targetRole.getManager().setColor(colorHex).update();
                         break;
 
@@ -187,19 +187,23 @@ public class RoleCommand extends RoleCommandImpl {
 
                         mentionedRoles = loadRoles(e.getMessage(), oldName);
                         targetRole = getTargetRole(mentionedRoles);
-                        if (!isRoleUnique(chat, mentionedRoles)) return;
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
                         if (newName.isEmpty()) {
                             chat.sendMessage("Please select a valid name.");
                             return;
-                        } else targetRole.getManager().setName(newName).update();
+                        } else {
+                            assert targetRole != null;
+                            targetRole.getManager().setName(newName).update();
+                        }
                         break;
 
                     case "getpos":
                     case "getposition": // Return role position (int)
-                        if (isRoleUnique(chat, mentionedRoles))
+                        if (isRoleUnique(chat, mentionedRoles)) {
+                            assert targetRole != null;
                             chat.sendMessage("`" + targetRole.getPosition() + "`");
+                        }
                         return;
 
                     default:
@@ -252,7 +256,7 @@ public class RoleCommand extends RoleCommandImpl {
     }
 
     private Role getTargetRole(List<Role> mentionedRoles) {
-        return mentionedRoles.get(0);
+        return mentionedRoles.size() != 1 ? null : mentionedRoles.get(0);
     }
 
     private boolean hasNullFlag(String inputArgs) {
@@ -279,7 +283,9 @@ public class RoleCommand extends RoleCommandImpl {
     }
 
     private boolean cannotInteract(MessageSender chat, Message msg, List<Role> mentionedRoles) {
+        if (!isRoleUnique(chat, mentionedRoles)) return true;
         Role targetRole = getTargetRole(mentionedRoles);
+        assert targetRole != null;
         if (!PermissionUtil.canInteract(msg.getAuthor(), targetRole)) {
             chat.sendMessage("You cannot interact with a role higher in the hierarchy than your top role!");
             return true;
@@ -323,7 +329,9 @@ public class RoleCommand extends RoleCommandImpl {
             return true;
         }
 
-        RoleManager rm = getTargetRole(mentionedRoles).getManager();
+        Role targetRole = getTargetRole(mentionedRoles);
+        assert targetRole != null;
+        RoleManager rm = targetRole.getManager();
         if (give) rm.give(perm).update();
         else rm.revoke(perm).update();
         return false;
