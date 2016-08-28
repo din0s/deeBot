@@ -3,6 +3,7 @@ package me.dinosparkour.commands.global;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
 import net.dv8tion.jda.MessageBuilder;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +58,10 @@ public class MemeCommand extends GlobalCommand {
             ex.printStackTrace();
         }
 
-        e.getChannel().sendFileAsync(imgFile, new MessageBuilder().appendString("Here's your meme:").build(), m -> imgFile.delete());
+        if (e.isPrivate() || e.getTextChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
+            e.getChannel().sendFileAsync(imgFile, new MessageBuilder().appendString("Here's your meme:").build(), m -> imgFile.delete());
+        else
+            chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
     }
 
     @Override
