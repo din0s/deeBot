@@ -13,10 +13,13 @@ import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.utils.PermissionUtil;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ActionManager extends ListenerAdapter {
+
+    private final ScheduledExecutorService roleScheduler = Executors.newScheduledThreadPool(1);
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent e) {
@@ -48,12 +51,9 @@ public class ActionManager extends ListenerAdapter {
             if (!PermissionUtil.checkPermission(guild, selfInfo, Permission.MANAGE_ROLES))
                 reason = "the bot not having `[MANAGE_ROLES]`";
             else if (PermissionUtil.canInteract(selfInfo, role)) {
-                new Timer().schedule(new TimerTask() {                                  // We have to use a timer because
-                    @Override                                                           // otherwise the bot cannot
-                    public void run() {                                                 // assign the custom role to
-                        guild.getManager().addRoleToUser(e.getUser(), role).update();   // new bots joining the guild
-                    }                                                                   // due to a race condition when
-                }, 11);                                                                 // autogenerating their role..
+                // We have to use a timer because otherwise the bot cannot assign the custom role to
+                // new bots joining the guild due to a race condition when Discord generates their role..
+                roleScheduler.schedule(() -> guild.getManager().addRoleToUser(e.getUser(), role).update(), 11L, TimeUnit.MILLISECONDS);
                 return;
             } else reason = "the role's position being higher in the hierarchy.\n"
                     + "Please move the bot's role to the top in order to fix this issue";
