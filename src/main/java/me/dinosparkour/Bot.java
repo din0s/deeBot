@@ -1,10 +1,7 @@
 package me.dinosparkour;
 
 import me.dinosparkour.commands.CommandRegistry;
-import me.dinosparkour.commands.admin.CleanupCommand;
-import me.dinosparkour.commands.admin.EvalCommand;
-import me.dinosparkour.commands.admin.GameCommand;
-import me.dinosparkour.commands.admin.ShutdownCommand;
+import me.dinosparkour.commands.admin.*;
 import me.dinosparkour.commands.global.*;
 import me.dinosparkour.commands.guild.*;
 import me.dinosparkour.commands.guild.actions.AutoRoleCommand;
@@ -46,6 +43,7 @@ public class Bot {
                 .addListener(registry.addCommand(new CleanupCommand()))
                 .addListener(registry.addCommand(new EvalCommand()))
                 .addListener(registry.addCommand(new GameCommand()))
+                .addListener(registry.addCommand(new GetInviteCommand()))
                 .addListener(registry.addCommand(new ShutdownCommand()))
 
                 // GLOBAL
