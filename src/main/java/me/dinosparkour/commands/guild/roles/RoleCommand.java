@@ -5,7 +5,10 @@ import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.RoleUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.*;
+import net.dv8tion.jda.entities.Message;
+import net.dv8tion.jda.entities.Role;
+import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.managers.RoleManager;
 import net.dv8tion.jda.utils.PermissionUtil;
@@ -15,37 +18,26 @@ import java.util.*;
 public class RoleCommand extends RoleCommandImpl {
 
     private final List<String> helpContents = IOUtil.readLinesFromResource("rolecommand.txt");
-    private User author;
-    private Guild guild;
-    private User selfInfo;
-    private Message message;
-    private Role targetRole;
-    private String inputArgs;
-    private List<Role> mentionedRoles;
-    private TextChannel fallbackChannel;
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        guild = e.getGuild();
-        fallbackChannel = e.getTextChannel();
-
         switch (args.length) {
             case 0: // Command Help
-                sendHelpMessage(chat);
+                sendHelpMessage(chat, e.getTextChannel());
                 break;
 
             case 1:
                 switch (args[0].toLowerCase()) {
                     case "help": // Command help
-                        sendHelpMessage(chat);
+                        sendHelpMessage(chat, e.getTextChannel());
                         break;
 
                     case "list": // Send role list
-                        List<Role> roleList = guild.getRoles();
+                        List<Role> roleList = e.getGuild().getRoles();
                         if (roleList.size() > 1) {
                             StringBuilder sb = new StringBuilder("```\n");
                             roleList.stream()
-                                    .filter(r -> !r.equals(guild.getPublicRole()))
+                                    .filter(r -> !r.equals(e.getGuild().getPublicRole()))
                                     .map(r -> "\u25ba " + r.getName())
                                     .forEach(r -> {
                                         if (sb.length() + r.length() > 2000 - "```".length()) {
@@ -67,7 +59,7 @@ public class RoleCommand extends RoleCommandImpl {
                                 .filter(p -> !p.equals(Permission.UNKNOWN))
                                 .map(p -> p + "\n")
                                 .forEach(permsList::append);
-                        chat.sendPrivateMessage(permsList.append("```").toString(), fallbackChannel);
+                        chat.sendPrivateMessage(permsList.append("```").toString(), e.getTextChannel());
                         break;
 
                     default:
@@ -77,23 +69,21 @@ public class RoleCommand extends RoleCommandImpl {
                 break;
 
             default:
-                author = e.getAuthor();
-                selfInfo = e.getJDA().getSelfInfo();
-                message = e.getMessage();
-                inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
-                loadRoles(inputArgs);
+                String inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
+                List<Role> mentionedRoles = loadRoles(e.getMessage(), inputArgs);
+                Role targetRole = getTargetRole(mentionedRoles);
 
                 switch (args[0].toLowerCase()) {
                     case "create": // Create new role
-                        RoleManager roleCreator = guild.createRole();
-                        if (hasFullFlag() || hasNullFlag()) {
+                        RoleManager roleCreator = e.getGuild().createRole();
+                        if (hasFullFlag(inputArgs) || hasNullFlag(inputArgs)) {
                             roleCreator.setName(inputArgs.substring(0, inputArgs.length() - 7));
-                            if (hasFullFlag()) {
-                                if (!PermissionUtil.checkPermission(guild, author, Permission.ADMINISTRATOR)) {
+                            if (hasFullFlag(inputArgs)) {
+                                if (!PermissionUtil.checkPermission(e.getGuild(), e.getAuthor(), Permission.ADMINISTRATOR)) {
                                     chat.sendMessage("You need the `[ADMINISTRATOR]` permission in order to apply the --full flag.");
                                     roleCreator.delete();
                                     return;
-                                } else if (!PermissionUtil.checkPermission(guild, selfInfo, Permission.ADMINISTRATOR)) {
+                                } else if (!PermissionUtil.checkPermission(e.getGuild(), e.getJDA().getSelfInfo(), Permission.ADMINISTRATOR)) {
                                     chat.sendMessage("The bot needs the `[ADMINISTRATOR]` permission in order to apply the --full flag.");
                                     roleCreator.delete();
                                     return;
@@ -109,20 +99,23 @@ public class RoleCommand extends RoleCommandImpl {
                         break;
 
                     case "delete": // Delete existing role
-                        if (!canInteract(chat, true)) return;
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
                         targetRole.getManager().delete();
                         break;
 
                     case "hoist":
                     case "separate": // Toggle userlist separation
-                        if (!canInteract(chat, true)) return;
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
                         targetRole.getManager().setGrouped(!targetRole.isGrouped()).update();
                         chat.sendMessage("Now set to **" + targetRole.isGrouped() + "**.");
                         return;
 
                     case "getperms":
                     case "info": // Get role info
-                        if (!canInteract(chat, false)) return;
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
                         if (!targetRole.getPermissions().isEmpty()) {
                             StringBuilder rolePerms = new StringBuilder("```");
                             targetRole.getPermissions().stream().map(p -> p + "\n").forEach(rolePerms::append);
@@ -146,7 +139,7 @@ public class RoleCommand extends RoleCommandImpl {
                                 chat.sendMessage("Your query returned too many results. Please narrow down your search!");
                                 return;
                         }
-                        List<Role> roleList = guild.getRolesForUser(targetUser);
+                        List<Role> roleList = e.getGuild().getRolesForUser(targetUser);
                         if (!roleList.isEmpty()) {
                             StringBuilder roleBuilder = new StringBuilder("```");
                             roleList.stream().map(r -> r.getName() + "\n").forEach(roleBuilder::append);
@@ -155,18 +148,19 @@ public class RoleCommand extends RoleCommandImpl {
                         return;
 
                     case "addperm": // Add permission to role
-                        if (cannotModifyPerm(chat, args, true)) return;
+                        if (cannotModifyPerm(chat, args, e.getMessage(), inputArgs, true)) return;
                         break;
 
                     case "removeperm":
                     case "deleteperm": // Remove permission from role
-                        if (cannotModifyPerm(chat, args, false)) return;
+                        if (cannotModifyPerm(chat, args, e.getMessage(), inputArgs, false)) return;
                         break;
 
                     case "color": // (Re)Set role color
                         if (insufficientArgs(chat, args)) return;
-                        stripFirstArg();
-                        if (!canInteract(chat, true)) return;
+                        mentionedRoles = loadRoles(e.getMessage(), stripFirstArg(inputArgs));
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
                         int colorHex;
                         String hexCode = args[1].startsWith("#") ? args[1].substring(1) : args[1];
@@ -191,8 +185,10 @@ public class RoleCommand extends RoleCommandImpl {
                         String oldName = inputArgs.substring(0, inputArgs.indexOf("|")).trim();
                         String newName = inputArgs.substring(inputArgs.indexOf("|") + 1).trim();
 
-                        loadRoles(oldName);
-                        if (!canInteract(chat, true)) return;
+                        mentionedRoles = loadRoles(e.getMessage(), oldName);
+                        targetRole = getTargetRole(mentionedRoles);
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
                         if (newName.equals("")) {
                             chat.sendMessage("Please select a valid name.");
@@ -202,7 +198,7 @@ public class RoleCommand extends RoleCommandImpl {
 
                     case "getpos":
                     case "getposition": // Return role position (int)
-                        if (canInteract(chat, false))
+                        if (isRoleUnique(chat, mentionedRoles))
                             chat.sendMessage("`" + targetRole.getPosition() + "`");
                         return;
 
@@ -243,53 +239,65 @@ public class RoleCommand extends RoleCommandImpl {
         return flags;
     }
 
-    private void sendHelpMessage(MessageSender chat) {
+    private void sendHelpMessage(MessageSender chat, TextChannel fallbackChannel) {
         chat.sendPrivateMessage("```diff\n"
                 + MessageUtil.breakCodeBlocks(String.join("\n\n", helpContents))
-                .replace("%P%", getPrefix(guild))
+                .replace("%P%", getPrefix(fallbackChannel.getGuild()))
                 .replace("\n<br>\n", "\n")
                 + "```", fallbackChannel);
     }
 
-    private void loadRoles(String roleName) {
-        mentionedRoles = new RoleUtil().getMentionedRoles(message, roleName);
-        targetRole = mentionedRoles.isEmpty() ? null : mentionedRoles.get(0);
+    private List<Role> loadRoles(Message message, String roleName) {
+        return new RoleUtil().getMentionedRoles(message, roleName);
     }
 
-    private boolean hasNullFlag() {
+    private Role getTargetRole(List<Role> mentionedRoles) {
+        return mentionedRoles.get(0);
+    }
+
+    private boolean hasNullFlag(String inputArgs) {
         return inputArgs.toLowerCase().endsWith(" --null");
     }
 
-    private boolean hasFullFlag() {
+    private boolean hasFullFlag(String inputArgs) {
         return inputArgs.toLowerCase().endsWith(" --full");
     }
 
-    private boolean canInteract(MessageSender chat, boolean modify) {
-        if (mentionedRoles.isEmpty()) {
-            chat.sendMessage("No roles were found that meet the criteria!");
-            return false;
-        } else if (modify) {
-            if (!PermissionUtil.canInteract(author, targetRole)) {
-                chat.sendMessage("You cannot interract with a role higher in the hierarchy than your top role!");
+    private boolean isRoleUnique(MessageSender chat, List<Role> mentionedRoles) {
+        switch (mentionedRoles.size()) {
+            case 0:
+                chat.sendMessage("No roles were found that meet the criteria!");
                 return false;
-            }
 
-            List<Role> botRoles = guild.getRolesForUser(selfInfo);
-            if (!botRoles.isEmpty() && botRoles.get(0).equals(targetRole)) {
-                chat.sendMessage("The bot cannot interact with its highest role!");
+            case 1:
+                return true;
+
+            default:
+                chat.sendMessage("Your query returned too many results. Please narrow down your search!");
                 return false;
-            } else if (!PermissionUtil.canInteract(selfInfo, targetRole)) {
-                chat.sendMessage("The bot's role is lower in hierarchy than the specified role!"
-                        + "\nPlease move it to the top of the list to fix this issue.");
-                return false;
-            }
         }
-        return true;
     }
 
-    private void stripFirstArg() {
-        inputArgs = inputArgs.substring(inputArgs.indexOf(" ") + 1);
-        loadRoles(inputArgs);
+    private boolean cannotInteract(MessageSender chat, Message msg, List<Role> mentionedRoles) {
+        Role targetRole = getTargetRole(mentionedRoles);
+        if (!PermissionUtil.canInteract(msg.getAuthor(), targetRole)) {
+            chat.sendMessage("You cannot interract with a role higher in the hierarchy than your top role!");
+            return true;
+            }
+
+        List<Role> botRoles = ((TextChannel) msg.getChannel()).getGuild().getRolesForUser(msg.getJDA().getSelfInfo());
+            if (!botRoles.isEmpty() && botRoles.get(0).equals(targetRole)) {
+                chat.sendMessage("The bot cannot interact with its highest role!");
+                return true;
+            } else if (!PermissionUtil.canInteract(msg.getJDA().getSelfInfo(), targetRole)) {
+                chat.sendMessage("The bot's role is lower in hierarchy than the specified role!"
+                        + "\nPlease move it to the top of the list to fix this issue.");
+                return true;
+            } else return false;
+    }
+
+    private String stripFirstArg(String inputArgs) {
+        return inputArgs.substring(inputArgs.indexOf(" ") + 1);
     }
 
     private boolean insufficientArgs(MessageSender chat, String[] args) {
@@ -299,22 +307,23 @@ public class RoleCommand extends RoleCommandImpl {
         } else return false;
     }
 
-    private boolean cannotModifyPerm(MessageSender chat, String[] args, boolean give) {
+    private boolean cannotModifyPerm(MessageSender chat, String[] args, Message msg, String inputArgs, boolean give) {
         if (insufficientArgs(chat, args)) return true;
 
-        stripFirstArg();
-        if (!canInteract(chat, true)) return true;
+        List<Role> mentionedRoles = loadRoles(msg, stripFirstArg(inputArgs));
+        if (!isRoleUnique(chat, mentionedRoles)) return true;
+        if (cannotInteract(chat, msg, mentionedRoles)) return true;
 
         Permission perm;
         try {
             perm = Permission.valueOf(args[1]);
         } catch (IllegalArgumentException ex) {
             chat.sendMessage("That's not a valid permission name!\n"
-                    + "**Use " + MessageUtil.stripFormatting(getPrefix(guild)) + "role permissions**");
+                    + "**Use " + MessageUtil.stripFormatting(getPrefix(((TextChannel) msg.getChannel()).getGuild())) + "role permissions**");
             return true;
         }
 
-        RoleManager rm = targetRole.getManager();
+        RoleManager rm = getTargetRole(mentionedRoles).getManager();
         if (give) rm.give(perm).update();
         else rm.revoke(perm).update();
         return false;
