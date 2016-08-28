@@ -31,7 +31,10 @@ public class CustomCmdCommand extends GuildCommand {
                     String allResponses = inputArgs.substring(name.length() + 1).trim();
                     name = name.trim();
 
-                    if (CommandRegistry.getCommand(name) != null) {
+                    if (name.isEmpty()) {
+                        chat.sendMessage("Your command's name cannot be null!");
+                        return;
+                    } else if (CommandRegistry.getCommand(name) != null) {
                         chat.sendMessage("You cannot override the default commands! "
                                 + "**" + MessageUtil.stripFormatting(getPrefix(e.getGuild())) + "help " + name + "**");
                         return;
