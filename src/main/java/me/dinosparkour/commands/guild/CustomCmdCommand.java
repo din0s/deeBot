@@ -107,6 +107,7 @@ public class CustomCmdCommand extends GuildCommand {
         Map<String, String> variables = new HashMap<>();
         variables.put("%user%", "the user's name");
         variables.put("%userId%", "the user's id");
+        variables.put("%input%", "the user's command input");
         return variables;
     }
 

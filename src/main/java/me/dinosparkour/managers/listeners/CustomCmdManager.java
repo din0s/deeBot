@@ -18,12 +18,18 @@ public class CustomCmdManager extends ListenerAdapter {
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
-        String cmdName = rawContent.length() <= prefix.length() ? null : rawContent.substring(prefix.length());
+        if (rawContent.length() <= prefix.length())
+            return; // Ignore message if it's shorter than the prefix itself
+        String noPrefix = rawContent.substring(prefix.length());
+        String cmdName = noPrefix.contains(" ") ? noPrefix.substring(0, noPrefix.indexOf(" ")) : noPrefix;
+        String input = noPrefix.contains(" ") ? noPrefix.substring(cmdName.length()).trim() : "";
         if (!sm.isValid(cmdName))
             return; // Only listen for valid custom commands
 
         List<String> responses = sm.getCommandResponses(cmdName);
         String message = responses.get(new Random().nextInt(responses.size()));
-        MessageUtil.sendMessage(MessageUtil.parseVariables(message, e.getAuthor()), e.getChannel());
+        message = MessageUtil.parseVariables(message, e.getAuthor())
+                .replaceAll("(?i)%input%", input);
+        MessageUtil.sendMessage(message, e.getChannel());
     }
 }
