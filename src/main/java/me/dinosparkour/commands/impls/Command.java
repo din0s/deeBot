@@ -88,7 +88,11 @@ public abstract class Command extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         read++;
-        String prefix = getPrefix(e.isPrivate() ? null : e.getGuild());
+        if (!e.isPrivate() && e.getTextChannel() == null) { // Check if the channel is null before getting the guild to prevent NPEs due to concurrency issues
+            System.err.println("Received NULL TextChannel in a GuildMessage Event, skipping.");
+            return;
+        }
+        String prefix = getPrefix(e.getGuild());
 
         if (e.getAuthor().isBot() || !isValidCommand(prefix, e.getMessage()))
             return; // Ignore message if it's not a command or sent by a bot
