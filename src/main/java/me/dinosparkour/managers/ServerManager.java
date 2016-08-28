@@ -146,8 +146,7 @@ public class ServerManager {
 
     // Custom Command Existence Check
     public boolean isValid(String name) {
-        return !(name == null || name.isEmpty())
-                && getCommands().keySet().stream().anyMatch(cmdName -> cmdName.equalsIgnoreCase(name));
+        return !name.isEmpty() && getCommands().keySet().stream().anyMatch(cmdName -> cmdName.equalsIgnoreCase(name));
     }
 
     // Custom Command Getters
