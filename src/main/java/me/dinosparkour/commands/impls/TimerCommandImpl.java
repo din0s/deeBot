@@ -155,10 +155,10 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private void removeEntry(TimerImpl impl) {
-        getMap().get(impl.getAuthorId()).cancel(true); // Cancel the scheduled future
-        getMap().remove(impl.getAuthorId());
         getList().remove(impl); // Remove the timer from the set
         IOUtil.removeTextFromFile(getFile(), getEntryLine(impl));
+        getMap().get(impl.getAuthorId()).cancel(true); // Cancel the scheduled future
+        getMap().remove(impl.getAuthorId());
     }
 
     private boolean userMatch(TimerImpl impl, User u) {
