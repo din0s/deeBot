@@ -1,4 +1,9 @@
 ```diff
+- [v 2.1.0]
++ Addressed critical internal issue with command execution
++ The meme command now warns for insufficient permissions to attach images
++ Fixed concurrency issues in the role command
++ Fixed multiple typos
 - [v 2.0.2]
 + Fix for a time formatting issue
 + Internal fix for the log directory creation
@@ -6,6 +11,4 @@
 + Internal fix for short messages
 + Auto-update the welcome channel with latest info
 + Created an internal log manager
-- [v 2.0.0]
-+ Complete rewrite of the bot.
 ```
