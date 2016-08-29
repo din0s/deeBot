@@ -6,10 +6,15 @@ import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CustomCmdManager extends ListenerAdapter {
+
+    private static final Pattern RANDOM = Pattern.compile(".*(\\$random\\{(.*)\\}).*");
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
@@ -28,6 +33,21 @@ public class CustomCmdManager extends ListenerAdapter {
 
         List<String> responses = sm.getCommandResponses(cmdName);
         String message = responses.get(new Random().nextInt(responses.size()));
+
+        Matcher randomMatch = RANDOM.matcher(message);
+        if (randomMatch.matches()) {
+            List<String> optionList = new ArrayList<>();
+            for (String s : randomMatch.group(2).split(";")) {
+                s = s.trim();
+                if (!s.isEmpty())
+                    optionList.add(s);
+            }
+
+            String option = !optionList.isEmpty() ? optionList.get(new Random().nextInt(optionList.size())) : null;
+            if (option != null)
+                message = message.replace(randomMatch.group(1), option);
+        }
+
         message = MessageUtil.parseVariables(message, e.getAuthor())
                 .replace("\\n", "\n")
                 .replaceAll("(?i)%input%", input);
