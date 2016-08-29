@@ -4,11 +4,13 @@ import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.IOUtil;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.JDA;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.ReconnectedEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.io.File;
 import java.time.Duration;
@@ -91,7 +93,9 @@ public abstract class TimerCommandImpl extends Command {
                 break;
 
             default:
-                if (!hasSetTimer(e.getAuthor())) {
+                if (!isReminder() && !PermissionUtil.checkPermission(e.getTextChannel(), e.getAuthor(), Permission.MESSAGE_MANAGE))
+                    chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to create announcements for this channel!");
+                else if (!hasSetTimer(e.getAuthor())) {
                 /*
                  * timer [duration] [time unit] (timer text)
                  *        args[0]    args[1]     args[...]
@@ -203,7 +207,7 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private enum Unit {
-        SECONDS(ChronoUnit.SECONDS, 1000, "s", "second", "seconds"),
+        SECONDS(ChronoUnit.SECONDS, 1000, "s", "sec", "second", "seconds"),
         MINUTES(ChronoUnit.MINUTES, Unit.SECONDS.multiplier * 60, "m", "min", "minute", "minutes"),
         HOURS(ChronoUnit.HOURS, Unit.MINUTES.multiplier * 60, "h", "hour", "hours"),
         DAYS(ChronoUnit.DAYS, Unit.HOURS.multiplier * 24, "d", "day", "days");
