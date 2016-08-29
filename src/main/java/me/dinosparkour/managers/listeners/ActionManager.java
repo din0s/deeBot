@@ -34,6 +34,10 @@ public class ActionManager extends ListenerAdapter {
     public void onEvent(GenericGuildMemberEvent e, boolean isJoin) {
         Guild guild = e.getGuild();
         User selfInfo = e.getJDA().getSelfInfo();
+
+        if (e.getUser().equals(selfInfo))
+            return; // Ignore our own Join/Leave events
+
         ServerManager sm = new ServerManager(guild);
         String message = isJoin ? sm.getWelcomeMessage() : sm.getFarewellMessage();
         Role role = guild.getRoleById(sm.getAutoRoleId());
