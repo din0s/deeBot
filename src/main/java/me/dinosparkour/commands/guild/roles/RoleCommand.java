@@ -159,6 +159,7 @@ public class RoleCommand extends RoleCommandImpl {
                     case "color": // (Re)Set role color
                         if (insufficientArgs(chat, args)) return;
                         mentionedRoles = loadRoles(e.getMessage(), stripFirstArg(inputArgs));
+                        targetRole = getTargetRole(mentionedRoles);
                         if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
 
                         int colorHex;
@@ -175,6 +176,13 @@ public class RoleCommand extends RoleCommandImpl {
                         assert targetRole != null;
                         targetRole.getManager().setColor(colorHex).update();
                         break;
+
+                    case "getcolor": // Get role color
+                        if (isRoleUnique(chat, mentionedRoles)) {
+                            assert targetRole != null;
+                            chat.sendMessage("**`#" + Integer.toHexString(targetRole.getColor()) + "`**");
+                        }
+                        return;
 
                     case "rename": // Rename role
                         if (!inputArgs.contains("|")) {
@@ -289,17 +297,17 @@ public class RoleCommand extends RoleCommandImpl {
         if (!PermissionUtil.canInteract(msg.getAuthor(), targetRole)) {
             chat.sendMessage("You cannot interact with a role higher in the hierarchy than your top role!");
             return true;
-            }
+        }
 
         List<Role> botRoles = ((TextChannel) msg.getChannel()).getGuild().getRolesForUser(msg.getJDA().getSelfInfo());
-            if (!botRoles.isEmpty() && botRoles.get(0).equals(targetRole)) {
-                chat.sendMessage("The bot cannot interact with its highest role!");
-                return true;
-            } else if (!PermissionUtil.canInteract(msg.getJDA().getSelfInfo(), targetRole)) {
-                chat.sendMessage("The bot's role is lower in hierarchy than the specified role!"
-                        + "\nPlease move it to the top of the list to fix this issue.");
-                return true;
-            } else return false;
+        if (!botRoles.isEmpty() && botRoles.get(0).equals(targetRole)) {
+            chat.sendMessage("The bot cannot interact with its highest role!");
+            return true;
+        } else if (!PermissionUtil.canInteract(msg.getJDA().getSelfInfo(), targetRole)) {
+            chat.sendMessage("The bot's role is lower in hierarchy than the specified role!"
+                    + "\nPlease move it to the top of the list to fix this issue.");
+            return true;
+        } else return false;
     }
 
     private String stripFirstArg(String inputArgs) {

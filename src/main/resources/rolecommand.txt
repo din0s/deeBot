@@ -15,3 +15,4 @@
 <br>
 ! %P%role color #[hex code] [name] - Sets the specified role's color to the given hex code.
 ! %P%role color reset [name] - Resets the specified role's color.
+! %P%role getcolor [name] - Gets the specified role's color.
