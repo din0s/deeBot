@@ -69,7 +69,6 @@ public abstract class TimerCommandImpl extends Command {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String targetId = isReminder() ? e.getAuthor().getPrivateChannel().getId() : e.getTextChannel().getId();
-        String allArgs = String.join(" ", Arrays.asList(args));
         String typeName = getType().name().toLowerCase();
         String typeSet = getType().pronoun + typeName;
 
@@ -117,7 +116,9 @@ public abstract class TimerCommandImpl extends Command {
 
                     OffsetDateTime odt = OffsetDateTime.now().plus(duration, chronoUnit);
                     String authorId = e.getAuthor().getId();
-                    String message = allArgs.substring(args[0].length() + 1 + args[1].length()).trim();
+                    String message = e.getMessage().getRawContent()
+                            .substring(e.getMessage().getRawContent().indexOf(" ") + 1 + args[0].length() + 1 + args[1].length())
+                            .trim().replace("\n", "\\n");
                     TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
 
                     // Add the entry
@@ -183,7 +184,7 @@ public abstract class TimerCommandImpl extends Command {
 
     private Runnable timerRunnable(TimerImpl impl) {
         return () -> {
-            String msg = impl.getMessage().isEmpty() ? "⏰  Time's up!" : impl.getMessage();
+            String msg = impl.getMessage().isEmpty() ? "⏰  Time's up!" : impl.getMessage().replace("\\n", "\n");
             MessageChannel channel = isReminder()
                     ? jda.getPrivateChannelById(impl.getTargetId())
                     : jda.getTextChannelById(impl.getTargetId());
