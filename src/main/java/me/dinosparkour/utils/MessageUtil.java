@@ -70,7 +70,8 @@ public class MessageUtil {
         return s.replace("*", "\\*")
                 .replace("`", "\\`")
                 .replace("_", "\\_")
-                .replace("~~", "\\~\\~");
+                .replace("~~", "\\~\\~")
+                .replace(">", "\\>");
     }
 
     public static String breakCodeBlocks(String s) {
