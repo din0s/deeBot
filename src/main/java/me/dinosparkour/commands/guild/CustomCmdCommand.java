@@ -27,9 +27,10 @@ public class CustomCmdCommand extends GuildCommand {
                     chat.sendUsageMessage();
                     return;
                 } else {
-                    String name = inputArgs.substring(0, inputArgs.indexOf("|"));
-                    String allResponses = inputArgs.substring(name.length() + 1).trim();
-                    name = name.trim();
+                    String name = inputArgs.substring(0, inputArgs.indexOf("|")).trim();
+                    String allResponses = e.getMessage()
+                            .getRawContent().substring(e.getMessage().getRawContent().indexOf("|") + 1)
+                            .trim().replace("\n", "\\n");
 
                     if (name.isEmpty()) {
                         chat.sendMessage("Your command's name cannot be null!");

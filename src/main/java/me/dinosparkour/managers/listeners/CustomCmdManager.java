@@ -29,6 +29,7 @@ public class CustomCmdManager extends ListenerAdapter {
         List<String> responses = sm.getCommandResponses(cmdName);
         String message = responses.get(new Random().nextInt(responses.size()));
         message = MessageUtil.parseVariables(message, e.getAuthor())
+                .replace("\\n", "\n")
                 .replaceAll("(?i)%input%", input);
         MessageUtil.sendMessage(message, e.getChannel());
     }
