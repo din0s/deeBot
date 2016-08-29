@@ -1,8 +1,9 @@
 ```diff
-- [v 2.1.3]
-+ Fixed an internal concurrency issue when handling commands
-+ Applied the blacklist over to custom commands as well
-+ Added nickname information in !!whois
-+ !!joinmsg and !!leavemsg now allow for newlines
-+ Added %input% variable to custom commands
+- [v 2.1.4]
++ Announcements now require MESSAGE_MANAGE to be set
++ Custom Commands and Timers (Announcements/Reminders) now allow for multiline messages
++ Custom Commands now have the function $random{}, use !!help customcmds for more info
++ Fixed an issue where the bot would attempt to send the leave message after it was kicked
++ Made the Timers (Announcements/Reminders) repeatable, using the flag --repeat
++ Added !!role getcolor [role]
 ```
