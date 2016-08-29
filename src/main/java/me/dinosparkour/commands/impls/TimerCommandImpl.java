@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class TimerCommandImpl extends Command {
 
+    private static final String DEFAULT_MESSAGE = "⏰  Time's up!";
     private final ScheduledExecutorService timerScheduler = Executors.newScheduledThreadPool(1);
     private final List<TimerImpl> announcementList = new ArrayList<>();
     private final List<TimerImpl> reminderList = new ArrayList<>();
@@ -42,7 +43,9 @@ public abstract class TimerCommandImpl extends Command {
                         String authorId = constructors[1];
                         String targetId = constructors[2];
                         String message = s.substring(time.length() + 1 + authorId.length() + 1 + targetId.length() + 1);
-                        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
+                        boolean repeatable = isRepeatable(message);
+                        if (repeatable) message = removeFlag(message);
+                        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message, repeatable);
                         if (impl.getSecondsLeft() < 0)
                             IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
                         else addEntry(impl); // Add a new entry if the reminder is valid
@@ -76,8 +79,12 @@ public abstract class TimerCommandImpl extends Command {
             case 0:
                 if (hasSetTimer(e.getAuthor())) { // The user has a timer set
                     TimerImpl timer = getSetTimer(e.getAuthor());
-                    chat.sendMessage("You have " + typeSet + " set for `" + timer.getTimeLeftFormatted() + "`"
-                            + (timer.getMessage() == null ? "." : (" with the following message:\n" + timer.getMessage())));
+                    chat.sendMessage("You have "
+                            + (timer.isRepeatable() ? "a repeated " : getType().pronoun)
+                            + typeName + " set"
+                            + (timer.isRepeatable() ? " every " : " for `" + timer.getTimeLeftFormatted() + "`")
+                            + " with the following message:\n"
+                            + (timer.getMessage() == null ? DEFAULT_MESSAGE : timer.getMessage()));
                 } else chat.sendMessage(noTimers); // No timer has been set
                 break;
 
@@ -102,6 +109,7 @@ public abstract class TimerCommandImpl extends Command {
                     int duration;
                     try {
                         duration = Integer.parseInt(args[0]);
+                        if (duration < 0) throw new NumberFormatException();
                     } catch (NumberFormatException ex) {
                         chat.sendMessage("That's not a valid duration amount!");
                         return;
@@ -119,7 +127,17 @@ public abstract class TimerCommandImpl extends Command {
                     String message = e.getMessage().getRawContent()
                             .substring(e.getMessage().getRawContent().indexOf(" ") + 1 + args[0].length() + 1 + args[1].length())
                             .trim().replace("\n", "\\n");
-                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
+                    boolean repeatable = isRepeatable(message);
+                    if (isRepeatable(message)) {
+                        if (chronoUnit.equals(ChronoUnit.HOURS) || chronoUnit.equals(ChronoUnit.DAYS))
+                            message = removeFlag(message);
+                        else {
+                            chat.sendMessage("To reduce load on Discord's servers, "
+                                    + "please select either hours or days as your time unit for a repeated " + typeName + ".");
+                            return;
+                        }
+                    }
+                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message, repeatable);
 
                     // Add the entry
                     chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());
@@ -141,6 +159,11 @@ public abstract class TimerCommandImpl extends Command {
         return Arrays.asList("duration / reset", "time unit", "text");
     }
 
+    @Override
+    public Map<String, String> getFlags() {
+        return Collections.singletonMap("--repeat", "Create a repeatable " + getType().name().toLowerCase());
+    }
+
     private List<TimerImpl> getList() {
         return isReminder() ? reminderList : announcementList;
     }
@@ -150,11 +173,17 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private String getEntryLine(TimerImpl impl) {
-        return impl.getTimeStamp() + "|" + impl.getAuthorId() + "|" + impl.getTargetId() + "|" + impl.getMessage();
+        return impl.getTimeStamp() + "|"
+                + impl.getAuthorId() + "|"
+                + impl.getTargetId() + "|"
+                + impl.getMessage()
+                + (impl.isRepeatable() ? " --repeat" : "");
     }
 
     private void addEntry(TimerImpl impl) {
-        ScheduledFuture future = timerScheduler.schedule(timerRunnable(impl), impl.getSecondsLeft(), TimeUnit.SECONDS);
+        ScheduledFuture future = impl.isRepeatable()
+                ? timerScheduler.scheduleWithFixedDelay(timerRunnable(impl), impl.getSecondsLeft(), impl.getSecondsLeft(), TimeUnit.SECONDS)
+                : timerScheduler.schedule(timerRunnable(impl), impl.getSecondsLeft(), TimeUnit.SECONDS);
         getList().add(impl);
         getMap().put(impl.getAuthorId(), future);
     }
@@ -184,13 +213,22 @@ public abstract class TimerCommandImpl extends Command {
 
     private Runnable timerRunnable(TimerImpl impl) {
         return () -> {
-            String msg = impl.getMessage().isEmpty() ? "⏰  Time's up!" : impl.getMessage().replace("\\n", "\n");
+            String msg = impl.getMessage().isEmpty() ? DEFAULT_MESSAGE : impl.getMessage().replace("\\n", "\n");
             MessageChannel channel = isReminder()
                     ? jda.getPrivateChannelById(impl.getTargetId())
                     : jda.getTextChannelById(impl.getTargetId());
             if (channel != null) MessageUtil.sendMessage(msg, channel);
-            removeEntry(impl);
+            if (!impl.isRepeatable()) removeEntry(impl);
+            else impl.updateOdt();
         };
+    }
+
+    private boolean isRepeatable(String message) {
+        return message.endsWith(" --repeat");
+    }
+
+    private String removeFlag(String message) {
+        return message.substring(0, message.length() - "--repeat".length()).trim();
     }
 
     private boolean isReminder() {
@@ -232,16 +270,21 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     public class TimerImpl {
-        private final OffsetDateTime odt;
+
         private final String authorId;
         private final String targetId;
         private final String message;
+        private final boolean repeatable;
+        private final long duration;
+        private OffsetDateTime odt;
 
-        TimerImpl(OffsetDateTime odt, String authorId, String targetId, String message) {
+        TimerImpl(OffsetDateTime odt, String authorId, String targetId, String message, boolean repeatable) {
             this.odt = odt;
             this.authorId = authorId;
             this.targetId = targetId;
             this.message = message;
+            this.repeatable = repeatable;
+            this.duration = getSecondsLeft();
         }
 
         OffsetDateTime getTimeStamp() {
@@ -266,6 +309,16 @@ public abstract class TimerCommandImpl extends Command {
 
         String getMessage() {
             return message;
+        }
+
+        boolean isRepeatable() {
+            return repeatable;
+        }
+
+        void updateOdt() {
+            IOUtil.removeTextFromFile(getFile(), getEntryLine(this));
+            this.odt = OffsetDateTime.now().plusSeconds(duration);
+            IOUtil.writeTextToFile(getFile(), getEntryLine(this), true);
         }
     }
 }
