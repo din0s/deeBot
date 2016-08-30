@@ -89,7 +89,12 @@ public abstract class Command extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         read++;
-        if (!e.isPrivate() && e.getTextChannel() == null) { // Check if the channel is null before getting the guild to prevent NPEs due to concurrency issues
+
+        // Checks related to the Event's objects, to prevent concurrency issues.
+        if (e.getAuthor() == null) {
+            System.err.println("Received NULL Author in a Message Event, skipping.");
+            return;
+        } else if (!e.isPrivate() && e.getTextChannel() == null) {
             System.err.println("Received NULL TextChannel in a GuildMessage Event, skipping.");
             return;
         }
