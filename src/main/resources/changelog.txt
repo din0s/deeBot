@@ -1,9 +1,6 @@
 ```diff
-- [v 2.1.4]
-+ Announcements now require MESSAGE_MANAGE to be set
-+ Custom Commands and Timers (Announcements/Reminders) now allow for multiline messages
-+ Custom Commands now have the function $random{}, use !!help customcmds for more info
-+ Fixed an issue where the bot would attempt to send the leave message after it was kicked
-+ Made the Timers (Announcements/Reminders) repeatable, using the flag --repeat
-+ Added !!role getcolor [role]
++ [v 2.1.5]
++ Added (more) concurrency checks
++ Added "secs" and "mins" as units in timer commands (Announcement/Reminder)
++ !!stats now displays the correct amount of messages read
 ```
