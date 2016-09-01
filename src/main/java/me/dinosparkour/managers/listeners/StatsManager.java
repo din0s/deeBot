@@ -3,6 +3,7 @@ package me.dinosparkour.managers.listeners;
 import me.dinosparkour.Info;
 import me.dinosparkour.utils.HttpRequestUtil;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import org.json.JSONObject;
 
@@ -13,6 +14,16 @@ public class StatsManager extends ListenerAdapter {
 
     private static final String DISCORD_BOTS = "https://bots.discord.pw/api/bots/" + Info.BOT_ID + "/stats";
     private static final String CARBONITEX = "https://www.carbonitex.net/discord/data/botdata.php";
+    private static long read = 0;
+    private static long sent = 0;
+
+    public static long amountRead() {
+        return read;
+    }
+
+    public static long amountSent() {
+        return sent;
+    }
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
@@ -37,5 +48,13 @@ public class StatsManager extends ListenerAdapter {
 
             HttpRequestUtil.postData(CARBONITEX, data);
         }
+    }
+
+    @Override
+    public void onMessageReceived(MessageReceivedEvent e) {
+        if (e.getAuthor().equals(e.getJDA().getSelfInfo()))
+            sent++;
+        else
+            read++;
     }
 }

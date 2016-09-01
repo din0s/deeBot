@@ -19,17 +19,6 @@ import java.util.stream.Collectors;
 
 public abstract class Command extends ListenerAdapter {
 
-    private static int read = 0;
-    private static int sent = 0;
-
-    protected static int amountRead() {
-        return read;
-    }
-
-    protected static int amountSent() {
-        return sent;
-    }
-
     public abstract void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat);
 
     public abstract String getName();
@@ -88,8 +77,6 @@ public abstract class Command extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
-        read++;
-
         // Checks related to the Event's objects, to prevent concurrency issues.
         if (e.getAuthor() == null) {
             System.err.println("Received NULL Author in a Message Event, skipping.");
@@ -161,10 +148,10 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> callback) {
-            if (tChannel == null || (tChannel.getClass().equals(TextChannel.class) && !PermissionUtil.canTalk((TextChannel) tChannel)))
-                return;
-            tChannel.sendMessageAsync(MessageUtil.filter(msgContent), callback);
-            sent++;
+            if (tChannel != null
+                    && (tChannel instanceof PrivateChannel
+                    || PermissionUtil.canTalk((TextChannel) tChannel)))
+                MessageUtil.sendMessage(msgContent, tChannel, callback);
         }
 
         public void sendMessage(String msgContent, Consumer<Message> callback) {

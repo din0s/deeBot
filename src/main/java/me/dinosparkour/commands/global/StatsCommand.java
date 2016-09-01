@@ -1,6 +1,7 @@
 package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
+import me.dinosparkour.managers.listeners.StatsManager;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -18,8 +19,8 @@ public class StatsCommand extends GlobalCommand {
                 + "**\u00b7 " + jda.getVoiceChannels().size() + "** voice channels\n"
                 + "**\u00b7 " + jda.getUsers().size() + "** unique users\n\n"
                 + "__Callbacks__\n"
-                + "**\u00b7 " + amountRead() + "** read messages\n"
-                + "**\u00b7 " + amountSent() + "** sent messages\n"
+                + "**\u00b7 " + StatsManager.amountRead() + "** read messages\n"
+                + "**\u00b7 " + StatsManager.amountSent() + "** sent messages\n"
                 + "**\u00b7 " + jda.getResponseTotal() + "** API responses");
     }
 

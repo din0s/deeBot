@@ -2,6 +2,7 @@ package me.dinosparkour.utils;
 
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.Permission;
+import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.entities.User;
@@ -12,16 +13,21 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class MessageUtil {
 
-    public static void sendMessage(String message, MessageChannel channel) {
+    public static void sendMessage(String message, MessageChannel channel, Consumer<Message> callback) {
         if (channel instanceof TextChannel && !PermissionUtil.canTalk((TextChannel) channel)) return;
-        channel.sendMessageAsync(MessageUtil.filter(message), null);
+        channel.sendMessageAsync(MessageUtil.filter(message), callback);
     }
 
-    public static String filter(String msgContent) {
+    public static void sendMessage(String message, MessageChannel channel) {
+        sendMessage(message, channel, null);
+    }
+
+    private static String filter(String msgContent) {
         return msgContent.length() > 2000
                 ? "*The output message is over 2000 characters!*"
                 : msgContent.replace("@everyone", "@\u180Eeveryone").replace("@here", "@\u180Ehere");
