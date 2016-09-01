@@ -246,8 +246,8 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     private enum Unit {
-        SECONDS(ChronoUnit.SECONDS, 1000, "s", "sec", "second", "seconds"),
-        MINUTES(ChronoUnit.MINUTES, Unit.SECONDS.multiplier * 60, "m", "min", "minute", "minutes"),
+        SECONDS(ChronoUnit.SECONDS, 1000, "s", "sec", "secs", "second", "seconds"),
+        MINUTES(ChronoUnit.MINUTES, Unit.SECONDS.multiplier * 60, "m", "min", "mins", "minute", "minutes"),
         HOURS(ChronoUnit.HOURS, Unit.MINUTES.multiplier * 60, "h", "hour", "hours"),
         DAYS(ChronoUnit.DAYS, Unit.HOURS.multiplier * 24, "d", "day", "days");
 
