@@ -61,7 +61,7 @@ public class GetInviteCommand extends AdminCommand {
                     chat.sendMessage("I cannot generate an invite to that guild!");
                 else
                     chat.sendMessage(INVITE_PREFIX + InviteUtil.createInvite(channel, InviteUtil.InviteDuration.THIRTY_MINUTES, 0, false).getCode());
-            } else chat.sendMessage(INVITE_PREFIX + existentInvites.get(0));
+            } else chat.sendMessage(INVITE_PREFIX + existentInvites.get(0).getCode());
         }
     }
 
