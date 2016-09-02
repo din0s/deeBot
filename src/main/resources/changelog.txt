@@ -1,6 +1,5 @@
 ```diff
-+ [v 2.1.5]
-+ Added (more) concurrency checks
-+ Added "secs" and "mins" as units in timer commands (Announcement/Reminder)
-+ !!stats now displays the correct amount of messages read
+- [v 2.1.6]
++ Added usage examples for specific commands on !!help (command)
++ Fixed a rare NPE with the !!purge command
 ```
