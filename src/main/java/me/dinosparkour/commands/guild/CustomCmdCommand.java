@@ -118,6 +118,11 @@ public class CustomCmdCommand extends GuildCommand {
         return 1;
     }
 
+    @Override
+    public String getExample() {
+        return "create derp | you said %input%, hey %user% $random{one of these; will be picked}";
+    }
+
     private boolean isNotAuthorized(MessageSender chat, User u, Guild g) {
         if (!PermissionUtil.checkPermission(g, u, Permission.MANAGE_SERVER)) {
             chat.sendMessage("You need `[MANAGE_SERVER]` to modify the Custom Commands on this guild!");

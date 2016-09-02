@@ -95,6 +95,11 @@ public class BanCommand extends GuildCommand {
         return Collections.singletonList(Permission.BAN_MEMBERS);
     }
 
+    @Override
+    public String getExample() {
+        return "dinos#0649 7";
+    }
+
     private int parseDays(String days) {
         try {
             return days.isEmpty() ? 0 : Integer.parseInt(days);

@@ -57,4 +57,9 @@ public class YouTubeCommand extends GlobalCommand {
     public int getArgMin() {
         return 1;
     }
+
+    @Override
+    public String getExample() {
+        return "discord don't be a broom";
+    }
 }

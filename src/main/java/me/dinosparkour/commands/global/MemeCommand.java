@@ -89,6 +89,11 @@ public class MemeCommand extends GlobalCommand {
         return 1;
     }
 
+    @Override
+    public String getExample() {
+        return "kermit | but that's | none of my business";
+    }
+
     private boolean enoughArgs() {
         return StringUtils.countMatches(allArgs, "|") == 2;
     }

@@ -26,4 +26,9 @@ public class AnnouncementCommand extends TimerCommandImpl {
     public boolean allowsPrivate() {
         return false;
     }
+
+    @Override
+    public String getExample() {
+        return "10 days Rematch between Team Blue and Team Red.";
+    }
 }

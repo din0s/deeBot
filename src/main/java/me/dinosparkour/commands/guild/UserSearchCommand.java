@@ -67,4 +67,9 @@ public class UserSearchCommand extends GuildCommand {
     public int getArgMin() {
         return 1;
     }
+
+    @Override
+    public String getExample() {
+        return "dinos";
+    }
 }

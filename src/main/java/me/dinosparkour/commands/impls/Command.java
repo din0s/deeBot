@@ -61,6 +61,10 @@ public abstract class Command extends ListenerAdapter {
         return null;
     }
 
+    public String getExample() {
+        return null;
+    }
+
     public final String getUsage() {
         return getName()
                 + (getRequiredParams() != null ? " " + String.join(" ", getRequiredParams().stream()

@@ -66,6 +66,11 @@ public class KickCommand extends GuildCommand {
         return Collections.singletonList(Permission.KICK_MEMBERS);
     }
 
+    @Override
+    public String getExample() {
+        return "dinos#0649";
+    }
+
     private boolean canKick(MessageSender chat, User target, Message msg) {
         Guild guild = ((TextChannel) msg.getChannel()).getGuild();
         User selfInfo = msg.getJDA().getSelfInfo();

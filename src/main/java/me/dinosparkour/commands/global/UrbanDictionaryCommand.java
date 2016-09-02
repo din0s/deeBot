@@ -45,6 +45,11 @@ public class UrbanDictionaryCommand extends GlobalCommand {
         return 1;
     }
 
+    @Override
+    public String getExample() {
+        return "the meaning of life";
+    }
+
     private String getUrbanDefinition(String query) {
         if (query.equals("+")) query = "%2B";
 

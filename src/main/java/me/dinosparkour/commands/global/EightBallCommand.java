@@ -63,6 +63,11 @@ public class EightBallCommand extends GlobalCommand {
         return 1;
     }
 
+    @Override
+    public String getExample() {
+        return "will I ever win the lottery?";
+    }
+
     private boolean randomBool() {
         return ThreadLocalRandom.current().nextBoolean();
     }

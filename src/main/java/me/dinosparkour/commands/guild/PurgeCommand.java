@@ -112,4 +112,9 @@ public class PurgeCommand extends GuildCommand {
     public List<Permission> requiredPermissions() {
         return Arrays.asList(Permission.MESSAGE_HISTORY, Permission.MESSAGE_MANAGE);
     }
+
+    @Override
+    public String getExample() {
+        return "50 dinos#0649";
+    }
 }

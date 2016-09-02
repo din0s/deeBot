@@ -61,4 +61,9 @@ public class UnbanCommand extends GuildCommand {
     public List<Permission> requiredPermissions() {
         return Collections.singletonList(Permission.BAN_MEMBERS);
     }
+
+    @Override
+    public String getExample() {
+        return "dinos#0649";
+    }
 }

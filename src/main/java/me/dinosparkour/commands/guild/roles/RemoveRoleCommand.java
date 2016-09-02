@@ -6,4 +6,9 @@ public class RemoveRoleCommand extends ModifyRoleCommandImpl {
     protected Task getTask() {
         return Task.REMOVE;
     }
+
+    @Override
+    public String getExample() {
+        return "dinos#0649 Admin";
+    }
 }

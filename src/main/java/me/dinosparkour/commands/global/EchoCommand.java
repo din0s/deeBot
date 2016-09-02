@@ -43,4 +43,9 @@ public class EchoCommand extends GlobalCommand {
     public int getArgMin() {
         return 1;
     }
+
+    @Override
+    public String getExample() {
+        return "I am the greatest!";
+    }
 }

@@ -99,4 +99,9 @@ public class AutoRoleCommand extends GuildCommand {
     public List<Permission> requiredPermissions() {
         return Collections.singletonList(Permission.MANAGE_ROLES);
     }
+
+    @Override
+    public String getExample() {
+        return "Cool Person";
+    }
 }

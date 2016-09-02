@@ -82,4 +82,9 @@ public class WhoisCommand extends GlobalCommand {
     public List<String> getOptionalParams() {
         return Collections.singletonList("user");
     }
+
+    @Override
+    public String getExample() {
+        return "dinos#0649";
+    }
 }

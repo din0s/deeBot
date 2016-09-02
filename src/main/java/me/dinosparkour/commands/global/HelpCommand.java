@@ -41,7 +41,8 @@ public class HelpCommand extends GlobalCommand {
                         + "\n\n**Info:** " + argCmd.getDescription().replace("\n", " ")
                         + (argCmd.getAlias().size() > 1 ? "\n\n**Alias:** `" + String.join("`, `", argCmd.getAlias()) + "`" : "")
                         + (argCmd.getFlags() != null ? "\n\n**Flags:** " + MessageUtil.formatMap(argCmd.getFlags(), ", ", true) : "")
-                        + (argCmd.getVariables() != null ? "\n\n**Variables:**```\n" + MessageUtil.formatMap(argCmd.getVariables(), "\n", false) + "```" : ""));
+                        + (argCmd.getVariables() != null ? "\n\n**Variables:**```\n" + MessageUtil.formatMap(argCmd.getVariables(), "\n", false) + "```" : "")
+                        + (argCmd.getExample() != null ? "\n\n**Example:** `" + prefix + argCmd.getName() + " " + argCmd.getExample() + "`" : ""));
                 return;
             }
 

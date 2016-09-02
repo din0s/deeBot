@@ -48,4 +48,9 @@ public class ChoiceCommand extends GlobalCommand {
     public List<String> getRequiredParams() {
         return Collections.singletonList("choices separated by ;");
     }
+
+    @Override
+    public String getExample() {
+        return "my first option; second option; none!";
+    }
 }

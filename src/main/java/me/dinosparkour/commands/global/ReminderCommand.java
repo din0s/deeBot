@@ -26,4 +26,9 @@ public class ReminderCommand extends TimerCommandImpl {
     public boolean allowsPrivate() {
         return true;
     }
+
+    @Override
+    public String getExample() {
+        return "2 hours Go to sleep!";
+    }
 }

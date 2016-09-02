@@ -44,4 +44,9 @@ public class ReverseCommand extends GlobalCommand {
     public int getArgMin() {
         return 1;
     }
+
+    @Override
+    public String getExample() {
+        return "!dlrow olleH";
+    }
 }

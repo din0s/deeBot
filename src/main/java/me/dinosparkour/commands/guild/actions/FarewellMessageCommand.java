@@ -6,4 +6,9 @@ public class FarewellMessageCommand extends ActionCommandImpl {
     public Action getAction() {
         return Action.LEAVE;
     }
+
+    @Override
+    public String getExample() {
+        return "Poof! Bye %user%..";
+    }
 }

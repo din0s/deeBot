@@ -6,4 +6,9 @@ public class AddRoleCommand extends ModifyRoleCommandImpl {
     protected Task getTask() {
         return Task.ADD;
     }
+
+    @Override
+    public String getExample() {
+        return "dinos#0649 Loser";
+    }
 }
