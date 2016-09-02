@@ -56,6 +56,11 @@ public class PurgeCommand extends GuildCommand {
             amount = input + 1;
 
         List<Message> history = e.getChannel().getHistory().retrieve(amount);
+        if (history == null) {
+            chat.sendMessage("*There are no messages to delete!*");
+            return;
+        }
+
         if (user != null) {
             User fUser = user; // Final User Object
             history = history.stream().filter(msg -> msg.getAuthor().equals(fUser)).collect(Collectors.toList());
