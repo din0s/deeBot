@@ -66,6 +66,7 @@ public class Bot {
                 .addListener(registry.addCommand(new ReverseCommand()))
                 .addListener(registry.addCommand(new SaltCommand()))
                 .addListener(registry.addCommand(new StatsCommand()))
+                .addListener(registry.addCommand(new SteamStatusCommand()))
                 .addListener(registry.addCommand(new SupportCommand()))
                 .addListener(registry.addCommand(new UptimeCommand()))
                 .addListener(registry.addCommand(new UrbanDictionaryCommand()))
