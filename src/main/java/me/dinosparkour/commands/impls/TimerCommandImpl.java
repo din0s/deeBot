@@ -81,9 +81,9 @@ public abstract class TimerCommandImpl extends Command {
                     TimerImpl timer = getSetTimer(e.getAuthor());
                     chat.sendMessage("You have "
                             + (timer.isRepeatable() ? "a repeated " : getType().pronoun)
-                            + typeName + " set"
-                            + (timer.isRepeatable() ? " every " : " for `" + timer.getTimeLeftFormatted() + "`")
-                            + " with the following message:\n"
+                            + typeName + " set "
+                            + (!timer.isRepeatable() ? " for `" + timer.getTimeLeftFormatted() + "` " : "")
+                            + "with the following message:\n"
                             + (timer.getMessage() == null ? DEFAULT_MESSAGE : timer.getMessage()));
                 } else chat.sendMessage(noTimers); // No timer has been set
                 break;
@@ -299,11 +299,11 @@ public abstract class TimerCommandImpl extends Command {
             return MessageUtil.formatTime(getSecondsLeft() * 1000);
         }
 
-        public String getAuthorId() {
+        String getAuthorId() {
             return authorId;
         }
 
-        public String getTargetId() {
+        String getTargetId() {
             return targetId;
         }
 
