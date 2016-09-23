@@ -43,9 +43,11 @@ public abstract class TimerCommandImpl extends Command {
                         String authorId = constructors[1];
                         String targetId = constructors[2];
                         String message = s.substring(time.length() + 1 + authorId.length() + 1 + targetId.length() + 1);
+                        /*
                         boolean repeatable = isRepeatable(message);
                         if (repeatable) message = removeFlag(message);
-                        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message, repeatable);
+                        */
+                        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message /*, repeatable */);
                         if (impl.getSecondsLeft() < 0)
                             IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
                         else addEntry(impl); // Add a new entry if the reminder is valid
@@ -80,9 +82,8 @@ public abstract class TimerCommandImpl extends Command {
                 if (hasSetTimer(e.getAuthor())) { // The user has a timer set
                     TimerImpl timer = getSetTimer(e.getAuthor());
                     chat.sendMessage("You have "
-                            + (timer.isRepeatable() ? "a repeated " : getType().pronoun)
+                            + /* (timer.isRepeatable() ? "a repeated " : */ getType().pronoun //)
                             + typeName + " set "
-                            + (!timer.isRepeatable() ? " for `" + timer.getTimeLeftFormatted() + "` " : "")
                             + "with the following message:\n"
                             + (timer.getMessage() == null ? DEFAULT_MESSAGE : timer.getMessage()));
                 } else chat.sendMessage(noTimers); // No timer has been set
@@ -127,6 +128,8 @@ public abstract class TimerCommandImpl extends Command {
                     String message = e.getMessage().getRawContent()
                             .substring(e.getMessage().getRawContent().indexOf(" ") + 1 + args[0].length() + 1 + args[1].length())
                             .trim().replace("\n", "\\n");
+
+                    /*
                     boolean repeatable = isRepeatable(message);
                     if (isRepeatable(message)) {
                         if (chronoUnit.equals(ChronoUnit.HOURS) || chronoUnit.equals(ChronoUnit.DAYS))
@@ -137,7 +140,8 @@ public abstract class TimerCommandImpl extends Command {
                             return;
                         }
                     }
-                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message, repeatable);
+                    */
+                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message /*, repeatable */);
 
                     // Add the entry
                     chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());
@@ -159,10 +163,12 @@ public abstract class TimerCommandImpl extends Command {
         return Arrays.asList("duration / reset", "time unit", "text");
     }
 
+    /*
     @Override
     public Map<String, String> getFlags() {
         return Collections.singletonMap("--repeat", "Create a repeatable " + getType().name().toLowerCase());
     }
+    */
 
     private List<TimerImpl> getList() {
         return isReminder() ? reminderList : announcementList;
@@ -177,13 +183,13 @@ public abstract class TimerCommandImpl extends Command {
                 + impl.getAuthorId() + "|"
                 + impl.getTargetId() + "|"
                 + impl.getMessage()
-                + (impl.isRepeatable() ? " --repeat" : "");
+                /* + (impl.isRepeatable() ? " --repeat" : "") */;
     }
 
     private void addEntry(TimerImpl impl) {
-        ScheduledFuture future = impl.isRepeatable()
+        ScheduledFuture future = /* impl.isRepeatable()
                 ? timerScheduler.scheduleWithFixedDelay(timerRunnable(impl), impl.getSecondsLeft(), impl.getSecondsLeft(), TimeUnit.SECONDS)
-                : timerScheduler.schedule(timerRunnable(impl), impl.getSecondsLeft(), TimeUnit.SECONDS);
+                : */ timerScheduler.schedule(timerRunnable(impl), impl.getSecondsLeft(), TimeUnit.SECONDS);
         getList().add(impl);
         getMap().put(impl.getAuthorId(), future);
     }
@@ -218,11 +224,13 @@ public abstract class TimerCommandImpl extends Command {
                     ? jda.getPrivateChannelById(impl.getTargetId())
                     : jda.getTextChannelById(impl.getTargetId());
             if (channel != null) MessageUtil.sendMessage(msg, channel);
-            if (!impl.isRepeatable()) removeEntry(impl);
-            else impl.updateOdt();
+            /* if (!impl.isRepeatable()) */
+            removeEntry(impl);
+            //else impl.updateOdt();
         };
     }
 
+    /*
     private boolean isRepeatable(String message) {
         return message.endsWith(" --repeat");
     }
@@ -230,6 +238,7 @@ public abstract class TimerCommandImpl extends Command {
     private String removeFlag(String message) {
         return message.substring(0, message.length() - "--repeat".length()).trim();
     }
+    */
 
     private boolean isReminder() {
         return getType() == Type.REMINDER;
@@ -274,17 +283,17 @@ public abstract class TimerCommandImpl extends Command {
         private final String authorId;
         private final String targetId;
         private final String message;
-        private final boolean repeatable;
-        private final long duration;
+        //private final boolean repeatable;
+        //private final long duration;
         private OffsetDateTime odt;
 
-        TimerImpl(OffsetDateTime odt, String authorId, String targetId, String message, boolean repeatable) {
+        TimerImpl(OffsetDateTime odt, String authorId, String targetId, String message /*, boolean repeatable */) {
             this.odt = odt;
             this.authorId = authorId;
             this.targetId = targetId;
             this.message = message;
-            this.repeatable = repeatable;
-            this.duration = getSecondsLeft();
+            //this.repeatable = repeatable;
+            //this.duration = getSecondsLeft();
         }
 
         OffsetDateTime getTimeStamp() {
@@ -295,9 +304,11 @@ public abstract class TimerCommandImpl extends Command {
             return Duration.between(OffsetDateTime.now(), odt).getSeconds();
         }
 
+        /*
         String getTimeLeftFormatted() {
             return MessageUtil.formatTime(getSecondsLeft() * 1000);
         }
+        */
 
         String getAuthorId() {
             return authorId;
@@ -311,6 +322,7 @@ public abstract class TimerCommandImpl extends Command {
             return message;
         }
 
+        /*
         boolean isRepeatable() {
             return repeatable;
         }
@@ -320,5 +332,6 @@ public abstract class TimerCommandImpl extends Command {
             this.odt = OffsetDateTime.now().plusSeconds(duration);
             IOUtil.writeTextToFile(getFile(), getEntryLine(this), true);
         }
+        */
     }
 }
