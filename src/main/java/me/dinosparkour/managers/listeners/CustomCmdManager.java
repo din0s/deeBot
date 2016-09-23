@@ -23,7 +23,7 @@ public class CustomCmdManager extends ListenerAdapter {
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
-        if (rawContent.length() <= prefix.length())
+        if (rawContent.length() <= prefix.length() || !rawContent.startsWith(prefix))
             return; // Ignore message if it's shorter than the prefix itself
         String noPrefix = rawContent.substring(prefix.length());
         String cmdName = noPrefix.contains(" ") ? noPrefix.substring(0, noPrefix.indexOf(" ")) : noPrefix;
