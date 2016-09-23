@@ -77,7 +77,7 @@ public class MessageUtil {
                 .replace("`", "\\`")
                 .replace("_", "\\_")
                 .replace("~~", "\\~\\~")
-                .replace(">", "\\>");
+                .replace(">", "\u180E>");
     }
 
     public static String breakCodeBlocks(String s) {
