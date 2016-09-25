@@ -1,5 +1,9 @@
 ```diff
-- [v 2.1.6]
-+ Added usage examples for specific commands on !!help (command)
-+ Fixed a rare NPE with the !!purge command
+- [v 2.2.0]
++ Adjusted console printing for concurrency checks
++ Fixed formatting issue with timer messages
++ Added the brand new Steam Status Command: !!steam
++ Fixed a bug with custom commands and invalid prefixes
++ Removed the repeat feature from timers due to complications with bot restarts
+  (will be addressed and reintroduced in the future)
 ```

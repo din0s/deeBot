@@ -8,7 +8,7 @@ import java.lang.management.ManagementFactory;
 public class Info {
 
     public static final String DEFAULT_PREFIX = "!!";
-    public static final String VERSION = "2.1.6";
+    public static final String VERSION = "2.2.0";
     public static final String LIBRARY = "JDA #" + JDAInfo.VERSION;
     public static final String AUTHOR_ID = "98457903660269568";
     public static final String BOT_ID = "137904252214444032";
