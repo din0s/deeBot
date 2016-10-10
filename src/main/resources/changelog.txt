@@ -1,9 +1,6 @@
 ```diff
-- [v 2.2.0]
-+ Adjusted console printing for concurrency checks
-+ Fixed formatting issue with timer messages
-+ Added the brand new Steam Status Command: !!steam
-+ Fixed a bug with custom commands and invalid prefixes
-+ Removed the repeat feature from timers due to complications with bot restarts
-  (will be addressed and reintroduced in the future)
+- [v 2.2.1]
++ Added %mention% variable in join/leave messages
++ Added --private flag in customcmds
++ Added required permissions listing in !!help (command)
 ```
