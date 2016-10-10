@@ -110,7 +110,7 @@ public class ServerManager {
     }
 
     public ServerManager setWelcomeChannel(TextChannel channel) {
-        dataMap.put(DataType.WELCOME_CHANNEL_ID, channel != null ? channel.getId() : null);
+        dataMap.replace(DataType.WELCOME_CHANNEL_ID, channel != null ? channel.getId() : null);
         return this;
     }
 
@@ -120,7 +120,7 @@ public class ServerManager {
     }
 
     public ServerManager setFarewellChannel(TextChannel channel) {
-        dataMap.put(DataType.FAREWELL_CHANNEL_ID, channel != null ? channel.getId() : null);
+        dataMap.replace(DataType.FAREWELL_CHANNEL_ID, channel != null ? channel.getId() : null);
         return this;
     }
 
