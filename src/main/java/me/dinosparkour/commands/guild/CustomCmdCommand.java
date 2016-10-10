@@ -48,6 +48,9 @@ public class CustomCmdCommand extends GuildCommand {
                     } else if (allResponses.isEmpty()) {
                         chat.sendMessage("**Please include at least one response!**");
                         return;
+                    } else if (allResponses.trim().equalsIgnoreCase("--private")) {
+                        chat.sendMessage("**Please include a message before the `Private` tag!**");
+                        return;
                     }
 
                     String[] responses = allResponses.split("(,(\\s+)?)");
@@ -101,6 +104,13 @@ public class CustomCmdCommand extends GuildCommand {
     @Override
     public List<String> getOptionalParams() {
         return Collections.singletonList("command name | random, responses");
+    }
+
+    @Override
+    public Map<String, String> getFlags() {
+        Map<String, String> flags = new HashMap<>();
+        flags.put("--private", "Send the reply in a private message");
+        return flags;
     }
 
     @Override

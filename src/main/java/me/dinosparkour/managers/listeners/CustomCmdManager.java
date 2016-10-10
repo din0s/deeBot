@@ -3,6 +3,7 @@ package me.dinosparkour.managers.listeners;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
@@ -51,6 +52,12 @@ public class CustomCmdManager extends ListenerAdapter {
         message = MessageUtil.parseVariables(message, e.getAuthor())
                 .replace("\\n", "\n")
                 .replaceAll("(?i)%input%", input);
-        MessageUtil.sendMessage(message, e.getChannel());
+
+        MessageChannel c = e.getChannel();
+        if (message.toLowerCase().endsWith(" --private")) {
+            message = message.substring(0, message.length() - " --private".length()).trim();
+            c = e.getAuthor().getPrivateChannel();
+        }
+        MessageUtil.sendMessage(message, c);
     }
 }
