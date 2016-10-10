@@ -107,6 +107,7 @@ abstract class ActionCommandImpl extends GuildCommand {
         variables.put("%user%", "the user's name");
         variables.put("%userId%", "the user's id");
         variables.put("%guild%", "the guild's name");
+        variables.put("%mention%", "mention the user");
         variables.put("%usercount%", "the guild's user count");
         return variables;
     }

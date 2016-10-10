@@ -73,6 +73,7 @@ public class ActionManager extends ListenerAdapter {
     private String parseVariables(String message, User user, Guild guild) {
         return MessageUtil.parseVariables(message, user)
                 .replaceAll("(?i)%guild%", MessageUtil.stripFormatting(guild.getName()))
-                .replaceAll("(?i)%usercount%", String.valueOf(guild.getUsers().size()));
+                .replaceAll("(?i)%usercount%", String.valueOf(guild.getUsers().size()))
+                .replaceAll("(?i)%mention%", user.getAsMention());
     }
 }
