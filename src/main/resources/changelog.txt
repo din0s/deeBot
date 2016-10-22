@@ -1,6 +1,4 @@
 ```diff
-- [v 2.2.1]
-+ Added %mention% variable in join/leave messages
-+ Added --private flag in customcmds
-+ Added required permissions listing in !!help (command)
+- [v 2.2.2]
++ Minor fix for the !!help (cmdname) command
 ```
