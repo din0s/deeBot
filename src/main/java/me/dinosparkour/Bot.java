@@ -52,6 +52,7 @@ public class Bot {
                 .addListener(registry.addCommand(new ChoiceCommand()))
                 .addListener(registry.addCommand(new ChuckNorrisCommand()))
                 .addListener(registry.addCommand(new CoinCommand()))
+                .addListener(registry.addCommand(new DiscordStatusCommand()))
                 .addListener(registry.addCommand(new EchoCommand()))
                 .addListener(registry.addCommand(new EightBallCommand()))
                 .addListener(registry.addCommand(new GoodShitCommand()))
