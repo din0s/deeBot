@@ -33,7 +33,8 @@ public class PurgeCommand extends GuildCommand {
 
         User user = null;
         if (args.length > 1) {
-            List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), Arrays.copyOfRange(args, 1, args.length));
+            int len = isSilent(args) ? args.length - 1 : args.length;
+            List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), Arrays.copyOfRange(args, 1, len));
             switch (userList.size()) {
                 case 0:
                     break;
@@ -78,9 +79,10 @@ public class PurgeCommand extends GuildCommand {
                 ratelimitScheduler.schedule(() -> ratelimitedGuilds.remove(e.getGuild().getId()), 1, TimeUnit.SECONDS);
             }
 
-        chat.sendMessage("Successfully deleted "
-                + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
-                : "**" + MessageUtil.stripFormatting(user.getUsername()) + "**'s messages from the past " + input + " lines!"));
+        if (!isSilent(args))
+            chat.sendMessage("Successfully deleted "
+                    + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
+                    : "**" + MessageUtil.stripFormatting(user.getUsername()) + "**'s messages from the past " + input + " lines!"));
     }
 
     @Override
@@ -109,6 +111,13 @@ public class PurgeCommand extends GuildCommand {
     }
 
     @Override
+    public Map<String, String> getFlags() {
+        Map<String, String> flags = new HashMap<>();
+        flags.put("--silent", "Do not print the success message in chat");
+        return flags;
+    }
+
+    @Override
     public int getArgMin() {
         return 1;
     }
@@ -121,5 +130,9 @@ public class PurgeCommand extends GuildCommand {
     @Override
     public String getExample() {
         return "50 dinos#0649";
+    }
+
+    private boolean isSilent(String[] args) {
+        return args[args.length - 1].equalsIgnoreCase("--silent");
     }
 }
