@@ -1,18 +1,18 @@
-! %P%role list - Displays all roles available in the guild.
-! %P%role permissions - Sends a list with all permission names.
+%P%role list - Displays all roles available in the guild.
+%P%role permissions - Sends a list with all permission names.
 <br>
-! %P%role create [name] (--null / --full) - Creates a role with the given name.
-! %P%role delete [name] - Deletes the role with the given name.
+%P%role create [name] (--null / --full) - Creates a role with the given name.
+%P%role delete [name] - Deletes the role with the given name.
 <br>
-! %P%role userinfo [name] - Displays the specified user's roles.
-! %P%role separate [name] - Toggles userlist separation for the specified role.
-! %P%role getpos [name] - Returns the specified role's position in the rolelist.
-! %P%role info [name] - Displays all permissions available to the specified role.
-! %P%role rename [old name] | [new name] - Renames the specified role.
+%P%role userinfo [name] - Displays the specified user's roles.
+%P%role separate [name] - Toggles userlist separation for the specified role.
+%P%role getpos [name] - Returns the specified role's position in the rolelist.
+%P%role info [name] - Displays all permissions available to the specified role.
+%P%role rename [old name] | [new name] - Renames the specified role.
 <br>
-! %P%role addperm [permission] [name] - Adds the specified permission to the role.
-! %P%role removeperm [permission] [name] - Removes the specified permission from the role.
+%P%role addperm [permission] [name] - Adds the specified permission to the role.
+%P%role removeperm [permission] [name] - Removes the specified permission from the role.
 <br>
-! %P%role color #[hex code] [name] - Sets the specified role's color to the given hex code.
-! %P%role color reset [name] - Resets the specified role's color.
-! %P%role getcolor [name] - Gets the specified role's color.
+%P%role color #[hex code] [name] - Sets the specified role's color to the given hex code.
+%P%role color reset [name] - Resets the specified role's color.
+%P%role getcolor [name] - Gets the specified role's color.
