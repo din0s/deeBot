@@ -51,7 +51,8 @@ public class CustomCmdManager extends ListenerAdapter {
 
         message = MessageUtil.parseVariables(message, e.getAuthor())
                 .replace("\\n", "\n")
-                .replaceAll("(?i)%input%", input);
+                .replaceAll("(?i)%input%", input)
+                .replaceAll("(?i)%mention%", e.getAuthor().getAsMention());
 
         MessageChannel c = e.getChannel();
         if (message.toLowerCase().endsWith(" --private")) {
