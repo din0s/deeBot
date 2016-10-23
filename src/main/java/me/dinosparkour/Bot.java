@@ -61,6 +61,7 @@ public class Bot {
                 .addListener(registry.addCommand(new InviteCommand()))
                 .addListener(registry.addCommand(new LennyCommand()))
                 .addListener(registry.addCommand(new MemeCommand()))
+                .addListener(registry.addCommand(new PatreonCommand()))
                 .addListener(registry.addCommand(new PingCommand()))
                 .addListener(registry.addCommand(new RektCommand()))
                 .addListener(registry.addCommand(new ReminderCommand()))
