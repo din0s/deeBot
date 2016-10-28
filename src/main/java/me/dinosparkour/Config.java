@@ -35,6 +35,7 @@ class Config {
         IOUtil.writeJsonToFile(configFile, new JSONObject()
                 .put("abal", "")
                 .put("carbon", "")
+                .put("cx", "")
                 .put("google", "")
                 .put("token", ""));
     }

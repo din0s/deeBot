@@ -16,6 +16,7 @@ public class Info {
     private static final Config CONFIG = new Config();                 // config.json
     public static final String ABAL_KEY = CONFIG.getValue("abal");     // https://bots.discord.pw
     public static final String CARBON_KEY = CONFIG.getValue("carbon"); // https://www.carbonitex.net/discord/bots
+    public static final String GOOGLE_CX = CONFIG.getValue("cx");      //
     public static final String GOOGLE_KEY = CONFIG.getValue("google"); // https://developers.google.com/
     static final String TOKEN = CONFIG.getValue("token");
 
