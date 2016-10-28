@@ -11,11 +11,14 @@ import java.util.*;
 public class YouTubeCommand extends GlobalCommand {
 
     private static final String API_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=1&q={q}&type=video&key={key}";
+    private final Map<String, String> params = new HashMap<>(2);
+
+    public YouTubeCommand() {
+        params.put("key", Info.GOOGLE_KEY);
+    }
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        Map<String, String> params = new HashMap<>();
-        params.put("key", Info.GOOGLE_KEY);
         params.put("q", String.join(" ", Arrays.asList(args)));
         JSONArray arr = HttpRequestUtil.getData(API_URL, params).getJSONArray("items");
 
