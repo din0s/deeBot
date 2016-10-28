@@ -1,5 +1,6 @@
 package me.dinosparkour.commands.guild;
 
+import me.dinosparkour.Info;
 import me.dinosparkour.commands.CommandRegistry;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.ServerManager;
@@ -48,7 +49,8 @@ public class CustomCmdCommand extends GuildCommand {
                 modifyCommand(args, e, chat, false);
                 break;
 
-            case "reset":
+            case "deleteall":
+            case "resetall":
                 if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
                 Set<String> cmds = new ServerManager(e.getGuild()).getCommands().keySet();
                 if (cmds.isEmpty())
@@ -59,6 +61,24 @@ public class CustomCmdCommand extends GuildCommand {
                     manager.update();
                     chat.sendMessage("Deleted all custom commands! \uD83D\uDE35");
                 }
+                break;
+
+            case "reload":
+                if (!e.getAuthor().getId().equals(Info.AUTHOR_ID)) return; // Author-exclusive subcommand
+                if (args.length == 1) { // Reload all
+                    e.getChannel().sendTyping();
+                    ServerManager.init();
+                    chat.sendMessage("Done!");
+                } else if (args[1].equalsIgnoreCase("this")) // Reload current guild
+                    reloadGuild(e.getGuild(), chat);
+                else { // Reload specific guild
+                    Guild g = e.getJDA().getGuildById(args[1]);
+                    if (g == null)
+                        chat.sendMessage("That's not a valid Guild ID!");
+                    else
+                        reloadGuild(g, chat);
+                }
+                break;
         }
     }
 
@@ -79,7 +99,7 @@ public class CustomCmdCommand extends GuildCommand {
 
     @Override
     public List<String> getRequiredParams() {
-        return Collections.singletonList("create / list / modify / delete / reset");
+        return Collections.singletonList("create / list / modify / delete / resetALL");
     }
 
     @Override
@@ -173,5 +193,12 @@ public class CustomCmdCommand extends GuildCommand {
         if (!createNew) sm.deleteCommand(name);
         sm.addCommand(obj).update();
         chat.sendMessage(getSuccessMessage((createNew ? "created" : "updated"), name));
+    }
+
+    private void reloadGuild(Guild g, MessageSender chat) {
+        if (ServerManager.reload(g))
+            chat.sendMessage("Successfully reloaded the guild's data file!");
+        else
+            chat.sendMessage("**Error:** No data file found for this guild!");
     }
 }

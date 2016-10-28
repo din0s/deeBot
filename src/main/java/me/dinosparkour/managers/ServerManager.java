@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -42,22 +43,35 @@ public class ServerManager {
                             .forEach(path -> {
                                 String fileName = path.getFileName().toString();
                                 String guildId = fileName.substring(0, fileName.length() - ".json".length()); // Extract the id by removing the extension
-                                DATABASE.put(guildId, IOUtil.readJsonFromFile(path.toFile()));
-
-                                // Add the prefix to our map
-                                String prefix = DATABASE.get(guildId).has(DataType.PREFIX.configEntry)
-                                        ? DATABASE.get(guildId).getString(DataType.PREFIX.configEntry) : null;
-                                if (prefix != null) PREFIXES.put(guildId, prefix);
-
-                                // Add the custom commands to our map
-                                JSONArray array = DATABASE.get(guildId).has(DataType.COMMANDS.configEntry)
-                                        ? DATABASE.get(guildId).getJSONArray(DataType.COMMANDS.configEntry) : null;
-                                if (array != null) CUSTOM_COMMANDS.put(guildId, array);
+                                loadFromFile(path, guildId);
                             });
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
             });
+    }
+
+    public static void loadFromFile(Path path, String guildId) {
+        DATABASE.put(guildId, IOUtil.readJsonFromFile(path.toFile()));
+
+        // Add the prefix to our map
+        String prefix = DATABASE.get(guildId).has(DataType.PREFIX.configEntry)
+                ? DATABASE.get(guildId).getString(DataType.PREFIX.configEntry) : null;
+        if (prefix != null) PREFIXES.put(guildId, prefix);
+
+        // Add the custom commands to our map
+        JSONArray array = DATABASE.get(guildId).has(DataType.COMMANDS.configEntry)
+                ? DATABASE.get(guildId).getJSONArray(DataType.COMMANDS.configEntry) : null;
+        if (array != null) CUSTOM_COMMANDS.put(guildId, array);
+    }
+
+    public static boolean reload(Guild guild) {
+        File guildFile = new File(getDataDir() + guild.getId() + ".json");
+        if (guildFile.exists()) {
+            loadFromFile(guildFile.toPath(), guild.getId());
+            return true; // Successfully loaded
+        }
+        return false; // File not found
     }
 
     // Static Getters
