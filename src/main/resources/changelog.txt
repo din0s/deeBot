@@ -1,5 +1,5 @@
 ```diff
-- [v 2.2.6]
+- [v 2.2.7]
 + Simplified !!role output
 + Optimized !!yt searching
 + Added Google Search: !!g [query]
