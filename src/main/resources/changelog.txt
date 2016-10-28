@@ -1,7 +1,10 @@
 ```diff
-- [v 2.2.3]
-+ Added the --silent flag in !!purge
-+ Added !!discordstatus for those dark and rainy days
-+ Added a %mention% variable in Custom Commands
-+ Added !!patreon - Patreon page now live!
+- [v 2.2.4]
++ Simplified !!role output
++ Optimized !!yt searching
++ Added Google Search: !!g [query]
++ Added !!shorten and !!unshorten
++ Reworked !!role info
++ Added !!customcmds edit & reset
++ Included a few ghosts for Halloween
 ```
