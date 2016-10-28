@@ -6,8 +6,6 @@ import me.dinosparkour.utils.HttpRequestUtil;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 public class YouTubeCommand extends GlobalCommand {
@@ -16,13 +14,9 @@ public class YouTubeCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        String allArgs = String.join(" ", Arrays.asList(args));
         Map<String, String> params = new HashMap<>();
-        try {
-            params.put("key", Info.GOOGLE_KEY);
-            params.put("q", URLEncoder.encode(allArgs, "UTF-8"));
-        } catch (UnsupportedEncodingException ignored) {
-        } // UTF-8 is valid and will not throw an exception
+        params.put("key", Info.GOOGLE_KEY);
+        params.put("q", String.join(" ", Arrays.asList(args)));
         JSONArray arr = HttpRequestUtil.getData(API_URL, params).getJSONArray("items");
 
         if (arr.length() == 0)
