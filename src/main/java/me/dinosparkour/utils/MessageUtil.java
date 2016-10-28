@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class MessageUtil {
@@ -94,6 +95,9 @@ public class MessageUtil {
 
     public static String parseVariables(String message, User user) {
         return message.replaceAll("(?i)%userid%", user.getId())
-                .replaceAll("(?i)%user%", stripFormatting(user.getUsername()));
+                .replaceAll("(?i)%user%", stripFormatting(user.getUsername()
+                        .replace("\\", Matcher.quoteReplacement("\\"))
+                        .replace("$", Matcher.quoteReplacement("$"))
+                ));
     }
 }
