@@ -38,11 +38,11 @@ public class HttpRequestUtil {
         return obj;
     }
 
-    public static void postData(String url, JSONObject data) {
-        postData(url, Collections.emptyMap(), data);
+    public static HttpResponse postData(String url, JSONObject data) {
+        return postData(url, Collections.emptyMap(), data);
     }
 
-    public static void postData(String url, Map<String, String> headers, JSONObject data) {
+    public static HttpResponse postData(String url, Map<String, String> headers, JSONObject data) {
         HttpRequestWithBody request = Unirest.post(url); // Create a POST request
 
         if (!headers.isEmpty()) // If we have a map of headers, iterate and include in the request
@@ -51,14 +51,17 @@ public class HttpRequestUtil {
         request.header("Content-Type", "application/json"); // Body is encoded in JSON
         request.body(data.toString());
 
+        HttpResponse response = null;
         try {
-            HttpResponse response = request.asString(); // Send the request
+            response = request.asString(); // Send the request
             if (!success(response)) // If we do not receive 2XX, print the response
                 System.out.printf("Request to %s returned %s %s:\n%s\n", url, response.getStatus(), response.getStatusText(), response.getBody());
             else if (SimpleLog.LEVEL.getPriority() <= SimpleLog.Level.DEBUG.getPriority()) // If we are in debug mode, print the status
                 System.out.printf("Request to %s returned %s %s\n", url, response.getStatus(), response.getStatusText());
         } catch (UnirestException ignored) {
         }
+
+        return response;
     }
 
     private static boolean success(HttpResponse response) {
