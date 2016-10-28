@@ -1,10 +1,11 @@
 ```diff
-- [v 2.2.4]
+- [v 2.2.5]
 + Simplified !!role output
 + Optimized !!yt searching
 + Added Google Search: !!g [query]
 + Added !!shorten and !!unshorten
 + Reworked !!role info
 + Added !!customcmds edit & reset
++ Fixed Case Sensitive !!usersearch
 + Included a few ghosts for Halloween
 ```
