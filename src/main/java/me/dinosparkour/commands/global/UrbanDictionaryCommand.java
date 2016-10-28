@@ -59,8 +59,9 @@ public class UrbanDictionaryCommand extends GlobalCommand {
         } catch (UnsupportedEncodingException ignored) {
         } // UTF-8 is valid and will not throw an exception
 
-        assert obj != null;
-        if (!obj.has("list"))
+        if (obj == null)
+            return "**An issue occurred while contacting UrbanDictionary's servers!** Try again later.";
+        else if (!obj.has("list"))
             return "*Couldn't fetch results for \"" + MessageUtil.stripFormatting(query) + "\"!*";
         JSONArray arr = obj.getJSONArray("list");
         if (arr.length() == 0)
