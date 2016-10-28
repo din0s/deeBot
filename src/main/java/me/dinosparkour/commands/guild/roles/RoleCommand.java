@@ -116,13 +116,13 @@ public class RoleCommand extends RoleCommandImpl {
                     case "roleinfo":
                     case "info": // Get role info
                         if (!isRoleUnique(chat, mentionedRoles)) return;
-                        mentionedRoles = loadRoles(e.getMessage(), stripFirstArg(inputArgs));
+                        mentionedRoles = loadRoles(e.getMessage(), inputArgs);
                         targetRole = getTargetRole(mentionedRoles);
                         assert targetRole != null;
 
                         String roleName = targetRole.getName();
                         String roleId = targetRole.getId();
-                        int roleColor = targetRole.getColor();
+                        String roleColor = Integer.toHexString(targetRole.getColor()).toUpperCase();
                         int rolePosition = targetRole.getPosition();
                         boolean isHoisted = targetRole.isGrouped();
                         boolean isMentionable = targetRole.isMentionable();
@@ -131,7 +131,7 @@ public class RoleCommand extends RoleCommandImpl {
 
                         chat.sendMessage("**Name:** " + MessageUtil.stripFormatting(roleName) + "\n"
                                 + "**ID:** " + roleId + "\n"
-                                + "**Color:** #" + Integer.toHexString(roleColor).toUpperCase() + "\n"
+                                + "**Color:** #" + (roleColor.equals("#0") ? "None." : roleColor) + "\n"
                                 + "**Position:** " + rolePosition + "\n"
                                 + "\n"
                                 + "**Is Hoisted?:** " + (isHoisted ? "Yes" : "No") + "\n"
