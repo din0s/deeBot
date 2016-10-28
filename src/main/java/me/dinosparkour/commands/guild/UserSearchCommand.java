@@ -21,7 +21,7 @@ public class UserSearchCommand extends GuildCommand {
                 .filter(u -> {
                     String nick = e.getGuild().getNicknameForUser(u);
                     String sample = includeNicks ? nick == null ? u.getUsername() : nick : u.getUsername();
-                    return sample.toLowerCase().contains(query);
+                    return sample.toLowerCase().contains(query.toLowerCase());
                 })
                 .map(MessageUtil::userDiscrimSet)
                 .collect(Collectors.toList());
