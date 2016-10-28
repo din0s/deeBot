@@ -7,7 +7,7 @@
 %P%role userinfo [name] - Displays the specified user's roles.
 %P%role separate [name] - Toggles userlist separation for the specified role.
 %P%role getpos [name] - Returns the specified role's position in the rolelist.
-%P%role info [name] - Displays all permissions available to the specified role.
+%P%role info [name] - Displays information related to the specified role.
 %P%role rename [old name] | [new name] - Renames the specified role.
 <br>
 %P%role addperm [permission] [name] - Adds the specified permission to the role.

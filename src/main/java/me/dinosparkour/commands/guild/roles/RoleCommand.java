@@ -14,6 +14,7 @@ import net.dv8tion.jda.managers.RoleManager;
 import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RoleCommand extends RoleCommandImpl {
 
@@ -112,15 +113,32 @@ public class RoleCommand extends RoleCommandImpl {
                         chat.sendMessage("Now set to **" + targetRole.isGrouped() + "**.");
                         return;
 
-                    case "getperms":
+                    case "roleinfo":
                     case "info": // Get role info
-                        if (cannotInteract(chat, e.getMessage(), mentionedRoles)) return;
+                        if (!isRoleUnique(chat, mentionedRoles)) return;
+                        mentionedRoles = loadRoles(e.getMessage(), stripFirstArg(inputArgs));
+                        targetRole = getTargetRole(mentionedRoles);
                         assert targetRole != null;
-                        if (!targetRole.getPermissions().isEmpty()) {
-                            StringBuilder rolePerms = new StringBuilder("```");
-                            targetRole.getPermissions().stream().map(p -> p + "\n").forEach(rolePerms::append);
-                            chat.sendMessage(rolePerms.append("```").toString());
-                        } else chat.sendMessage("`This role has no permissions!`");
+
+                        String roleName = targetRole.getName();
+                        String roleId = targetRole.getId();
+                        int roleColor = targetRole.getColor();
+                        int rolePosition = targetRole.getPosition();
+                        boolean isHoisted = targetRole.isGrouped();
+                        boolean isMentionable = targetRole.isMentionable();
+                        boolean isManaged = targetRole.isManaged();
+                        List<String> rolePermissions = targetRole.getPermissions().stream().map(Enum::name).collect(Collectors.toList());
+
+                        chat.sendMessage("**Name:** " + MessageUtil.stripFormatting(roleName) + "\n"
+                                + "**ID:** " + roleId + "\n"
+                                + "**Color:** #" + Integer.toHexString(roleColor).toUpperCase() + "\n"
+                                + "**Position:** " + rolePosition + "\n"
+                                + "\n"
+                                + "**Is Hoisted?:** " + (isHoisted ? "Yes" : "No") + "\n"
+                                + "**Is Mentionable?:** " + (isMentionable ? "Yes" : "No") + "\n"
+                                + "**Is Managed by an Integration?:** " + (isManaged ? "Yes" : "No") + "\n"
+                                + "\n"
+                                + "**Permissions:**```\n" + (rolePermissions.isEmpty() ? "None" : String.join(" - ", rolePermissions)) + "```");
                         return;
 
                     case "userinfo": // User role info
