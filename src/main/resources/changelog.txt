@@ -1,5 +1,5 @@
 ```diff
-- [v 2.2.5]
+- [v 2.2.6]
 + Simplified !!role output
 + Optimized !!yt searching
 + Added Google Search: !!g [query]
@@ -7,5 +7,6 @@
 + Reworked !!role info
 + Added !!customcmds edit & reset
 + Fixed Case Sensitive !!usersearch
++ Added a case sensitive flag in !!usersearch
 + Included a few ghosts for Halloween
 ```
