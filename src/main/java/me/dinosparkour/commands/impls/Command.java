@@ -105,7 +105,7 @@ public abstract class Command extends ListenerAdapter {
         else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
             if (!permissionCheck(e, e.getJDA().getSelfInfo())) // Check if the bot can execute the actions needed
                 chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
-            if ((getArgMax() > -1                 // A maximum argument limit has been set AND
+            else if ((getArgMax() > -1            // A maximum argument limit has been set AND
                     && args.length > getArgMax()) // There are more arguments than we expected, OR
                     || args.length < getArgMin()) // There are fewer arguments than we required
                 chat.sendUsageMessage();
