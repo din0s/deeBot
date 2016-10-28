@@ -131,7 +131,7 @@ public class RoleCommand extends RoleCommandImpl {
 
                         chat.sendMessage("**Name:** " + MessageUtil.stripFormatting(roleName) + "\n"
                                 + "**ID:** " + roleId + "\n"
-                                + "**Color:** #" + (roleColor.equals("#0") ? "None." : roleColor) + "\n"
+                                + "**Color:** #" + (roleColor.equals("0") ? "None." : roleColor) + "\n"
                                 + "**Position:** " + rolePosition + "\n"
                                 + "\n"
                                 + "**Is Hoisted?:** " + (isHoisted ? "Yes" : "No") + "\n"
