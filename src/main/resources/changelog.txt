@@ -1,12 +1,8 @@
 ```diff
-- [v 2.2.7]
-+ Simplified !!role output
-+ Optimized !!yt searching
-+ Added Google Search: !!g [query]
-+ Added !!shorten and !!unshorten
-+ Reworked !!role info
-+ Added !!customcmds edit & reset
-+ Fixed Case Sensitive !!usersearch
-+ Added a case sensitive flag in !!usersearch
-+ Included a few ghosts for Halloween
+- [v 2.2.8]
++ Added %nickname% to custom commands
++ Performance changes
++ Added !!hastebin command
++ Added --delete flag in customcmds
++ Reworked flag & variable processing
 ```
