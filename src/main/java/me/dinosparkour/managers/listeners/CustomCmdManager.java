@@ -1,5 +1,6 @@
 package me.dinosparkour.managers.listeners;
 
+import me.dinosparkour.commands.guild.CustomCmdCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
@@ -11,7 +12,6 @@ import net.dv8tion.jda.hooks.ListenerAdapter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class CustomCmdManager extends ListenerAdapter {
 
@@ -28,7 +28,7 @@ public class CustomCmdManager extends ListenerAdapter {
             return; // Ignore message if it's shorter than the prefix itself
         String noPrefix = rawContent.substring(prefix.length());
         String cmdName = noPrefix.contains(" ") ? noPrefix.substring(0, noPrefix.indexOf(" ")) : noPrefix;
-        String input = noPrefix.contains(" ") ? noPrefix.substring(cmdName.length()).trim() : "";
+        String input = noPrefix.contains(" ") ? noPrefix.substring(cmdName.length()).trim() : "[no input]";
         if (!sm.isValid(cmdName))
             return; // Only listen for valid custom commands
 
@@ -49,18 +49,16 @@ public class CustomCmdManager extends ListenerAdapter {
                 message = message.replace(randomMatch.group(1), option);
         }
 
-        Set<String> flags = Arrays.stream(message.split("\\s+"))
-                .filter(arg -> arg.startsWith("--"))
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
+        Set<String> flags = MessageUtil.parseFlags(message, CustomCmdCommand.getFlagSet());
+        Map<String, String> vars = new HashMap<>();
+        vars.put("user", MessageUtil.stripFormatting(e.getAuthor().getUsername()));
+        vars.put("userid", e.getAuthor().getId());
+        vars.put("input", input);
+        vars.put("nickname", e.getAuthorName());
+        vars.put("mention", e.getAuthor().getAsMention());
 
-        message = MessageUtil.parseVariables(message, e.getAuthor())
-                .replace("\\n", "\n")
-                .replaceAll("(?i)%input%", input)
-                .replaceAll("(?i)%nickname%", e.getAuthorName())
-                .replaceAll("(?i)%mention%", e.getAuthor().getAsMention())
-                .replaceAll(" (?i)--private", "")
-                .replaceAll(" (?i)--delete", "");
+        message = MessageUtil.stripFlags(message, flags);
+        message = MessageUtil.replaceVars(message, vars, e.getAuthor());
 
         MessageChannel c = e.getChannel();
         if (flags.contains("--private"))
@@ -70,6 +68,6 @@ public class CustomCmdManager extends ListenerAdapter {
                 e.getChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
             e.getMessage().deleteMessage();
 
-        MessageUtil.sendMessage(message, c);
+        MessageUtil.sendMessage(message.replace("\\\\n", "\n"), c);
     }
 }

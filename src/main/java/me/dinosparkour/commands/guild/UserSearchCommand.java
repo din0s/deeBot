@@ -10,14 +10,15 @@ import java.util.stream.Collectors;
 
 public class UserSearchCommand extends GuildCommand {
 
+    private final Map<String, String> flags = new LinkedHashMap<>();
+
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        List<String> argArray = Arrays.asList(args);
-        String allArgs = String.join(" ", argArray);
-        Set<String> flags = argArray.stream().filter(arg -> arg.startsWith("-")).map(String::toLowerCase).collect(Collectors.toSet());
-        boolean includeNicks = flags.contains("-n");
-        boolean isGlobal = flags.contains("-g");
-        boolean isCaseSensitive = flags.contains("--case-sensitive");
+        String allArgs = String.join(" ", Arrays.asList(args));
+        Set<String> flagSet = MessageUtil.parseFlags(args, getFlags().keySet());
+        boolean includeNicks = flagSet.contains("-n");
+        boolean isGlobal = flagSet.contains("-g");
+        boolean isCaseSensitive = flagSet.contains("--case-sensitive");
 
         if (isGlobal && includeNicks) {
             chat.sendMessage("You can only search for nicknamed users in the current guild!");
@@ -25,10 +26,7 @@ public class UserSearchCommand extends GuildCommand {
         }
 
         List<User> baseCollection = isGlobal ? e.getJDA().getUsers() : e.getGuild().getUsers();
-        String query = allArgs.replaceAll(" (?i)-n", "")
-                .replaceAll(" (?i)-g", "")
-                .replaceAll(" (?i)--case-sensitive", "").trim();
-
+        String query = MessageUtil.stripFlags(allArgs, flagSet);
         List<String> results = baseCollection.stream()
                 .filter(u -> {
                     String nick = e.getGuild().getNicknameForUser(u);
@@ -69,10 +67,11 @@ public class UserSearchCommand extends GuildCommand {
 
     @Override
     public Map<String, String> getFlags() {
-        Map<String, String> flags = new LinkedHashMap<>();
-        flags.put("-N", "Include nicknames");
-        flags.put("-G", "Perform global search");
-        flags.put("--case-sensitive", "Strictly match Case Sensitivity");
+        if (flags.isEmpty()) {
+            flags.put("-N", "Include nicknames");
+            flags.put("-G", "Perform global search");
+            flags.put("--case-sensitive", "Strictly match Case Sensitivity");
+        }
         return flags;
     }
 

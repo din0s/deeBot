@@ -13,6 +13,8 @@ import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.utils.PermissionUtil;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -71,9 +73,12 @@ public class ActionManager extends ListenerAdapter {
     }
 
     private String parseVariables(String message, User user, Guild guild) {
-        return MessageUtil.parseVariables(message, user)
-                .replaceAll("(?i)%guild%", MessageUtil.stripFormatting(guild.getName()))
-                .replaceAll("(?i)%usercount%", String.valueOf(guild.getUsers().size()))
-                .replaceAll("(?i)%mention%", user.getAsMention());
+        Map<String, String> vars = new HashMap<>();
+        vars.put("user", MessageUtil.stripFormatting(user.getUsername()));
+        vars.put("userid", user.getId());
+        vars.put("guild", MessageUtil.stripFormatting(guild.getName()));
+        vars.put("usercount", String.valueOf(guild.getUsers().size()));
+        vars.put("mention", user.getAsMention());
+        return MessageUtil.replaceVars(message, vars, user);
     }
 }

@@ -11,7 +11,9 @@ import net.dv8tion.jda.utils.PermissionUtil;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -93,11 +95,38 @@ public class MessageUtil {
                 Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY) + (guildId == null ? "" : "&guild_id=" + guildId);
     }
 
-    public static String parseVariables(String message, User user) {
-        return message.replaceAll("(?i)%userid%", user.getId())
-                .replaceAll("(?i)%user%", stripFormatting(user.getUsername()
-                        .replace("\\", Matcher.quoteReplacement("\\"))
-                        .replace("$", Matcher.quoteReplacement("$"))
-                ));
+    private static String replace(String input, String key, String value) {
+        boolean hasValue = !value.isEmpty();
+        String keyTag = hasValue ? "%" : "";
+        return input.replaceAll((hasValue ? "" : " ") + "(?i)" + keyTag + key + keyTag, value);
+    }
+
+    public static String replaceVars(String message, Map<String, String> vars, User user) {
+        message = message.replace("\\", Matcher.quoteReplacement("\\"))
+                .replace("$", Matcher.quoteReplacement("$"));
+
+        String[] varArray = vars.keySet().toArray(new String[vars.size()]);
+        for (String var : varArray)
+            message = replace(message, var, vars.get(var));
+        return message;
+    }
+
+    public static Set<String> parseFlags(String[] args, Set<String> flags) {
+        flags = flags.stream().map(String::toLowerCase).collect(Collectors.toSet());
+        return Arrays.stream(args)
+                .map(String::toLowerCase)
+                .filter(flags::contains)
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<String> parseFlags(String message, Set<String> flags) {
+        return parseFlags(message.split("\\s+"), flags);
+    }
+
+    public static String stripFlags(String message, Set<String> flags) {
+        String[] flagArray = flags.toArray(new String[flags.size()]);
+        for (String flag : flagArray)
+            message = replace(message, flag, "");
+        return message;
     }
 }

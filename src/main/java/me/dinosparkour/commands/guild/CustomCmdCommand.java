@@ -17,6 +17,17 @@ import java.util.*;
 
 public class CustomCmdCommand extends GuildCommand {
 
+    private static final Map<String, String> FLAGS = new HashMap<>();
+
+    static {
+        FLAGS.put("--private", "Send the reply in a private message");
+        FLAGS.put("--delete", "Delete the original message after replying");
+    }
+
+    public static Set<String> getFlagSet() {
+        return FLAGS.keySet();
+    }
+
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         switch (args[0].toLowerCase()) {
@@ -109,10 +120,7 @@ public class CustomCmdCommand extends GuildCommand {
 
     @Override
     public Map<String, String> getFlags() {
-        Map<String, String> flags = new HashMap<>();
-        flags.put("--private", "Send the reply in a private message");
-        flags.put("--delete", "Delete the original message after replying");
-        return flags;
+        return FLAGS;
     }
 
     @Override
