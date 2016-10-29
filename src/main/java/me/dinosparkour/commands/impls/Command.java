@@ -65,6 +65,10 @@ public abstract class Command extends ListenerAdapter {
         return null;
     }
 
+    public boolean isHidden() {
+        return false;
+    }
+
     public final String getUsage() {
         return getName()
                 + (getRequiredParams() != null ? " " + String.join(" ", getRequiredParams().stream()
@@ -100,17 +104,20 @@ public abstract class Command extends ListenerAdapter {
         String[] args = commandArgs(prefix, e.getMessage());
         MessageSender chat = new MessageSender(e);
 
-        if (e.isPrivate() && !allowsPrivate()) // Check if the command is guild-only
-            chat.sendMessage("**This command can only be used in a guild!**");
-        else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
-            if (!permissionCheck(e, e.getJDA().getSelfInfo())) // Check if the bot can execute the actions needed
-                chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
-            else if ((getArgMax() > -1            // A maximum argument limit has been set AND
-                    && args.length > getArgMax()) // There are more arguments than we expected, OR
-                    || args.length < getArgMin()) // There are fewer arguments than we required
-                chat.sendUsageMessage();
-            else executeCommand(args, e, chat);
-        } else
+        if (e.isPrivate() && !allowsPrivate()) { // Check if the command is guild-only
+            if (!isHidden())
+                chat.sendMessage("**This command can only be used in a guild!**");
+        } else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
+            if (!permissionCheck(e, e.getJDA().getSelfInfo())) { // Check if the bot can execute the actions needed
+                if (!isHidden())
+                    chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
+            } else if ((getArgMax() > -1            // A maximum argument limit has been set AND
+                    && args.length > getArgMax())   // There are more arguments than we expected, OR
+                    || args.length < getArgMin()) { // There are fewer arguments than we required
+                if (!isHidden())
+                    chat.sendUsageMessage();
+            } else executeCommand(args, e, chat);
+        } else if (!isHidden())
             chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
     }
 
