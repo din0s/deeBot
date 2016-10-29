@@ -19,8 +19,8 @@ public class CustomCmdManager extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (BlacklistManager.isBlacklisted(e.getChannel()))
-            return; // Ignore channel if the channel is blacklisted
+        if (e.getAuthor().isBot() || BlacklistManager.isBlacklisted(e.getChannel()))
+            return; // Ignore message if the author is a bot or if the channel is blacklisted
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
