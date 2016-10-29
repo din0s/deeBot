@@ -111,6 +111,7 @@ public class CustomCmdCommand extends GuildCommand {
     public Map<String, String> getFlags() {
         Map<String, String> flags = new HashMap<>();
         flags.put("--private", "Send the reply in a private message");
+        flags.put("--delete", "Delete the original message after replying");
         return flags;
     }
 

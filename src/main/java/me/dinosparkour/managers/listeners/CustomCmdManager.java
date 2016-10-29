@@ -3,15 +3,15 @@ package me.dinosparkour.managers.listeners;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
+import net.dv8tion.jda.Permission;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CustomCmdManager extends ListenerAdapter {
 
@@ -49,17 +49,27 @@ public class CustomCmdManager extends ListenerAdapter {
                 message = message.replace(randomMatch.group(1), option);
         }
 
+        Set<String> flags = Arrays.stream(message.split("\\s+"))
+                .filter(arg -> arg.startsWith("--"))
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
         message = MessageUtil.parseVariables(message, e.getAuthor())
                 .replace("\\n", "\n")
                 .replaceAll("(?i)%input%", input)
                 .replaceAll("(?i)%nickname%", e.getAuthorName())
-                .replaceAll("(?i)%mention%", e.getAuthor().getAsMention());
+                .replaceAll("(?i)%mention%", e.getAuthor().getAsMention())
+                .replaceAll(" (?i)--private", "")
+                .replaceAll(" (?i)--delete", "");
 
         MessageChannel c = e.getChannel();
-        if (message.toLowerCase().endsWith(" --private")) {
-            message = message.substring(0, message.length() - " --private".length()).trim();
+        if (flags.contains("--private"))
             c = e.getAuthor().getPrivateChannel();
-        }
+
+        if (flags.contains("--delete") &&
+                e.getChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
+            e.getMessage().deleteMessage();
+
         MessageUtil.sendMessage(message, c);
     }
 }
