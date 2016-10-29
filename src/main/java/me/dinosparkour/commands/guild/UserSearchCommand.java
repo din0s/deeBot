@@ -18,6 +18,12 @@ public class UserSearchCommand extends GuildCommand {
         boolean includeNicks = flags.contains("-n");
         boolean isGlobal = flags.contains("-g");
         boolean isCaseSensitive = flags.contains("--case-sensitive");
+
+        if (isGlobal && includeNicks) {
+            chat.sendMessage("You can only search for nicknamed users in the current guild!");
+            return;
+        }
+
         List<User> baseCollection = isGlobal ? e.getJDA().getUsers() : e.getGuild().getUsers();
         String query = allArgs.replaceAll(" (?i)-n", "")
                 .replaceAll(" (?i)-g", "")
@@ -25,21 +31,10 @@ public class UserSearchCommand extends GuildCommand {
 
         List<String> results = baseCollection.stream()
                 .filter(u -> {
-                    if (isGlobal && includeNicks)
-                        return e.getJDA().getGuilds().stream().anyMatch(g -> {
-                            String nick = g.getNicknameForUser(u);
-                            String name = isCaseSensitive ? query : query.toLowerCase();
-                            if (nick == null) return u.getUsername().contains(name);
-
-                            if (!isCaseSensitive) nick = nick.toLowerCase();
-                            return nick.contains(name);
-                        });
-                    else {
-                        String nick = e.getGuild().getNicknameForUser(u);
-                        String sample = includeNicks ? nick == null ? u.getUsername() : nick : u.getUsername();
-                        if (!isCaseSensitive) sample = sample.toLowerCase();
-                        return sample.contains(isCaseSensitive ? query : query.toLowerCase());
-                    }
+                    String nick = e.getGuild().getNicknameForUser(u);
+                    String sample = includeNicks ? nick == null ? u.getUsername() : nick : u.getUsername();
+                    if (!isCaseSensitive) sample = sample.toLowerCase();
+                    return sample.contains(isCaseSensitive ? query : query.toLowerCase());
                 }).map(MessageUtil::userDiscrimSet)
                 .collect(Collectors.toList());
 
