@@ -43,11 +43,23 @@ public class HttpRequestUtil {
     }
 
     public static JSONObject getData(String url, Map<String, String> params, String auth) {
+        return getData(url, params, "", auth);
+    }
+
+    public static JSONObject getData(String url, String username, String password) {
+        return getData(url, Collections.emptyMap(), username, password);
+    }
+
+    public static JSONObject getData(String url, Map<String, String> params, String username, String password) {
         JSONObject obj = null;
         GetRequest req = Unirest.get(url); // Create a GET request
         params.entrySet().forEach(set -> req.routeParam(set.getKey(), set.getValue())); // Add params for each set
-        if (!auth.isEmpty()) // If we have an authorization key, add it to the headers
-            req.header("Authorization", auth);
+        if (!password.isEmpty()) {
+            if (username.isEmpty()) // No username - Set authorization headers
+                req.header("Authorization", password);
+            else // Use Basic HTTP Authentication instead
+                req.basicAuth(username, password);
+        }
 
         try {
             obj = req.asJson().getBody().getObject(); // Send the request
