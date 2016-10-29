@@ -57,6 +57,7 @@ public class Bot {
                 .addListener(registry.addCommand(new EightBallCommand()))
                 .addListener(registry.addCommand(new GoodShitCommand()))
                 .addListener(registry.addCommand(new GoogleCommand()))
+                .addListener(registry.addCommand(new HastebinCommand()))
                 .addListener(registry.addCommand(new HelpCommand()))
                 .addListener(registry.addCommand(new InfoCommand()))
                 .addListener(registry.addCommand(new InviteCommand()))
