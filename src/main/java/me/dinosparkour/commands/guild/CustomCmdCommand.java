@@ -119,6 +119,7 @@ public class CustomCmdCommand extends GuildCommand {
         Map<String, String> variables = new LinkedHashMap<>();
         variables.put("%user%", "the user's name");
         variables.put("%userId%", "the user's id");
+        variables.put("%nickname%", "the user's nickname (if present)");
         variables.put("%input%", "the user's command input");
         variables.put("%mention%", "mentions the user");
         variables.put("$random{arg0;arg1;arg2...}", "a random argument out of the specified array");
