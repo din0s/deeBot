@@ -1,7 +1,7 @@
 package me.dinosparkour.commands.guild;
 
 import me.dinosparkour.Info;
-import me.dinosparkour.commands.impls.GlobalCommand;
+import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
@@ -17,30 +17,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JDAVersionCommand extends GlobalCommand {
+public class JDAVersionCommand extends GuildCommand {
 
     //private static final String BINTRAY_URL = "https://api.bintray.com/packages/dv8fromtheworld/maven/{package}/versions/_latest";
     private static final String DOWNLOADS_URL = "http://home.dv8tion.net:8080/job/{package}/lastBuild/api/json";
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        if ((!e.getGuild().getId().equals("125227483518861312") || !e.getGuild().getId().equals("81384788765712384"))
-                && !e.getAuthor().getId().equals(Info.AUTHOR_ID)) return;
+        if (e.getGuild().getId().equals("125227483518861312")
+                || e.getGuild().getId().equals("81384788765712384")
+                || e.getAuthor().getId().equals(Info.AUTHOR_ID)) {
 
-        e.getChannel().sendTyping();
-        StringBuilder sb = new StringBuilder();
+            e.getChannel().sendTyping();
+            StringBuilder sb = new StringBuilder();
 
-        Map<String, String> params = new HashMap<>(1);
-        params.put("package", "JDA");
-        sendRequest(sb, params);
+            Map<String, String> params = new HashMap<>(1);
+            params.put("package", "JDA");
+            sendRequest(sb, params);
 
-        params.replace("package", "JDA-Player");
-        sendRequest(sb, params);
+            params.replace("package", "JDA-Player");
+            sendRequest(sb, params);
 
-        params.replace("package", "JDA 3.x");
-        sendRequest(sb, params);
+            params.replace("package", "JDA 3.x");
+            sendRequest(sb, params);
 
-        chat.sendMessage(sb.toString());
+            chat.sendMessage(sb.toString());
+        }
     }
 
     @Override
