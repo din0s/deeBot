@@ -10,9 +10,16 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HttpRequestUtil {
+
+    private static final Map<String, String> JSON_MAP = new HashMap<>(1);
+
+    static {
+        JSON_MAP.put("Content-Type", "application/json");
+    }
 
     public static InputStream getInputStream(String url) {
         InputStream is = null;
@@ -38,18 +45,13 @@ public class HttpRequestUtil {
         return obj;
     }
 
-    public static HttpResponse postData(String url, JSONObject data) {
-        return postData(url, Collections.emptyMap(), data);
-    }
-
-    public static HttpResponse postData(String url, Map<String, String> headers, JSONObject data) {
+    public static HttpResponse postData(String url, Map<String, String> headers, String body) {
         HttpRequestWithBody request = Unirest.post(url); // Create a POST request
 
         if (!headers.isEmpty()) // If we have a map of headers, iterate and include in the request
             headers.entrySet().forEach(set -> request.header(set.getKey(), set.getValue()));
 
-        request.header("Content-Type", "application/json"); // Body is encoded in JSON
-        request.body(data.toString());
+        request.body(body);
 
         HttpResponse response = null;
         try {
@@ -62,6 +64,19 @@ public class HttpRequestUtil {
         }
 
         return response;
+    }
+
+    public static HttpResponse postData(String url, Map<String, String> headers, JSONObject data) {
+        headers.putAll(JSON_MAP);
+        return postData(url, headers, data.toString());
+    }
+
+    public static HttpResponse postData(String url, JSONObject data) {
+        return postData(url, JSON_MAP, data.toString());
+    }
+
+    public static HttpResponse postData(String url, String body) {
+        return postData(url, Collections.emptyMap(), body);
     }
 
     private static boolean success(HttpResponse response) {
