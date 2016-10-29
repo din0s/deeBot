@@ -1,6 +1,7 @@
 package me.dinosparkour.commands.impls;
 
 import me.dinosparkour.Info;
+import me.dinosparkour.commands.guild.JDAVersionCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
@@ -116,7 +117,8 @@ public abstract class Command extends ListenerAdapter {
                     || args.length < getArgMin()) { // There are fewer arguments than we required
                 if (!isHidden())
                     chat.sendUsageMessage();
-            } else executeCommand(args, e, chat);
+            } else if (!e.getChannel().getId().equals("125227483518861312") || this instanceof JDAVersionCommand) // Of all commands, only JDAVersion can be issued in JDA #general
+                executeCommand(args, e, chat);
         } else if (!isHidden())
             chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
     }
