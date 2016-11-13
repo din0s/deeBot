@@ -27,11 +27,16 @@ public class EvalCommand extends AdminCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        String allArgs = String.join(" ", Arrays.asList(args));
+        String allArgs = e.getMessage().getContent();
+        if (allArgs.contains(" ")) {
+            allArgs = allArgs.substring(allArgs.indexOf(' ')).trim();
+        }
+
         engine.put("e", e);
         engine.put("event", e);
         engine.put("api", e.getJDA());
         engine.put("jda", e.getJDA());
+        engine.put("chat", chat);
         engine.put("channel", e.getChannel());
         engine.put("author", e.getAuthor());
         engine.put("member", e.getMember());
