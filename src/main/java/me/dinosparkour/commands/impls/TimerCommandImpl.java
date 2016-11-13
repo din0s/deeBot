@@ -72,7 +72,15 @@ public abstract class TimerCommandImpl extends Command {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        String targetId = isReminder() ? e.getAuthor().getPrivateChannel().getId() : e.getTextChannel().getId();
+        final String[] targetId = new String[1];
+        if (isReminder()) {
+            if (!e.getAuthor().hasPrivateChannel())
+                e.getAuthor().openPrivateChannel().queue(c -> targetId[0] = c.getId());
+            else
+                targetId[0] = e.getAuthor().getPrivateChannel().getId();
+        } else
+            targetId[0] = e.getTextChannel().getId();
+
         String typeName = getType().name().toLowerCase();
         String typeSet = getType().pronoun + typeName;
 
@@ -140,7 +148,7 @@ public abstract class TimerCommandImpl extends Command {
                         }
                     }
                     */
-                    TimerImpl impl = new TimerImpl(odt, authorId, targetId, message /*, repeatable */);
+                    TimerImpl impl = new TimerImpl(odt, authorId, targetId[0], message /*, repeatable */);
 
                     // Add the entry
                     chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());

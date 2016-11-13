@@ -9,7 +9,6 @@ import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -208,18 +207,13 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
-            PrivateChannel c = event.getAuthor().getPrivateChannel();
-            if (c == null)
-                try {
-                    c = event.getAuthor().openPrivateChannel().block();
-                } catch (RateLimitedException ex) {
-                    ex.printStackTrace();
-                }
+            Consumer<Message> success = s -> sendMessage("✅ Check your DMs!", fallbackChannel);
+            Consumer<Throwable> failure = f -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
 
-            sendMessage(content, c,
-                    success -> sendMessage("✅ Check your DMs!", fallbackChannel),
-                    failure -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel)
-            );
+            if (!event.getAuthor().hasPrivateChannel())
+                event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel, success, failure));
+            else
+                sendMessage(content, event.getAuthor().getPrivateChannel(), success, failure);
         }
     }
 }

@@ -60,14 +60,20 @@ public class CustomCmdManager extends ListenerAdapter {
         message = MessageUtil.stripFlags(message, flags);
         message = MessageUtil.replaceVars(message, vars);
 
+        String msg = message.replace("\\\\n", "\n").replace("\uFE50", ",");
+
         MessageChannel c = e.getChannel();
-        if (flags.contains("--private"))
-            c = e.getAuthor().getPrivateChannel();
+        if (flags.contains("--private")) {
+            if (!e.getAuthor().hasPrivateChannel())
+                e.getAuthor().openPrivateChannel().queue(channel -> MessageUtil.sendMessage(msg, channel));
+            else
+                c = e.getAuthor().getPrivateChannel();
+        }
 
         if (flags.contains("--delete") &&
                 e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
             e.getMessage().deleteMessage().queue();
 
-        MessageUtil.sendMessage(message.replace("\\\\n", "\n").replace("\uFE50", ","), c);
+        MessageUtil.sendMessage(msg, c);
     }
 }
