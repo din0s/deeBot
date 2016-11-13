@@ -5,6 +5,7 @@ import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -20,8 +21,13 @@ public class YouTubeCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         params.put("q", String.join(" ", Arrays.asList(args)));
-        JSONArray arr = HttpRequestUtil.getData(API_URL, params).getJSONArray("items");
+        JSONObject obj = HttpRequestUtil.getData(API_URL, params);
+        if (!obj.has("items")) {
+            chat.sendMessage("Something went wrong while fetching the results from YouTube!");
+            return;
+        }
 
+        JSONArray arr = obj.getJSONArray("items");
         if (arr.length() == 0)
             chat.sendMessage("Your query returned zero results from YouTube!");
         else {
