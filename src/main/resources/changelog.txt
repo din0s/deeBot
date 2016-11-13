@@ -1,6 +1,5 @@
 ```diff
-- [v 2.3.0]
-+ Major rewrite to JDA 3.0 BETA. Expect things to break
-+ Please report all bugs in my support guild.
-+ > !!support
+- [v 2.3.1]
++ Lots and lots of internal fixes for issues caused by the rewrite.
++ Preparing for Christmas...
 ```
