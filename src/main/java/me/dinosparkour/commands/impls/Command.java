@@ -1,6 +1,10 @@
 package me.dinosparkour.commands.impls;
 
 import me.dinosparkour.Info;
+import me.dinosparkour.commands.admin.CleanupCommand;
+import me.dinosparkour.commands.admin.EvalCommand;
+import me.dinosparkour.commands.global.DiscordStatusCommand;
+import me.dinosparkour.commands.global.HastebinCommand;
 import me.dinosparkour.commands.guild.JDAVersionCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
@@ -120,7 +124,7 @@ public abstract class Command extends ListenerAdapter {
                 if (isPublic()) {
                     chat.sendUsageMessage();
                 }
-            } else if (!e.getChannel().getId().equals("125227483518861312") || this instanceof JDAVersionCommand) { // Of all commands, only JDAVersion can be issued in JDA #general
+            } else if (!e.getChannel().getId().equals("125227483518861312") || jdaCheck()) { // Of all commands, only JDAVersion can be issued in JDA #general
                 try {
                     executeCommand(args, e, chat);
                 } catch (Exception ex) {
@@ -164,6 +168,14 @@ public abstract class Command extends ListenerAdapter {
                 || requiredPermissions() == null // No permissions are required to execute the command
                 || requiredPermissions().stream().noneMatch(p -> !e.getGuild().getMember(u).hasPermission(e.getTextChannel(), p)) // The user has all permissions needed
                 || u.getId().equals(Info.AUTHOR_ID); // The user is the bot's author
+    }
+
+    private boolean jdaCheck() {
+        return this instanceof CleanupCommand
+                || this instanceof EvalCommand
+                || this instanceof DiscordStatusCommand
+                || this instanceof HastebinCommand
+                || this instanceof JDAVersionCommand;
     }
 
     protected class MessageSender {
