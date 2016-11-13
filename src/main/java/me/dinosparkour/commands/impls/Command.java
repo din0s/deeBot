@@ -98,9 +98,9 @@ public abstract class Command extends ListenerAdapter {
             return; // Ignore if the command is meant to be used by the owner only
         if (e.isFromType(ChannelType.TEXT) && MessageUtil.canNotTalk(e.getTextChannel()))
             return; // Ignore if we cannot talk in the channel anyway
-        if (BlacklistManager.isBlacklisted(e.getChannel())                                                         // Ignore if the channel is blacklisted
+        if (BlacklistManager.isBlacklisted(e.getChannel())                                       // Ignore if the channel is blacklisted
                 && (!e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)  // except for the people with MESSAGE_MANAGE
-                || !getName().equals("blacklist")))                                                                // when the blacklist command is executed
+                || !getName().equals("blacklist")))                                              // when the blacklist command is executed
             return;
 
         String[] args = commandArgs(prefix, e.getMessage());
