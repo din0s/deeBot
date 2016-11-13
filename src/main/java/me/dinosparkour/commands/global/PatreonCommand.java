@@ -6,8 +6,8 @@ import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.IOUtil;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class PatreonCommand extends GlobalCommand {
 
     private final static String SUCCESS_PLUS = "_Success!_ \uD83C\uDF89\t";
     private final static String SUCCESS_MINUS = "_Done!_ \uD83D\uDC4B\uD83C\uDFFD";
+    private final File patreonFile = new File(ServerManager.getDataDir() + "patreon.txt");
     private Set<String> patrons;
-    private File patreonFile = new File(ServerManager.getDataDir() + "patreon.txt");
 
     public PatreonCommand() {
         load();
@@ -54,7 +54,7 @@ public class PatreonCommand extends GlobalCommand {
 
                 int size = patrons.size();
                 String input = String.join(" ", Arrays.asList(args)).substring(args[0].length()).trim();
-                List<User> users = new UserUtil().getMentionedUsers(e.getMessage(), args);
+                List<User> users = new UserUtil().getMentionedUsers(e.getMessage(), Arrays.copyOfRange(args, 1, args.length));
                 switch (args[0]) {
                     case "add":
                         if (users.isEmpty()) {
@@ -91,7 +91,7 @@ public class PatreonCommand extends GlobalCommand {
                 }
                 break;
         }
-        chat.sendMessage("**Patreon Link:** <https://www.patreon.com/dinos>"
+        chat.sendMessage("**Patreon Link:** <http://patreon.deebot.xyz/>"
                 + "\n*Current Patrons:* "
                 + (patrons.isEmpty() ? "None :(" : String.join(", ", patrons)));
     }

@@ -4,7 +4,7 @@ import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,7 +28,7 @@ public class JDAVersionCommand extends GuildCommand {
                 || e.getGuild().getId().equals("81384788765712384")
                 || e.getAuthor().getId().equals(Info.AUTHOR_ID)) {
 
-            e.getChannel().sendTyping();
+            e.getChannel().sendTyping().queue();
             StringBuilder sb = new StringBuilder();
 
             Map<String, String> params = new HashMap<>(1);
@@ -38,9 +38,8 @@ public class JDAVersionCommand extends GuildCommand {
             params.replace("package", "JDA-Player");
             sendRequest(sb, params);
 
-            params.replace("package", "JDA 3.x");
-            sendRequest(sb, params);
-
+            // No further updates to the Legacy build
+            sb.append("__**JDA Legacy**__\nLatest Build: **2.3.0_379**\nRelease Date: `12/11/2016 00:02:58 UTC`");
             chat.sendMessage(sb.toString());
         }
     }
@@ -61,8 +60,8 @@ public class JDAVersionCommand extends GuildCommand {
     }
 
     @Override
-    public boolean isHidden() {
-        return true;
+    public boolean isPublic() {
+        return false;
     }
 
     private void sendRequest(StringBuilder sb, Map<String, String> params) {

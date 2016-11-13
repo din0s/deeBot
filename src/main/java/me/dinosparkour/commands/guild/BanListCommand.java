@@ -2,9 +2,8 @@ package me.dinosparkour.commands.guild;
 
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,20 +13,21 @@ public class BanListCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        List<User> bannedUsers = e.getGuild().getManager().getBans();
-        if (!bannedUsers.isEmpty()) {
-            StringBuilder sb = new StringBuilder("```xl\n");
-            bannedUsers.stream().map(MessageUtil::userDiscrimSet).forEach(user -> {
-                if (sb.length() + user.length() > 2000 - "```".length()) {
+        e.getGuild().getController().getBans().queue(bannedUsers -> {
+            if (!bannedUsers.isEmpty()) {
+                StringBuilder sb = new StringBuilder("```xl\n");
+                bannedUsers.stream().map(MessageUtil::userDiscrimSet).forEach(user -> {
+                    if (sb.length() + user.length() > 2000 - "```".length()) {
+                        chat.sendMessage(sb.append("```").toString());
+                        sb.setLength(0);
+                    } else
+                        sb.append(user).append("\n");
+                });
+                if (sb.length() > 0)
                     chat.sendMessage(sb.append("```").toString());
-                    sb.setLength(0);
-                } else
-                    sb.append(user).append("\n");
-            });
-            if (sb.length() > 0)
-                chat.sendMessage(sb.append("```").toString());
-        } else
-            chat.sendMessage("*The banlist is empty!*");
+            } else
+                chat.sendMessage("*The banlist is empty!*");
+        });
     }
 
     @Override

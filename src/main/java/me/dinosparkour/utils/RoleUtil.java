@@ -1,20 +1,20 @@
 package me.dinosparkour.utils;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.Role;
 
 import java.util.*;
 
 public class RoleUtil {
 
     public List<Role> getMentionedRoles(Message msg, String allArgs) {
-        if (msg.isPrivate()) // This method should ONLY be called for Guild messages
+        if (!msg.isFromType(ChannelType.TEXT)) // This method should ONLY be called for Guild messages
             return Collections.emptyList();
 
         Set<Role> results = new HashSet<>(msg.getMentionedRoles());
-        Guild guild = ((TextChannel) msg.getChannel()).getGuild();
+        Guild guild = msg.getGuild();
         Role idRole = guild.getRoleById(allArgs);
         if (idRole != null) // Passed arguments were a role id
             results.add(idRole);

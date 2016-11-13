@@ -2,9 +2,9 @@ package me.dinosparkour.commands.guild;
 
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.BlacklistManager;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +23,7 @@ public class BlacklistCommand extends GuildCommand {
         switch (args.length) {
             case 0:
                 TextChannel tc = e.getTextChannel();
-                if (!tc.checkPermission(e.getAuthor(), Permission.MESSAGE_MANAGE)) {
+                if (!e.getMember().hasPermission(tc, Permission.MESSAGE_MANAGE)) {
                     chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to modify the blacklist!");
                     return;
                 }

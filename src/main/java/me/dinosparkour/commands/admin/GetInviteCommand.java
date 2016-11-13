@@ -1,13 +1,12 @@
 package me.dinosparkour.commands.admin;
 
+/* JDA 3.x doesn't support InviteUtil yet
 import me.dinosparkour.commands.impls.AdminCommand;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.InviteUtil;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,25 +36,25 @@ public class GetInviteCommand extends AdminCommand {
         else if (guilds.size() > 1) { // More than one guild match the arguments
             StringBuilder sb = new StringBuilder("Your query returned too many results!\n");
             guilds.stream()
-                    .map(g -> String.format("%s (%s) by %s\n", g.getName(), g.getId(), g.getOwner().getUsername()))
+                    .map(g -> String.format("%s (%s) by %s\n", g.getName(), g.getId(), g.getOwner().getUser().getName()))
                     .forEach(sb::append);
             chat.sendMessage(sb.toString());
         } else { // Exactly one guild matches the arguments
             Guild guild = guilds.get(0);
-            User selfInfo = e.getJDA().getSelfInfo();
+            Member selfMember = guild.getSelfMember();
 
             List<InviteUtil.AdvancedInvite> existentInvites = new ArrayList<>();
-            if (PermissionUtil.checkPermission(guild, selfInfo, Permission.MANAGE_SERVER))
+            if (selfMember.hasPermission(Permission.MANAGE_SERVER))
                 existentInvites.addAll(InviteUtil.getInvites(guild));
 
             if (existentInvites.isEmpty()) {
                 List<TextChannel> channelList = guilds.get(0).getTextChannels();
                 TextChannel channel;
-                if (canGenerate(guild.getPublicChannel(), selfInfo))
+                if (canGenerate(guild.getPublicChannel(), selfMember))
                     channel = guild.getPublicChannel();
                 else
                     channel = channelList.stream()
-                            .filter(c -> canGenerate(c, selfInfo))
+                            .filter(c -> canGenerate(c, selfMember))
                             .findAny().orElse(null);
                 if (channel == null)
                     chat.sendMessage("I cannot generate an invite to that guild!");
@@ -95,7 +94,8 @@ public class GetInviteCommand extends AdminCommand {
         return 1;
     }
 
-    private boolean canGenerate(TextChannel channel, User selfInfo) {
-        return PermissionUtil.checkPermission(channel, selfInfo, Permission.CREATE_INSTANT_INVITE);
+    private boolean canGenerate(TextChannel channel, Member selfMember) {
+        return selfMember.hasPermission(channel, Permission.CREATE_INSTANT_INVITE);
     }
 }
+*/

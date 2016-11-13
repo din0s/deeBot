@@ -16,7 +16,7 @@ public class CommandRegistry {
     }
 
     public static List<Command> getPublicCommands() {
-        return commands.values().stream().filter(cmd -> !cmd.authorExclusive() && !cmd.isHidden()).collect(Collectors.toList());
+        return commands.values().stream().filter(cmd -> !cmd.authorExclusive() && cmd.isPublic()).collect(Collectors.toList());
     }
 
     public static Command getCommand(String name) {

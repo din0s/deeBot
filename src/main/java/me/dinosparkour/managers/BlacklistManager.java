@@ -1,10 +1,10 @@
 package me.dinosparkour.managers;
 
 import me.dinosparkour.utils.IOUtil;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.TextChannel;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class BlacklistManager {
     }
 
     public static boolean isBlacklisted(MessageChannel channel) {
-        return !(channel instanceof PrivateChannel) && BLACKLIST.contains(channel.getId());
+        return channel.getType().equals(ChannelType.TEXT) && BLACKLIST.contains(channel.getId());
     }
 
     public static void addToBlacklist(TextChannel channel) {

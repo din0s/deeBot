@@ -3,14 +3,13 @@ package me.dinosparkour.commands.impls;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.IOUtil;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.ReconnectedEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.time.Duration;
@@ -100,7 +99,7 @@ public abstract class TimerCommandImpl extends Command {
                 break;
 
             default:
-                if (!isReminder() && !PermissionUtil.checkPermission(e.getTextChannel(), e.getAuthor(), Permission.MESSAGE_MANAGE))
+                if (!isReminder() && !e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
                     chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to create announcements for this channel!");
                 else if (!hasSetTimer(e.getAuthor())) {
                 /*
@@ -285,7 +284,7 @@ public abstract class TimerCommandImpl extends Command {
         private final String message;
         //private final boolean repeatable;
         //private final long duration;
-        private OffsetDateTime odt;
+        private final OffsetDateTime odt;
 
         TimerImpl(OffsetDateTime odt, String authorId, String targetId, String message /*, boolean repeatable */) {
             this.odt = odt;

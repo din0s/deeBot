@@ -1,8 +1,6 @@
 ```diff
-- [v 2.2.10]
-+ Added %nickname% to custom commands
-+ Performance changes
-+ Added !!hastebin command
-+ Added --delete flag in customcmds
-+ Reworked flag & variable processing
+- [v 2.3.0]
++ Major rewrite to JDA 3.0 BETA. Expect things to break
++ Please report all bugs in my support guild.
++ > !!support
 ```

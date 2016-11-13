@@ -4,10 +4,10 @@ import me.dinosparkour.commands.guild.CustomCmdCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -19,7 +19,7 @@ public class CustomCmdManager extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {
-        if (e.getAuthor().isBot() || BlacklistManager.isBlacklisted(e.getChannel()))
+        if (e.getAuthor() == null || e.getAuthor().isBot() || BlacklistManager.isBlacklisted(e.getChannel()))
             return; // Ignore message if the author is a bot or if the channel is blacklisted
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
@@ -51,23 +51,23 @@ public class CustomCmdManager extends ListenerAdapter {
 
         Set<String> flags = MessageUtil.parseFlags(message, CustomCmdCommand.getFlagSet());
         Map<String, String> vars = new HashMap<>();
-        vars.put("user", MessageUtil.stripFormatting(e.getAuthor().getUsername()));
+        vars.put("user", MessageUtil.stripFormatting(e.getAuthor().getName()));
         vars.put("userid", e.getAuthor().getId());
         vars.put("input", input);
-        vars.put("nickname", e.getAuthorName());
+        vars.put("nickname", e.getGuild().getMember(e.getAuthor()).getEffectiveName());
         vars.put("mention", e.getAuthor().getAsMention());
 
         message = MessageUtil.stripFlags(message, flags);
-        message = MessageUtil.replaceVars(message, vars, e.getAuthor());
+        message = MessageUtil.replaceVars(message, vars);
 
         MessageChannel c = e.getChannel();
         if (flags.contains("--private"))
             c = e.getAuthor().getPrivateChannel();
 
         if (flags.contains("--delete") &&
-                e.getChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE))
-            e.getMessage().deleteMessage();
+                e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
+            e.getMessage().deleteMessage().queue();
 
-        MessageUtil.sendMessage(message.replace("\\\\n", "\n"), c);
+        MessageUtil.sendMessage(message.replace("\\\\n", "\n").replace("\uFE50", ","), c);
     }
 }

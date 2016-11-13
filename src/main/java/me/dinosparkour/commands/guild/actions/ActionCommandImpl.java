@@ -2,9 +2,9 @@ package me.dinosparkour.commands.guild.actions;
 
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.ServerManager;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.*;
 
@@ -15,8 +15,8 @@ abstract class ActionCommandImpl extends GuildCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = e.getMessage().getRawContent().substring(getPrefix(e.getGuild()).length()); // Custom argument parsing
-        if (allArgs.contains(" "))
-            allArgs = allArgs.substring(allArgs.indexOf(" ") + 1);            //  to allow the use of newlines
+        if (allArgs.contains(" "))                                                                   //    to allow the use
+            allArgs = allArgs.substring(allArgs.indexOf(" ") + 1);                                   //      of newlines
 
         ServerManager sm = new ServerManager(e.getGuild());
         switch (args.length) {
@@ -27,7 +27,7 @@ abstract class ActionCommandImpl extends GuildCommand {
                 break;
 
             default:
-                if (e.getTextChannel().checkPermission(e.getAuthor(), Permission.MESSAGE_MANAGE)) {
+                if (e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                     if (allArgs.equalsIgnoreCase("reset")) { // Clear the message
                         if (isJoin())
                             sm.setWelcomeMessage(null).update();

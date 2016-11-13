@@ -1,14 +1,14 @@
 package me.dinosparkour;
 
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.JDAInfo;
+import net.dv8tion.jda.core.JDAInfo;
 
 import java.lang.management.ManagementFactory;
 
 public class Info {
 
     public static final String DEFAULT_PREFIX = "!!";
-    public static final String VERSION = "2.2.10";
+    public static final String VERSION = "2.3.0";
     public static final String LIBRARY = "JDA #" + JDAInfo.VERSION;
     public static final String AUTHOR_ID = "98457903660269568";
     public static final String BOT_ID = "137904252214444032";

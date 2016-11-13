@@ -2,7 +2,7 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,7 +17,7 @@ public class DiscordStatusCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getChannel().sendTyping();
+        e.getChannel().sendTyping().queue();
         JSONObject response = HttpRequestUtil.getData("https://srhpyqt94yxb.statuspage.io/api/v2/summary.json");
 
         // OVERVIEW

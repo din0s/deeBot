@@ -6,11 +6,12 @@ import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.*;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,8 +67,8 @@ public abstract class Command extends ListenerAdapter {
         return null;
     }
 
-    public boolean isHidden() {
-        return false;
+    public boolean isPublic() {
+        return true;
     }
 
     public final String getUsage() {
@@ -87,7 +88,7 @@ public abstract class Command extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
         // Checks related to the Event's objects, to prevent concurrency issues.
-        if (e.getAuthor() == null || !e.isPrivate() && e.getTextChannel() == null)
+        if (e.getAuthor() == null || e.getChannel() == null)
             return;
 
         String prefix = getPrefix(e.getGuild());
@@ -95,31 +96,39 @@ public abstract class Command extends ListenerAdapter {
             return; // Ignore message if it's not a command or sent by a bot
         if (authorExclusive() && !e.getAuthor().getId().equals(Info.AUTHOR_ID))
             return; // Ignore if the command is meant to be used by the owner only
-        if (!e.isPrivate() && !PermissionUtil.canTalk(e.getJDA().getSelfInfo(), e.getTextChannel()))
+        if (e.isFromType(ChannelType.TEXT) && MessageUtil.canNotTalk(e.getTextChannel()))
             return; // Ignore if we cannot talk in the channel anyway
-        if (BlacklistManager.isBlacklisted(e.getChannel())                                         // Ignore if the channel is blacklisted
-                && (!e.getTextChannel().checkPermission(e.getAuthor(), Permission.MESSAGE_MANAGE)  // except for the people with MESSAGE_MANAGE
-                || !getName().equals("blacklist")))                                                // when the blacklist command is executed
+        if (BlacklistManager.isBlacklisted(e.getChannel())                                                         // Ignore if the channel is blacklisted
+                && (!e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)  // except for the people with MESSAGE_MANAGE
+                || !getName().equals("blacklist")))                                                                // when the blacklist command is executed
             return;
 
         String[] args = commandArgs(prefix, e.getMessage());
         MessageSender chat = new MessageSender(e);
 
-        if (e.isPrivate() && !allowsPrivate()) { // Check if the command is guild-only
-            if (!isHidden())
+        if (e.isFromType(ChannelType.PRIVATE) && !allowsPrivate()) { // Check if the command is guild-only
+            if (isPublic())
                 chat.sendMessage("**This command can only be used in a guild!**");
         } else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
-            if (!permissionCheck(e, e.getJDA().getSelfInfo())) { // Check if the bot can execute the actions needed
-                if (!isHidden())
+            if (!permissionCheck(e, e.getJDA().getSelfUser())) { // Check if the bot can execute the actions needed
+                if (isPublic())
                     chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
             } else if ((getArgMax() > -1            // A maximum argument limit has been set AND
                     && args.length > getArgMax())   // There are more arguments than we expected, OR
                     || args.length < getArgMin()) { // There are fewer arguments than we required
-                if (!isHidden())
+                if (isPublic())
                     chat.sendUsageMessage();
             } else if (!e.getChannel().getId().equals("125227483518861312") || this instanceof JDAVersionCommand) // Of all commands, only JDAVersion can be issued in JDA #general
-                executeCommand(args, e, chat);
-        } else if (!isHidden())
+                try {
+                    executeCommand(args, e, chat);
+                } catch (Exception ex) {
+                    String msg = "Message:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
+                            + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
+                    if (msg.length() <= 2000)
+                        chat.sendMessage(msg, e.getJDA().getUserById(Info.AUTHOR_ID).getPrivateChannel());
+                    ex.printStackTrace();
+                }
+        } else if (isPublic())
             chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
     }
 
@@ -129,6 +138,8 @@ public abstract class Command extends ListenerAdapter {
         String cmdName = msg.getRawContent().substring(prefix.length());
         if (cmdName.contains(" "))
             cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are parameters, remove them
+        if (cmdName.contains("\n"))
+            cmdName = cmdName.substring(0, cmdName.indexOf("\n"));
         return getAlias().contains(cmdName.toLowerCase());
     }
 
@@ -140,34 +151,34 @@ public abstract class Command extends ListenerAdapter {
     }
 
     private boolean permissionCheck(MessageReceivedEvent e, User u) {
-        return e.isPrivate() // Private Commands have no permissions
+        return e.isFromType(ChannelType.PRIVATE) // Private Commands have no permissions
                 || requiredPermissions() == null // No permissions are required to execute the command
-                || requiredPermissions().stream().noneMatch(p -> !PermissionUtil.checkPermission(e.getTextChannel(), u, p)) // The user has all permissions needed
+                || requiredPermissions().stream().noneMatch(p -> !e.getGuild().getMember(u).hasPermission(e.getTextChannel(), p)) // The user has all permissions needed
                 || u.getId().equals(Info.AUTHOR_ID); // The user is the bot's author
     }
 
-    // Credits to Kantenkugel for wasting his time on me
     protected class MessageSender {
-
         private final MessageReceivedEvent event;
 
         MessageSender(MessageReceivedEvent event) {
             this.event = event;
         }
 
-        public void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> callback) {
-            if (tChannel != null
-                    && (tChannel instanceof PrivateChannel
-                    || PermissionUtil.canTalk((TextChannel) tChannel)))
-                MessageUtil.sendMessage(msgContent, tChannel, callback);
+        public void sendMessage(String msgContent, MessageChannel tChannel, Consumer<Message> success, Consumer<Throwable> failure) {
+            if (tChannel == null) return;
+            MessageUtil.sendMessage(msgContent, tChannel, success, failure);
         }
 
-        public void sendMessage(String msgContent, Consumer<Message> callback) {
-            sendMessage(msgContent, event.getChannel(), callback);
+        public void sendMessage(String msgContent, Consumer<Message> success, Consumer<Throwable> failure) {
+            sendMessage(msgContent, event.getChannel(), success, failure);
+        }
+
+        public void sendMessage(String msgContent, Consumer<Message> success) {
+            sendMessage(msgContent, success, null);
         }
 
         public void sendMessage(String msgContent, MessageChannel channel) {
-            sendMessage(msgContent, channel, null);
+            sendMessage(msgContent, channel, null, null);
         }
 
         public void sendMessage(String msgContent) {
@@ -179,7 +190,9 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendMessageWithMentions(String content, String[] args) {
-            List<User> base = event.isPrivate() ? Collections.singletonList(event.getAuthor()) : event.getGuild().getUsers();
+            List<User> base = event.isFromType(ChannelType.PRIVATE)
+                    ? Collections.singletonList(event.getAuthor())
+                    : event.getGuild().getMembers().stream().map(Member::getUser).collect(Collectors.toList());
             List<User> mentionedUsers = new UserUtil().getMentionedUsers(event.getMessage(), args, base);
             if (mentionedUsers.isEmpty())
                 sendMessage(content);
@@ -195,11 +208,18 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
-            sendMessage(content, event.getAuthor().getPrivateChannel(), m -> {
-                if (m == null) // Something went wrong while sending the message
-                    sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
-                else sendMessage("✅ Check your DMs!", fallbackChannel);
-            });
+            PrivateChannel c = event.getAuthor().getPrivateChannel();
+            if (c == null)
+                try {
+                    c = event.getAuthor().openPrivateChannel().block();
+                } catch (RateLimitedException ex) {
+                    ex.printStackTrace();
+                }
+
+            sendMessage(content, c,
+                    success -> sendMessage("✅ Check your DMs!", fallbackChannel),
+                    failure -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel)
+            );
         }
     }
 }

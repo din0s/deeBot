@@ -2,9 +2,9 @@ package me.dinosparkour.managers.listeners;
 
 import me.dinosparkour.Info;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -52,7 +52,7 @@ public class StatsManager extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
-        if (e.getAuthor() != null && e.getAuthor().equals(e.getJDA().getSelfInfo()))
+        if (e.getAuthor() != null && e.getAuthor().equals(e.getJDA().getSelfUser()))
             sent++;
         else
             read++;

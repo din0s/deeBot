@@ -4,7 +4,7 @@ import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,7 +25,7 @@ public class GoogleCommand extends GlobalCommand {
         String q = String.join(" ", Arrays.asList(args));
         params.put("query", q);
 
-        e.getChannel().sendTyping();
+        e.getChannel().sendTyping().queue();
         JSONObject response = HttpRequestUtil.getData(REQUEST_URL, params);
 
         if (!response.has("items")) {

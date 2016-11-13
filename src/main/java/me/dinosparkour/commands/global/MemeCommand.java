@@ -2,15 +2,13 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.MessageBuilder;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import org.apache.commons.io.FileUtils;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -44,24 +42,19 @@ public class MemeCommand extends GlobalCommand {
             return;
         }
 
-        String[] lines = allArgs.substring(type.length()).split("\\|");
-        String line1 = urlify(lines.length > 1 ? lines[1] : "");
-        String line2 = urlify(lines.length > 2 ? lines[2] : "");
+        if (e.isFromType(ChannelType.PRIVATE)
+                || e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_ATTACH_FILES)) {
+            String[] lines = allArgs.substring(type.length()).split("\\|");
+            String line1 = urlify(lines.length > 1 ? lines[1] : "");
+            String line2 = urlify(lines.length > 2 ? lines[2] : "");
 
-        String requestUrl = String.format("http://memegen.link/%s/%s/%s.jpg", type, line1, line2);
+            String requestUrl = String.format("http://memegen.link/%s/%s/%s.jpg", type, line1, line2);
 
-        File imgFile = new File(e.getAuthorName() + System.currentTimeMillis() + ".jpg");
-        e.getChannel().sendTyping();
-        try {
-            FileUtils.copyInputStreamToFile(HttpRequestUtil.getInputStream(requestUrl), imgFile);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+            e.getChannel().sendTyping().queue();
+            e.getChannel().sendFile(HttpRequestUtil.getInputStream(requestUrl), "PNG",
+                    new MessageBuilder().appendString("Here's your meme:").build()).queue();
 
-        if (e.isPrivate() || e.getTextChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_ATTACH_FILES))
-            e.getChannel().sendFileAsync(imgFile, new MessageBuilder().appendString("Here's your meme:").build(), m -> imgFile.delete());
-        else
-            chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
+        } else chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
     }
 
     @Override

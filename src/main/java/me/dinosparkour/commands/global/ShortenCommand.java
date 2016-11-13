@@ -3,7 +3,7 @@ package me.dinosparkour.commands.global;
 import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -18,9 +18,9 @@ public class ShortenCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         body.put("longUrl", String.join(" ", Arrays.asList(args)));
-        e.getChannel().sendTyping();
+        e.getChannel().sendTyping().queue();
         JSONObject response = new JSONObject(HttpRequestUtil.postData(REQUEST_URL, body).getBody().toString());
-        chat.sendMessage("**Shortened URL:**: <" + response.getString("id") + ">");
+        chat.sendMessage("**Shortened URL:** <" + response.getString("id") + ">");
     }
 
     @Override

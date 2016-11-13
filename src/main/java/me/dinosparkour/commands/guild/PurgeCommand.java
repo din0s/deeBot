@@ -3,21 +3,15 @@ package me.dinosparkour.commands.guild;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class PurgeCommand extends GuildCommand {
-
-    private final ScheduledExecutorService ratelimitScheduler = Executors.newScheduledThreadPool(1);
-    private final Set<String> ratelimitedGuilds = new HashSet<>();
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
@@ -31,16 +25,16 @@ public class PurgeCommand extends GuildCommand {
             return;
         }
 
-        User user = null;
+        Member member = null;
         if (args.length > 1) {
             int len = isSilent(args) ? args.length - 1 : args.length;
-            List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), Arrays.copyOfRange(args, 1, len));
-            switch (userList.size()) {
+            List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), Arrays.copyOfRange(args, 1, len));
+            switch (memberList.size()) {
                 case 0:
                     break;
 
                 case 1:
-                    user = userList.get(0);
+                    member = memberList.get(0);
                     break;
 
                 default:
@@ -51,38 +45,35 @@ public class PurgeCommand extends GuildCommand {
 
         int amount;
         if (input == 100) {
-            e.getMessage().deleteMessage();
+            e.getMessage().deleteMessage().queue();
             amount = input;
         } else
             amount = input + 1;
 
-        List<Message> history = e.getChannel().getHistory().retrieve(amount);
-        if (history == null) {
-            chat.sendMessage("*There are no messages to delete!*");
-            return;
-        }
+        Member fMember = member;
+        e.getChannel().getHistory().retrievePast(amount).queue(history -> {
+            if (!history.isEmpty() && fMember != null)
+                history = history.stream().filter(msg -> msg.getAuthor().equals(fMember.getUser())).collect(Collectors.toList());
 
-        if (user != null) {
-            User fUser = user; // Final User Object
-            history = history.stream().filter(msg -> msg.getAuthor().equals(fUser)).collect(Collectors.toList());
-        }
-
-        if (history.size() == 1)
-            history.get(0).deleteMessage();
-        else if (!history.isEmpty())
-            if (ratelimitedGuilds.contains(e.getGuild().getId())) {
-                chat.sendMessage("**Please wait a second before deleting more messages!** [Rate limits]");
+            if (history.isEmpty()) {
+                chat.sendMessage("*There are no messages to delete!*");
                 return;
-            } else {
-                e.getTextChannel().deleteMessages(history);
-                ratelimitedGuilds.add(e.getGuild().getId());
-                ratelimitScheduler.schedule(() -> ratelimitedGuilds.remove(e.getGuild().getId()), 1, TimeUnit.SECONDS);
             }
 
-        if (!isSilent(args))
-            chat.sendMessage("Successfully deleted "
-                    + (user == null ? (e.getTextChannel().getHistory().retrieve(1) == null ? "all" : input) + " messages!"
-                    : "**" + MessageUtil.stripFormatting(user.getUsername()) + "**'s messages from the past " + input + " lines!"));
+            Consumer<Void> consumer = null;
+            if (!isSilent(args)) consumer = success ->
+                    e.getTextChannel().getHistory().retrievePast(1).queue(h ->
+                            chat.sendMessage("Successfully deleted " + (fMember == null
+                                    ? (h.isEmpty() ? "all" : input) + " messages!"
+                                    : "**" + MessageUtil.stripFormatting(fMember.getUser().getName()) + "**'s messages from the past " + input + " lines!")
+                            )
+                    );
+
+            if (history.size() == 1)
+                history.get(0).deleteMessage().queue(consumer);
+            else if (!history.isEmpty())
+                e.getTextChannel().deleteMessages(history).queue(consumer);
+        });
     }
 
     @Override

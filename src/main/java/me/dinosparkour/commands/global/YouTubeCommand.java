@@ -3,7 +3,7 @@ package me.dinosparkour.commands.global;
 import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
 
 import java.util.*;

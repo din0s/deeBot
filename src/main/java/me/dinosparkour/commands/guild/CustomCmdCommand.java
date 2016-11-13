@@ -5,11 +5,10 @@ import me.dinosparkour.commands.CommandRegistry;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,11 +39,11 @@ public class CustomCmdCommand extends GuildCommand {
                 new ServerManager(e.getGuild()).getCommands().entrySet().stream()
                         .map(set -> "Command \"" + MessageUtil.stripFormatting(set.getKey()) + "\" - Responses " + set.getValue() + "\n")
                         .forEach(sb::append);
-                chat.sendMessage(sb.length() > 0 ? sb.toString() : "No custom commands have been registered!");
+                chat.sendMessage(sb.length() > 0 ? sb.toString().replace("\uFE50", ",") : "No custom commands have been registered!");
                 break;
 
             case "delete": // Delete a command
-                if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
+                if (isNotAuthorized(chat, e.getMember())) return;
                 String inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
                 ServerManager sm = new ServerManager(e.getGuild());
                 if (inputArgs.isEmpty()) chat.sendUsageMessage();
@@ -62,7 +61,7 @@ public class CustomCmdCommand extends GuildCommand {
 
             case "deleteall":
             case "resetall":
-                if (isNotAuthorized(chat, e.getAuthor(), e.getGuild())) return;
+                if (isNotAuthorized(chat, e.getMember())) return;
                 Set<String> cmds = new ServerManager(e.getGuild()).getCommands().keySet();
                 if (cmds.isEmpty())
                     chat.sendMessage("This guild has no custom commands!");
@@ -77,7 +76,7 @@ public class CustomCmdCommand extends GuildCommand {
             case "reload":
                 if (!e.getAuthor().getId().equals(Info.AUTHOR_ID)) return; // Author-exclusive subcommand
                 if (args.length == 1) { // Reload all
-                    e.getChannel().sendTyping();
+                    e.getChannel().sendTyping().queue();
                     ServerManager.init();
                     chat.sendMessage("Done!");
                 } else if (args[1].equalsIgnoreCase("this")) // Reload current guild
@@ -145,8 +144,8 @@ public class CustomCmdCommand extends GuildCommand {
         return "create derp | you said %input%, hey %user% $random{one of these; will be picked}";
     }
 
-    private boolean isNotAuthorized(MessageSender chat, User u, Guild g) {
-        if (!PermissionUtil.checkPermission(g, u, Permission.MANAGE_SERVER)) {
+    private boolean isNotAuthorized(MessageSender chat, Member m) {
+        if (!m.hasPermission(Permission.MANAGE_SERVER)) {
             chat.sendMessage("You need `[MANAGE_SERVER]` to modify the Custom Commands on this guild!");
             return true;
         } else return false;
@@ -165,7 +164,7 @@ public class CustomCmdCommand extends GuildCommand {
     }
 
     private void modifyCommand(String[] args, MessageReceivedEvent e, MessageSender chat, boolean createNew) {
-        if (isNotAuthorized(chat, e.getAuthor(), e.getGuild()) || missingArguments(args, chat)) return;
+        if (isNotAuthorized(chat, e.getMember()) || missingArguments(args, chat)) return;
 
         String inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
         ServerManager sm = new ServerManager(e.getGuild());
@@ -196,7 +195,7 @@ public class CustomCmdCommand extends GuildCommand {
             return;
         }
 
-        String[] responses = allResponses.split("(,(\\s+)?)");
+        String[] responses = allResponses.replace("\\,", "\uFE50").split("(,(\\s+)?)");
         JSONObject obj = new JSONObject();
         obj.put("name", name);
         obj.put("responses", new JSONArray(responses));

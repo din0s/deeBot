@@ -2,8 +2,8 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.managers.listeners.StatsManager;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.List;

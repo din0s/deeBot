@@ -1,7 +1,10 @@
 package me.dinosparkour;
 
 import me.dinosparkour.commands.CommandRegistry;
-import me.dinosparkour.commands.admin.*;
+import me.dinosparkour.commands.admin.CleanupCommand;
+import me.dinosparkour.commands.admin.EvalCommand;
+import me.dinosparkour.commands.admin.GameCommand;
+import me.dinosparkour.commands.admin.ShutdownCommand;
 import me.dinosparkour.commands.global.*;
 import me.dinosparkour.commands.guild.*;
 import me.dinosparkour.commands.guild.actions.AutoRoleCommand;
@@ -14,12 +17,13 @@ import me.dinosparkour.managers.LogManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.managers.listeners.ActionManager;
 import me.dinosparkour.managers.listeners.CustomCmdManager;
-import me.dinosparkour.managers.listeners.InviteManager;
 import me.dinosparkour.managers.listeners.StatsManager;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.events.Event;
-import net.dv8tion.jda.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.AccountType;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.events.Event;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
+import net.dv8tion.jda.core.hooks.InterfacedEventManager;
 
 import javax.security.auth.login.LoginException;
 import java.util.concurrent.ExecutorService;
@@ -27,14 +31,14 @@ import java.util.concurrent.Executors;
 
 public class Bot {
 
-    public static void main(String[] args) throws LoginException, InterruptedException {
+    public static void main(String[] args) throws LoginException, InterruptedException, RateLimitedException {
         ServerManager.init(); // Initialize the ServerManager and load the files
         CommandRegistry registry = new CommandRegistry(); // Create a new Command Registry
 
-        JDA jda = new JDABuilder()
+        JDA jda = new JDABuilder(AccountType.BOT)
                 // Options
                 .setAudioEnabled(false) // We don't utilise JDA's audio subsystem
-                .setBotToken(Info.TOKEN) // Set the Authentication Token
+                .setToken(Info.TOKEN) // Set the Authentication Token
                 .setBulkDeleteSplittingEnabled(false) // Performance reasons
                 .setEventManager(new ThreadedEventManager()) // Allow for simultaneous command processing
 
@@ -43,7 +47,7 @@ public class Bot {
                 .addListener(registry.addCommand(new CleanupCommand()))
                 .addListener(registry.addCommand(new EvalCommand()))
                 .addListener(registry.addCommand(new GameCommand()))
-                .addListener(registry.addCommand(new GetInviteCommand()))
+                //.addListener(registry.addCommand(new GetInviteCommand()))
                 .addListener(registry.addCommand(new ShutdownCommand()))
 
                 // GLOBAL
@@ -105,14 +109,14 @@ public class Bot {
                 // Managers
                 .addListener(new ActionManager())
                 .addListener(new CustomCmdManager())
-                .addListener(new InviteManager())
+                //.addListener(new InviteManager())
                 .addListener(new StatsManager())
 
                 // Login
                 .buildBlocking(); // Finally establish a connection to Discord's servers!
 
         jda.getTextChannelById("168160579322642432").getManager() // Hardcoded  #welcome channel in @deeBot Central
-                .setTopic("**deeBot** | *Author:* <@" + Info.AUTHOR_ID + "> | *Latest Ver:* " + Info.VERSION).update();
+                .setTopic("**deeBot** | *Author:* <@" + Info.AUTHOR_ID + "> | *Latest Ver:* " + Info.VERSION).queue();
 
         LogManager.init(); // Initialize the log manager after everything's been set up
     }

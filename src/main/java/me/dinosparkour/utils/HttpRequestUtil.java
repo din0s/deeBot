@@ -5,10 +5,12 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.SimpleLog;
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,22 +40,26 @@ public class HttpRequestUtil {
         return getData(url, params, "");
     }
 
-    public static JSONObject getData(String url, String auth) {
-        return getData(url, Collections.emptyMap(), auth);
-    }
+//    public static JSONObject getData(String url, String auth) {
+//        return getData(url, Collections.emptyMap(), auth);
+//    }
 
     public static JSONObject getData(String url, Map<String, String> params, String auth) {
         return getData(url, params, "", auth);
     }
 
-    public static JSONObject getData(String url, String username, String password) {
-        return getData(url, Collections.emptyMap(), username, password);
-    }
+//    public static JSONObject getData(String url, String username, String password) {
+//        return getData(url, Collections.emptyMap(), username, password);
+//    }
 
     public static JSONObject getData(String url, Map<String, String> params, String username, String password) {
-        JSONObject obj = null;
+        try {
+            for (Map.Entry<String, String> set : params.entrySet()) // Add params for each set
+                url = url.replace("{" + set.getKey() + "}", URLEncoder.encode(set.getValue(), "UTF-8"));
+        } catch (UnsupportedEncodingException ignored) {
+        }
+
         GetRequest req = Unirest.get(url); // Create a GET request
-        params.entrySet().forEach(set -> req.routeParam(set.getKey(), set.getValue())); // Add params for each set
         if (!password.isEmpty()) {
             if (username.isEmpty()) // No username - Set authorization headers
                 req.header("Authorization", password);
@@ -61,6 +67,7 @@ public class HttpRequestUtil {
                 req.basicAuth(username, password);
         }
 
+        JSONObject obj = null;
         try {
             obj = req.asJson().getBody().getObject(); // Send the request
         } catch (UnirestException ignored) {

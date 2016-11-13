@@ -3,11 +3,10 @@ package me.dinosparkour.commands.guild.actions;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,13 +54,13 @@ public class AutoRoleCommand extends GuildCommand {
                     chat.sendMessage("No roles were found that meet the criteria!");
                 else { // A unique role has been found
                     Role newRole = roles.get(0);
-                    User selfInfo = e.getJDA().getSelfInfo();
+                    User selfInfo = e.getJDA().getSelfUser();
 
                     StringBuilder sb = new StringBuilder();
-                    if (!PermissionUtil.canInteract(e.getAuthor(), newRole)) {
+                    if (!e.getMember().canInteract(newRole)) {
                         chat.sendMessage("**ERROR:** You cannot select a role that's higher in the hierarchy than your own top role!");
                         return;
-                    } else if (!PermissionUtil.canInteract(selfInfo, newRole))
+                    } else if (!e.getGuild().getSelfMember().canInteract(newRole))
                         sb.append("**➤ WARNING \uD83C\uDD98**\n")
                                 .append(selfInfo.getAsMention()).append("'s role is lower in the hierarchy than the given role.\n")
                                 .append("This means that the bot will be unable to set the role upon joining!\n")

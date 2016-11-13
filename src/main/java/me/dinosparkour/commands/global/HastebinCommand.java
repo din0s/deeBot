@@ -2,8 +2,9 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
 import java.util.Collections;
@@ -26,9 +27,9 @@ public class HastebinCommand extends GlobalCommand {
 
         String key = new JSONObject(HttpRequestUtil.postData(HASTEBIN_URL, input).getBody().toString()).getString("key");
         chat.sendMessage(e.getAuthor().getAsMention() + ": http://hastebin.com/" + key + "." + flag, msg -> {
-            if (e.getTextChannel().checkPermission(e.getJDA().getSelfInfo(), Permission.MESSAGE_MANAGE)) {
-                e.getMessage().deleteMessage();
-            }
+            if (e.isFromType(ChannelType.TEXT)
+                    && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
+                e.getMessage().deleteMessage().queue();
         });
     }
 
@@ -72,6 +73,6 @@ public class HastebinCommand extends GlobalCommand {
     }
 
     private String stripLastArg(String input) {
-        return input.substring(0, input.lastIndexOf(' '));
+        return input.substring(0, input.lastIndexOf("--") - 1);
     }
 }

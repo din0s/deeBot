@@ -2,7 +2,7 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ public class CatCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JSONObject obj = HttpRequestUtil.getData("http://catfacts-api.appspot.com/api/facts");
-        chat.sendMessage(obj != null ? obj.getJSONArray("facts").getString(0) : "There was an issue while contacting the database, try again later.");
+        chat.sendMessage(obj != null && obj.has("facts") ? obj.getJSONArray("facts").get(0).toString() : "There was an issue while contacting the database, try again later.");
     }
 
     @Override

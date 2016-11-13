@@ -2,7 +2,7 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.GlobalCommand;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Collections;
 import java.util.List;

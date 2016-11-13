@@ -2,16 +2,15 @@ package me.dinosparkour.managers.listeners;
 
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.guild.member.GenericGuildMemberEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.events.guild.member.GuildMemberLeaveEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
+import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +34,8 @@ public class ActionManager extends ListenerAdapter {
 
     public void onEvent(GenericGuildMemberEvent e, boolean isJoin) {
         Guild guild = e.getGuild();
-        User selfInfo = e.getJDA().getSelfInfo();
 
-        if (e.getUser().equals(selfInfo))
+        if (e.getMember().equals(guild.getSelfMember()))
             return; // Ignore our own Join/Leave events
 
         ServerManager sm = new ServerManager(guild);
@@ -45,7 +43,7 @@ public class ActionManager extends ListenerAdapter {
         Role role = guild.getRoleById(sm.getAutoRoleId());
 
         if (message != null) {
-            message = parseVariables(message, e.getUser(), guild);
+            message = parseVariables(message, e.getMember().getUser(), guild);
             TextChannel channel = e.getJDA().getTextChannelById(isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId());
             if (channel == null || !guild.getTextChannels().contains(channel)) // Make sure we always have a channel
                 channel = guild.getPublicChannel();
@@ -54,16 +52,16 @@ public class ActionManager extends ListenerAdapter {
 
         if (isJoin && role != null) {
             String reason;
-            if (!PermissionUtil.checkPermission(guild, selfInfo, Permission.MANAGE_ROLES))
+            if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
                 reason = "the bot not having `[MANAGE_ROLES]`";
-            else if (PermissionUtil.canInteract(selfInfo, role)) {
+            else if (guild.getSelfMember().canInteract(role)) {
                 // We have to use a timer because otherwise the bot cannot assign the custom role to
                 // new bots joining the guild due to a race condition when Discord generates their role..
-                roleScheduler.schedule(() -> guild.getManager().addRoleToUser(e.getUser(), role).update(), 11L, TimeUnit.MILLISECONDS);
+                roleScheduler.schedule(() -> guild.getController().addRolesToMember(e.getMember(), role).queue(), 11L, TimeUnit.MILLISECONDS);
                 return;
             } else reason = "the role's position being higher in the hierarchy.\n"
                     + "Please move the bot's role to the top in order to fix this issue";
-            MessageUtil.sendMessage(unableToGiveRole(role, e.getUser(), reason), guild.getPublicChannel()); // Hopefully we don't reach this statement!!
+            MessageUtil.sendMessage(unableToGiveRole(role, e.getMember().getUser(), reason), guild.getPublicChannel()); // Hopefully we don't reach this statement!!
         }
     }
 
@@ -74,11 +72,11 @@ public class ActionManager extends ListenerAdapter {
 
     private String parseVariables(String message, User user, Guild guild) {
         Map<String, String> vars = new HashMap<>();
-        vars.put("user", MessageUtil.stripFormatting(user.getUsername()));
+        vars.put("user", MessageUtil.stripFormatting(user.getName()));
         vars.put("userid", user.getId());
         vars.put("guild", MessageUtil.stripFormatting(guild.getName()));
-        vars.put("usercount", String.valueOf(guild.getUsers().size()));
+        vars.put("usercount", String.valueOf(guild.getMembers().size()));
         vars.put("mention", user.getAsMention());
-        return MessageUtil.replaceVars(message, vars, user);
+        return MessageUtil.replaceVars(message, vars);
     }
 }

@@ -2,7 +2,7 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +25,8 @@ public class EightBallCommand extends GlobalCommand {
             "That's a terrible idea..",
             "As I see it, yes ^.^",
             "I wouldn't say so.",
-            "It's scientifically proven!");
+            "It's scientifically proven!"
+    );
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {

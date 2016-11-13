@@ -1,11 +1,9 @@
 package me.dinosparkour.commands.admin;
 
 import me.dinosparkour.commands.impls.AdminCommand;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,9 +14,8 @@ public class CleanupCommand extends AdminCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        int amount = 5;
-        User selfInfo = e.getJDA().getSelfInfo();
-        boolean bulk = PermissionUtil.checkPermission(e.getTextChannel(), selfInfo, Permission.MESSAGE_MANAGE);
+        int amount = 10;
+        boolean bulk = e.isFromType(ChannelType.TEXT) && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE);
 
         if (args.length == 1)
             try {
@@ -30,12 +27,16 @@ public class CleanupCommand extends AdminCommand {
                 return;
             }
 
-        List<Message> history = e.getTextChannel().getHistory().retrieve(amount).stream()
-                .filter(msg -> msg.getAuthor().equals(selfInfo)).collect(Collectors.toList());
-        if (bulk && history.size() > 1)
-            e.getTextChannel().deleteMessages(history);
-        else
-            history.forEach(Message::deleteMessage);
+        e.getTextChannel().getHistory().retrievePast(amount + 1).queue(history -> {
+            history.remove(0);
+            history = history.stream()
+                    .filter(msg -> msg.getAuthor().equals(e.getJDA().getSelfUser()))
+                    .collect(Collectors.toList());
+            if (bulk && history.size() > 1)
+                e.getTextChannel().deleteMessages(history).queue();
+            else
+                history.forEach(msg -> msg.deleteMessage().queue());
+        });
     }
 
     @Override

@@ -1,13 +1,7 @@
 package me.dinosparkour.utils;
 
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.Permission;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.utils.ApplicationUtil;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,13 +15,19 @@ import java.util.stream.Collectors;
 
 public class MessageUtil {
 
-    public static void sendMessage(String message, MessageChannel channel, Consumer<Message> callback) {
-        if (channel instanceof TextChannel && !PermissionUtil.canTalk((TextChannel) channel)) return;
-        channel.sendMessageAsync(MessageUtil.filter(message), callback);
+    public static boolean canNotTalk(TextChannel channel) {
+        Member member = channel.getGuild().getSelfMember();
+        return !member.hasPermission(channel, Permission.MESSAGE_READ)
+                || !member.hasPermission(channel, Permission.MESSAGE_WRITE);
+    }
+
+    public static void sendMessage(String message, MessageChannel channel, Consumer<Message> success, Consumer<Throwable> failure) {
+        if (channel instanceof TextChannel && canNotTalk((TextChannel) channel)) return;
+        channel.sendMessage(MessageUtil.filter(message)).queue(success, failure);
     }
 
     public static void sendMessage(String message, MessageChannel channel) {
-        sendMessage(message, channel, null);
+        sendMessage(message, channel, null, null);
     }
 
     private static String filter(String msgContent) {
@@ -72,7 +72,7 @@ public class MessageUtil {
     }
 
     public static String userDiscrimSet(User u) {
-        return stripFormatting(u.getUsername()) + "#" + u.getDiscriminator();
+        return stripFormatting(u.getName()) + "#" + u.getDiscriminator();
     }
 
     public static String stripFormatting(String s) {
@@ -87,21 +87,13 @@ public class MessageUtil {
         return s.replace("```", "\u180e``\u180e`");
     }
 
-    public static String getAuthInvite(JDA jda, String guildId) {
-        return ApplicationUtil.getAuthInvite(jda, Permission.ADMINISTRATOR, Permission.MANAGE_ROLES,
-                Permission.KICK_MEMBERS, Permission.BAN_MEMBERS,
-                Permission.CREATE_INSTANT_INVITE, Permission.MESSAGE_READ,
-                Permission.MESSAGE_WRITE, Permission.MESSAGE_MANAGE,
-                Permission.MESSAGE_ATTACH_FILES, Permission.MESSAGE_HISTORY) + (guildId == null ? "" : "&guild_id=" + guildId);
-    }
-
     private static String replace(String input, String key, String value) {
         boolean hasValue = !value.isEmpty();
         String keyTag = hasValue ? "%" : "";
         return input.replaceAll((hasValue ? "" : " ") + "(?i)" + keyTag + key + keyTag, value);
     }
 
-    public static String replaceVars(String message, Map<String, String> vars, User user) {
+    public static String replaceVars(String message, Map<String, String> vars) {
         message = message.replace("\\", Matcher.quoteReplacement("\\"))
                 .replace("$", Matcher.quoteReplacement("$"));
 

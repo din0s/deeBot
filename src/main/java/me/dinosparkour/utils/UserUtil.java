@@ -1,9 +1,6 @@
 package me.dinosparkour.utils;
 
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,7 +14,6 @@ public class UserUtil {
 
     private static final Pattern USER_DISCRIM_PATTERN = Pattern.compile("(.*)#(\\d{4})");
     private Set<User> results;
-    private String unmatchedArgs;
     private Message msg;
     private List<User> baseCollection;
     private boolean allowNicknames;
@@ -27,11 +23,15 @@ public class UserUtil {
         this.baseCollection = baseCollection;
         this.allowNicknames = allowNicknames;
         results = new HashSet<>(msg.getMentionedUsers());
-        unmatchedArgs = "";
+        String unmatchedArgs = "";
 
         for (String s : args) {
-            check(s);
-            if (!unmatchedArgs.isEmpty()) check(unmatchedArgs + s);
+            if (noMatch(s)) {
+                if (!unmatchedArgs.isEmpty()) {
+                    if (noMatch(unmatchedArgs + " " + s))
+                        unmatchedArgs += " " + s;
+                } else unmatchedArgs = s;
+            }
         }
         return new ArrayList<>(results);
     }
@@ -44,22 +44,36 @@ public class UserUtil {
         return getMentionedUsers(msg, args, msg.getJDA().getUsers(), true);
     }
 
-    private void check(String s) {
+    public List<Member> getMentionedMembers(Message msg, String[] args, List<Member> baseCollection, boolean allowNicknames) {
+        return switchToMembers(getMentionedUsers(msg, args, switchToUsers(baseCollection), allowNicknames));
+    }
+
+    public List<Member> getMentionedMembers(Message msg, String[] args, List<Member> baseCollection) {
+        return getMentionedMembers(msg, args, baseCollection, true);
+    }
+
+    public List<Member> getMentionedMembers(Message msg, String[] args) {
+        return getMentionedMembers(msg, args, msg.getGuild().getMembers());
+    }
+
+    private boolean noMatch(String s) {
         Matcher m = USER_DISCRIM_PATTERN.matcher(s);
         if (m.matches()) {
             User u = getUserWithDiscrim(m.group(1), m.group(2));
-            if (u != null) results.add(u);
-            else unmatchedArgs += s;
+            if (u != null)
+                results.add(u);
+            else return true;
         } else {
             List<User> matchedUsers = getUsersWithNameOrId(s);
-            if (matchedUsers.isEmpty()) unmatchedArgs += s;
+            if (matchedUsers.isEmpty()) return true;
             else results.addAll(matchedUsers);
         }
+        return false;
     }
 
     private User getUserWithDiscrim(String name, String discrim) {
         return baseCollection.stream()
-                .filter(u -> name == null || u.getUsername().equalsIgnoreCase(name))
+                .filter(u -> name == null || u.getName().equalsIgnoreCase(name))
                 .filter(u -> discrim == null || u.getDiscriminator().equals(discrim))
                 .findFirst().orElse(null);
     }
@@ -67,9 +81,22 @@ public class UserUtil {
     private List<User> getUsersWithNameOrId(String nameOrId) {
         return baseCollection.stream()
                 .filter(u -> {
-                    Guild g = msg.isPrivate() ? null : ((TextChannel) msg.getChannel()).getGuild();
-                    return allowNicknames && g != null && g.getNicknameForUser(u) != null && g.getNicknameForUser(u).equalsIgnoreCase(nameOrId)
-                            || (u.getUsername().equalsIgnoreCase(nameOrId) || u.getId().equals(nameOrId));
+                    Guild g = msg.isFromType(ChannelType.TEXT) ? msg.getGuild() : null;
+                    return allowNicknames
+                            && g != null
+                            && g.getMember(u) != null
+                            && g.getMember(u).getNickname() != null
+                            && g.getMember(u).getNickname().equalsIgnoreCase(nameOrId)
+                            || (u.getName().equalsIgnoreCase(nameOrId)
+                            || u.getId().equals(nameOrId));
                 }).collect(Collectors.toList());
+    }
+
+    private List<User> switchToUsers(List<Member> memberList) {
+        return memberList.stream().map(Member::getUser).collect(Collectors.toList());
+    }
+
+    private List<Member> switchToMembers(List<User> userList) {
+        return userList.stream().map(u -> msg.getGuild().getMember(u)).collect(Collectors.toList());
     }
 }

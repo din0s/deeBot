@@ -1,7 +1,8 @@
 package me.dinosparkour.commands.admin;
 
 import me.dinosparkour.commands.impls.AdminCommand;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -9,17 +10,16 @@ import javax.script.ScriptException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class EvalCommand extends AdminCommand {
 
-    private final ScheduledExecutorService eval = Executors.newScheduledThreadPool(1);
     private final ScriptEngine engine;
 
     public EvalCommand() {
         engine = new ScriptEngineManager().getEngineByName("nashorn");
         try {
-            engine.eval("var imports = new JavaImporter(java.io, java.lang, java.util);");
+            engine.eval("var imports = new JavaImporter(java.io, java.lang, java.util, Packages.net.dv8tion.jda.core, "
+                    + "Packages.net.dv8tion.jda.core.entities, Packages.net.dv8tion.jda.core.managers);");
         } catch (ScriptException ex) {
             ex.printStackTrace();
         }
@@ -29,48 +29,38 @@ public class EvalCommand extends AdminCommand {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         engine.put("e", e);
-        engine.put("e", e);
-        engine.put("API", e.getJDA()); // .. because my phone autocorrects to all caps, :P
+        engine.put("event", e);
         engine.put("api", e.getJDA());
         engine.put("jda", e.getJDA());
-        engine.put("channel", e.isPrivate() ? e.getPrivateChannel() : e.getTextChannel());
+        engine.put("channel", e.getChannel());
         engine.put("author", e.getAuthor());
+        engine.put("member", e.getMember());
         engine.put("message", e.getMessage());
         engine.put("guild", e.getGuild());
         engine.put("input", allArgs);
+        engine.put("selfUser", e.getJDA().getSelfUser());
+        engine.put("selfMember", e.getGuild() == null ? null : e.getGuild().getSelfMember());
         engine.put("mentionedUsers", e.getMessage().getMentionedUsers());
         engine.put("mentionedRoles", e.getMessage().getMentionedRoles());
         engine.put("mentionedChannels", e.getMessage().getMentionedChannels());
 
-        ScheduledFuture<?> future = eval.schedule(() -> {
-            Object out = null;
-            try {
-                out = engine.eval("(function() { with (imports) {\n" + allArgs + "\n} })();");
-            } catch (Exception ex) {
-                chat.sendMessage("**Exception**: ```\n" + ex.getLocalizedMessage() + "```");
-                return;
-            }
-
-            String outputS;
-            if (out == null)
-                outputS = "`Task executed without errors.`";
-            else
-                outputS = "Output: ```\n" + out.toString().replace("`", "\\`") + "\n```";
-
-            if (outputS.length() > 2000)
-                outputS = "The output is longer than 2000 chars!";
-
-            chat.sendMessage(outputS);
-        }, 0, TimeUnit.MILLISECONDS);
-
+        Object out;
         try {
-            future.get(10, TimeUnit.SECONDS);
-        } catch (TimeoutException ex) {
-            future.cancel(true);
-            chat.sendMessage("Your task exceeds the time limit!");
-        } catch (ExecutionException | InterruptedException ex) {
-            ex.printStackTrace();
+            out = engine.eval("(function() { with (imports) {\n" + allArgs + "\n} })();");
+        } catch (Exception ex) {
+            chat.sendMessage("**Exception**: ```\n" + ex.getLocalizedMessage() + "```");
+            return;
         }
+
+        String outputS;
+        if (out == null)
+            outputS = "`Task executed without errors.`";
+        else
+            outputS = "Output: ```\n" + out.toString().replace("`", "\\`") + "\n```";
+
+        if (e.getJDA().getStatus() != JDA.Status.SHUTDOWN)
+            chat.sendMessage(outputS);
+        else System.exit(0);
     }
 
     @Override
@@ -102,5 +92,4 @@ public class EvalCommand extends AdminCommand {
     public int getArgMin() {
         return 1;
     }
-
 }

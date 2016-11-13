@@ -2,8 +2,9 @@ package me.dinosparkour.commands.admin;
 
 import me.dinosparkour.commands.impls.AdminCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.managers.AccountManager;
+import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.managers.Presence;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,16 +15,17 @@ public class GameCommand extends AdminCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
-        AccountManager am = e.getJDA().getAccountManager();
+        Presence p = e.getJDA().getPresence();
         switch (allArgs) {
+            case "null":
             case "reset":
-                am.setGame(null);
+                p.setGame(null);
                 chat.sendMessage("Reset the game!");
                 break;
 
             default:
-                am.setGame(allArgs);
-                chat.sendMessage("Set the game to \"" + MessageUtil.stripFormatting(e.getJDA().getSelfInfo().getCurrentGame().getName()) + "\"");
+                p.setGame(Game.of(allArgs));
+                chat.sendMessage("Set the game to \"" + MessageUtil.stripFormatting(e.getJDA().getPresence().getGame().getName()) + "\"");
                 break;
         }
     }

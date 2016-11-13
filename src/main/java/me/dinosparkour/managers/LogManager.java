@@ -1,7 +1,7 @@
 package me.dinosparkour.managers;
 
 import me.dinosparkour.utils.IOUtil;
-import net.dv8tion.jda.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.SimpleLog;
 
 import java.io.File;
 import java.io.IOException;

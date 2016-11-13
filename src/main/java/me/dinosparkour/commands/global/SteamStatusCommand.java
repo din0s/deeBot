@@ -2,7 +2,7 @@ package me.dinosparkour.commands.global;
 
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.HttpRequestUtil;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.json.JSONObject;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ public class SteamStatusCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getChannel().sendTyping();
+        e.getChannel().sendTyping().queue();
         JSONObject statusObj = HttpRequestUtil.getData("https://steamgaug.es/api/v2");
         if (statusObj == null) {
             chat.sendMessage("**The Steam API is offline.** ❌");
@@ -60,7 +60,7 @@ public class SteamStatusCommand extends GlobalCommand {
         JSONObject obj = statusObj.getJSONObject(app.getKey());
         if (!app.isNotGame()) obj = obj.getJSONObject(app.getId());
         boolean online = obj.getInt("online") == 1;
-        boolean hasError = obj.has("error") && !obj.getString("error").equals("No Error");
+        boolean hasError = obj.has("error") && !obj.get("error").equals("No Error");
         boolean hasTime = !hasError && obj.has("time");
         return (online ? "+ " : "- ")
                 + app.getName() + " is "

@@ -4,8 +4,8 @@ import me.dinosparkour.commands.CommandRegistry;
 import me.dinosparkour.commands.impls.Command;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;

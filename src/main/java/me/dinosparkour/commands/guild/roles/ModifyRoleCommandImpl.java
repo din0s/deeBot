@@ -3,10 +3,9 @@ package me.dinosparkour.commands.guild.roles;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.RoleUtil;
 import me.dinosparkour.utils.UserUtil;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.utils.PermissionUtil;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,18 +17,19 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args, e.getGuild().getUsers(), false);
-        switch (userList.size()) {
+        List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), args, e.getGuild().getMembers(), false);
+        switch (memberList.size()) {
             case 0:
                 chat.sendMessage(getNotEnoughArguments("user"));
                 break;
 
             case 1:
-                User user = userList.get(0);
-                String stripUser = String.join(" ", Arrays.asList(args))
-                        .replace(user.getAsMention(), "")
-                        .replace(MessageUtil.userDiscrimSet(user), "")
-                        .replace(user.getUsername(), "").trim();
+                Member member = memberList.get(0);
+                String stripUser = e.getMessage().getRawContent().substring(getName().length() + 1)
+                        .replaceFirst("<@!?\\d+>", "")
+                        .replaceFirst(MessageUtil.userDiscrimSet(member.getUser()), "")
+                        .replaceFirst(member.getUser().getName(), "")
+                        .replaceFirst(member.getUser().getId(), "").trim();
 
                 List<Role> roleList = new RoleUtil().getMentionedRoles(e.getMessage(), stripUser);
                 switch (roleList.size()) {
@@ -39,29 +39,30 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
 
                     case 1:
                         Role role = roleList.get(0);
-                        if (e.getGuild().getRolesForUser(e.getJDA().getSelfInfo()).get(0).equals(role)) {
+                        if (e.getGuild().getSelfMember().getRoles().get(0).equals(role)) {
                             chat.sendMessage("The bot cannot interact with its own highest role!");
                             return;
                         }
-                        if (!PermissionUtil.canInteract(e.getJDA().getSelfInfo(), role)) {
+                        if (!e.getGuild().getSelfMember().canInteract(role)) {
                             chat.sendMessage("The bot doesn't have enough permissions to interact with that role!\n"
                                     + "To fix this issue, drag the bot's role to the top of the role list.");
                             return;
                         }
                         if (isPlus()) {
-                            if (e.getGuild().getRolesForUser(user).contains(role)) {
+                            if (member.getRoles().contains(role)) {
                                 chat.sendMessage("That user already has the role specified!");
                                 return;
                             }
-                            e.getGuild().getManager().addRoleToUser(user, role).update();
+                            e.getGuild().getController().addRolesToMember(member, role).queue();
                         } else {
-                            if (!e.getGuild().getRolesForUser(user).contains(role)) {
+                            if (!member.getRoles().contains(role)) {
                                 chat.sendMessage("That user doesn't have the role specified!");
                                 return;
                             }
-                            e.getGuild().getManager().removeRoleFromUser(user, role).update();
+                            e.getGuild().getController().removeRolesFromMember(member, role).queue();
                         }
-                        chat.sendMessage(MessageUtil.stripFormatting("Successfully " + getTask().perfect + " " + role.getName() + " to " + MessageUtil.userDiscrimSet(user) + "!"));
+                        chat.sendMessage(MessageUtil.stripFormatting("Successfully " + getTask().perfect + " " + role.getName()
+                                + (isPlus() ? " to " : " from ") + MessageUtil.userDiscrimSet(member.getUser()) + "!"));
                         break;
                 }
                 break;

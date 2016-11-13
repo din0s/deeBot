@@ -2,8 +2,9 @@ package me.dinosparkour.commands.guild;
 
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,12 +26,15 @@ public class UserSearchCommand extends GuildCommand {
             return;
         }
 
-        List<User> baseCollection = isGlobal ? e.getJDA().getUsers() : e.getGuild().getUsers();
+        List<User> baseCollection = isGlobal
+                ? e.getJDA().getUsers()
+                : e.getGuild().getMembers().stream().map(Member::getUser).collect(Collectors.toList());
         String query = MessageUtil.stripFlags(allArgs, flagSet);
         List<String> results = baseCollection.stream()
                 .filter(u -> {
-                    String nick = e.getGuild().getNicknameForUser(u);
-                    String sample = includeNicks ? nick == null ? u.getUsername() : nick : u.getUsername();
+                    Member member = e.getGuild().getMember(u);
+                    String nick = member == null ? null : member.getNickname();
+                    String sample = includeNicks ? nick == null ? u.getName() : nick : u.getName();
                     if (!isCaseSensitive) sample = sample.toLowerCase();
                     return sample.contains(isCaseSensitive ? query : query.toLowerCase());
                 }).map(MessageUtil::userDiscrimSet)
