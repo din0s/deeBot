@@ -91,7 +91,9 @@ public class IOUtil {
 
     public static void removeLinesFromFile(File file, List<String> deletedLines) {
         List<String> lines = readLinesFromFile(file);
-        if (lines.removeAll(deletedLines)) writeLinesToFile(file, lines, false);
+        if (lines.removeAll(deletedLines)) {
+            writeLinesToFile(file, lines, false);
+        }
     }
 
     public static void removeTextFromFile(File file, String removedText) {
@@ -108,10 +110,11 @@ public class IOUtil {
             }
         };
 
-        if (lock)
+        if (lock) {
             THREADPOOL.submit(task);
-        else
+        } else {
             task.run();
+        }
     }
 
     // Folder Creator

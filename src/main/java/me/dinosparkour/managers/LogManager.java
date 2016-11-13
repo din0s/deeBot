@@ -15,11 +15,12 @@ public class LogManager {
     public static void init() {
         String logFileName = new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + ".err";
         File logFile = new File(LOG_FOLDER + File.separator + logFileName);
-        if (IOUtil.createFolder(LOG_FOLDER) && IOUtil.createFile(logFile))
+        if (IOUtil.createFolder(LOG_FOLDER) && IOUtil.createFile(logFile)) {
             try {
                 SimpleLog.addFileLogs(null, logFile);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
+        }
     }
 }

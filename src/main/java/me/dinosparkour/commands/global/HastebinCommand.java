@@ -28,8 +28,9 @@ public class HastebinCommand extends GlobalCommand {
         String key = new JSONObject(HttpRequestUtil.postData(HASTEBIN_URL, input).getBody().toString()).getString("key");
         chat.sendMessage(e.getAuthor().getAsMention() + ": http://hastebin.com/" + key + "." + flag, msg -> {
             if (e.isFromType(ChannelType.TEXT)
-                    && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
+                    && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                 e.getMessage().deleteMessage().queue();
+            }
         });
     }
 

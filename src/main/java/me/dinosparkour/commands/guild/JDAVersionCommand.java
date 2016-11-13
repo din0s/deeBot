@@ -75,8 +75,9 @@ public class JDAVersionCommand extends GuildCommand {
         artifacts.forEach(artifact -> {
             String fileName = ((JSONObject) artifact).getString("fileName");
             if (version[0] == null
-                    || StringUtils.countMatches(fileName, '-') < StringUtils.countMatches(version[0], '-'))
+                    || StringUtils.countMatches(fileName, '-') < StringUtils.countMatches(version[0], '-')) {
                 version[0] = fileName;
+            }
         });
         version[0] = version[0].substring(version[0].lastIndexOf("-") + 1, version[0].length() - 4);
         OffsetDateTime updatedAt = OffsetDateTime.ofInstant(Instant.ofEpochMilli(obj.getLong("timestamp")), ZoneId.of("UTC"));

@@ -11,17 +11,20 @@ public class ChoiceCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
-        if (!allArgs.contains(";") || allArgs.equals(":"))
+        if (!allArgs.contains(";") || allArgs.equals(":")) {
             chat.sendUsageMessage();
-        else {
+        } else {
             List<String> choices = new ArrayList<>();
-            for (String s : allArgs.split(";"))
-                if (!s.trim().isEmpty())
+            for (String s : allArgs.split(";")) {
+                if (!s.trim().isEmpty()) {
                     choices.add(s.trim());
+                }
+            }
+
             int count = choices.size();
-            if (count == 1)
+            if (count == 1) {
                 chat.sendMessage("Please give me more than 1 option to choose from..");
-            else {
+            } else {
                 int rand = new Random().nextInt(count);
                 String choice = choices.get(rand).replace("`", "");
                 chat.sendMessage("\ud83e\udd14 *I'd say..* `" + MessageUtil.stripFormatting(choice) + "`!");

@@ -34,15 +34,16 @@ public class GoogleCommand extends GlobalCommand {
         }
 
         JSONArray items = response.getJSONArray("items");
-        if (items.length() == 0)
+        if (items.length() == 0) {
             chat.sendMessage("Your query returned zero results from Google!");
-        else {
+        } else {
             JSONObject result = items.getJSONObject(0);
-            String snippet = result.getString("snippet");
+            String snippet = MessageUtil.stripFormatting(result.getString("snippet"));
             String link = result.getString("link");
             String output = "**`Google Search Result for:`** " + MessageUtil.stripFormatting(q) + "\n<" + link + ">\n" + snippet.replace("\n", "");
-            if (output.endsWith("..."))
+            if (output.endsWith("...")) {
                 output += " _[read more]_";
+            }
             chat.sendMessage(output);
         }
     }

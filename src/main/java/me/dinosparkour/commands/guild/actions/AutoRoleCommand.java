@@ -48,11 +48,11 @@ public class AutoRoleCommand extends GuildCommand {
                         .filter(role -> role.getName().equals(allArgs))
                         .collect(Collectors.toList());
 
-                if (roles.size() > 1) // More than one roles share the given name
+                if (roles.size() > 1) { // More than one roles share the given name
                     chat.sendMessage("There are more than 1 roles that meet the criteria! Please use IDs.");
-                else if (roles.size() == 0) // No roles have the given name
+                } else if (roles.size() == 0) { // No roles have the given name
                     chat.sendMessage("No roles were found that meet the criteria!");
-                else { // A unique role has been found
+                } else { // A unique role has been found
                     Role newRole = roles.get(0);
                     User selfInfo = e.getJDA().getSelfUser();
 
@@ -60,14 +60,16 @@ public class AutoRoleCommand extends GuildCommand {
                     if (!e.getMember().canInteract(newRole)) {
                         chat.sendMessage("**ERROR:** You cannot select a role that's higher in the hierarchy than your own top role!");
                         return;
-                    } else if (!e.getGuild().getSelfMember().canInteract(newRole))
+                    } else if (!e.getGuild().getSelfMember().canInteract(newRole)) {
                         sb.append("**➤ WARNING \uD83C\uDD98**\n")
                                 .append(selfInfo.getAsMention()).append("'s role is lower in the hierarchy than the given role.\n")
                                 .append("This means that the bot will be unable to set the role upon joining!\n")
                                 .append("To fix the issue, drag deeBot's role to the top of the role list.\n\n");
+                    }
 
-                    if (sm.getAutoRoleId() == null || !sm.getAutoRoleId().equals(newRole.getId()))
+                    if (sm.getAutoRoleId() == null || !sm.getAutoRoleId().equals(newRole.getId())) {
                         sm.setAutoRole(newRole).update();
+                    }
                     chat.sendMessage(sb.append(SUCCESS).append(MessageUtil.stripFormatting(newRole.getName())).toString());
                 }
                 break;

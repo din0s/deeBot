@@ -66,8 +66,9 @@ public class PatreonCommand extends GlobalCommand {
                         if (size < patrons.size()) {
                             saveToFile();
                             chat.sendMessage(SUCCESS_PLUS);
-                        } else
+                        } else {
                             chat.sendMessage("_" + (users.size() > 1 ? "These users are" : "That user is") + " is already in the list!_");
+                        }
                         return;
 
                     case "remove":
@@ -76,8 +77,9 @@ public class PatreonCommand extends GlobalCommand {
                                 patrons.remove(input);
                                 saveToFile();
                                 chat.sendMessage(SUCCESS_MINUS);
-                            } else
+                            } else {
                                 chat.sendMessage("_That user is not in the patron list!_");
+                            }
                             return;
                         }
 
@@ -85,8 +87,9 @@ public class PatreonCommand extends GlobalCommand {
                         if (size > patrons.size()) {
                             saveToFile();
                             chat.sendMessage(SUCCESS_MINUS);
-                        } else
+                        } else {
                             chat.sendMessage("_" + (users.size() > 1 ? "These users are" : "That user is") + " aren't in the list!_");
+                        }
                         return;
                 }
                 break;

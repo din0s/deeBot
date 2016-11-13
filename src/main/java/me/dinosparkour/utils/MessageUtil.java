@@ -99,8 +99,9 @@ public class MessageUtil {
                 .replace("$", Matcher.quoteReplacement("$"));
 
         String[] varArray = vars.keySet().toArray(new String[vars.size()]);
-        for (String var : varArray)
+        for (String var : varArray) {
             message = replace(message, var, vars.get(var));
+        }
         return message;
     }
 
@@ -118,8 +119,9 @@ public class MessageUtil {
 
     public static String stripFlags(String message, Set<String> flags) {
         String[] flagArray = flags.toArray(new String[flags.size()]);
-        for (String flag : flagArray)
+        for (String flag : flagArray) {
             message = replace(message, flag, "");
+        }
         return message;
     }
 }

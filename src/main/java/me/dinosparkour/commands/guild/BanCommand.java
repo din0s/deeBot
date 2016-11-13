@@ -30,8 +30,10 @@ public class BanCommand extends GuildCommand {
                 String id = args[0];
                 days = args.length > 1 ? parseDays(allArgs.replace(id + " ", "")) : 0;
 
-                if (id.length() < 17 || id.length() > 18 || !NumberUtils.isDigits(id))
+                if (id.length() < 17 || id.length() > 18 || !NumberUtils.isDigits(id)) {
                     chat.sendMessage("**That's not a valid user!**");
+                }
+
                 if (invalidDays(chat, days)) return;
                 controller.ban(id, days)
                         .queue(success -> sendBanMessage("U(" + id + ")", e.getAuthor(), chat),
@@ -114,9 +116,9 @@ public class BanCommand extends GuildCommand {
 
     private boolean canBan(MessageSender chat, Member target, Message msg) {
         Guild guild = msg.getGuild();
-        if (!guild.getMembers().contains(target))
+        if (!guild.getMembers().contains(target)) {
             return true;
-        else if (!guild.getMember(msg.getAuthor()).canInteract(target)) {
+        } else if (!guild.getMember(msg.getAuthor()).canInteract(target)) {
             chat.sendMessage("Your role is lower in hierarchy than the given user's!");
             return false;
         } else if (target.equals(guild.getSelfMember())) {

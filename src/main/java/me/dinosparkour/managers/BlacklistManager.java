@@ -18,8 +18,9 @@ public class BlacklistManager {
     private static final File BLACKLIST_FILE = new File(ServerManager.getDataDir() + "blacklist.txt");
 
     public static void init() {
-        if (IOUtil.createFile(BLACKLIST_FILE))
+        if (IOUtil.createFile(BLACKLIST_FILE)) {
             BLACKLIST.addAll(IOUtil.readLinesFromFile(BLACKLIST_FILE));
+        }
     }
 
     public static boolean isBlacklisted(MessageChannel channel) {

@@ -51,7 +51,9 @@ public class UrbanDictionaryCommand extends GlobalCommand {
     }
 
     private String getUrbanDefinition(String query) {
-        if (query.equals("+")) query = "%2B";
+        if (query.equals("+")) {
+            query = "%2B";
+        }
 
         JSONObject obj = null;
         try {
@@ -59,13 +61,16 @@ public class UrbanDictionaryCommand extends GlobalCommand {
         } catch (UnsupportedEncodingException ignored) {
         } // UTF-8 is valid and will not throw an exception
 
-        if (obj == null)
+        if (obj == null) {
             return "**An issue occurred while contacting UrbanDictionary's servers!** Try again later.";
-        else if (!obj.has("list"))
+        } else if (!obj.has("list")) {
             return "*Couldn't fetch results for \"" + MessageUtil.stripFormatting(query) + "\"!*";
+        }
+
         JSONArray arr = obj.getJSONArray("list");
-        if (arr.length() == 0)
+        if (arr.length() == 0) {
             return "*No results found for \"" + MessageUtil.stripFormatting(query) + "\"!*";
+        }
 
         JSONObject result = arr.getJSONObject(0);
         String word = result.getString("word");
@@ -77,14 +82,15 @@ public class UrbanDictionaryCommand extends GlobalCommand {
         StringBuilder definition = new StringBuilder("__**`-=Urban Dictionary: " + word + "=-`**__\n");
         definition.append("\n**Definition:**\n").append(def).append("\n");
         assert example != null;
-        if (!example.isEmpty())
+        if (!example.isEmpty()) {
             definition.append("\n**Example:**\n").append(example).append("\n");
+        }
         //definition.append("\n[**+**] " + thumbsUp + " / [**-**] " + thumbsDown);
 
-        if (definition.toString().length() > 2000)
+        if (definition.toString().length() > 2000) {
             return "The requested definition cannot fit in one message, "
                     + "please click on this link: <" + result.getString("permalink") + ">";
-
+        }
         return definition.toString();
     }
 }

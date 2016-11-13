@@ -10,18 +10,20 @@ import java.util.*;
 public class RoleUtil {
 
     public List<Role> getMentionedRoles(Message msg, String allArgs) {
-        if (!msg.isFromType(ChannelType.TEXT)) // This method should ONLY be called for Guild messages
+        if (!msg.isFromType(ChannelType.TEXT)) { // This method should ONLY be called for Guild messages
             return Collections.emptyList();
+        }
 
         Set<Role> results = new HashSet<>(msg.getMentionedRoles());
         Guild guild = msg.getGuild();
         Role idRole = guild.getRoleById(allArgs);
-        if (idRole != null) // Passed arguments were a role id
+        if (idRole != null) { // Passed arguments were a role id
             results.add(idRole);
-        else // Get all roles with matching names
+        } else { // Get all roles with matching names
             guild.getRoles().stream()
                     .filter(role -> role.getName().equalsIgnoreCase(allArgs))
                     .forEach(results::add);
+        }
         return new ArrayList<>(results);
     }
 }

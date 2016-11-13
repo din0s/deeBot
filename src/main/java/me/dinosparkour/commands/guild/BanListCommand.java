@@ -20,13 +20,16 @@ public class BanListCommand extends GuildCommand {
                     if (sb.length() + user.length() > 2000 - "```".length()) {
                         chat.sendMessage(sb.append("```").toString());
                         sb.setLength(0);
-                    } else
+                    } else {
                         sb.append(user).append("\n");
+                    }
                 });
-                if (sb.length() > 0)
+                if (sb.length() > 0) {
                     chat.sendMessage(sb.append("```").toString());
-            } else
+                }
+            } else {
                 chat.sendMessage("*The banlist is empty!*");
+            }
         });
     }
 

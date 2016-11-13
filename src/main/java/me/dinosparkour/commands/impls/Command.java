@@ -106,46 +106,54 @@ public abstract class Command extends ListenerAdapter {
         MessageSender chat = new MessageSender(e);
 
         if (e.isFromType(ChannelType.PRIVATE) && !allowsPrivate()) { // Check if the command is guild-only
-            if (isPublic())
+            if (isPublic()) {
                 chat.sendMessage("**This command can only be used in a guild!**");
+            }
         } else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
             if (!permissionCheck(e, e.getJDA().getSelfUser())) { // Check if the bot can execute the actions needed
-                if (isPublic())
+                if (isPublic()) {
                     chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
+                }
             } else if ((getArgMax() > -1            // A maximum argument limit has been set AND
                     && args.length > getArgMax())   // There are more arguments than we expected, OR
                     || args.length < getArgMin()) { // There are fewer arguments than we required
-                if (isPublic())
+                if (isPublic()) {
                     chat.sendUsageMessage();
-            } else if (!e.getChannel().getId().equals("125227483518861312") || this instanceof JDAVersionCommand) // Of all commands, only JDAVersion can be issued in JDA #general
+                }
+            } else if (!e.getChannel().getId().equals("125227483518861312") || this instanceof JDAVersionCommand) { // Of all commands, only JDAVersion can be issued in JDA #general
                 try {
                     executeCommand(args, e, chat);
                 } catch (Exception ex) {
                     String msg = "Message:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
                             + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
-                    if (msg.length() <= 2000)
+                    if (msg.length() <= 2000) {
                         chat.sendMessage(msg, e.getJDA().getUserById(Info.AUTHOR_ID).getPrivateChannel());
-                    ex.printStackTrace();
+                    }
                 }
-        } else if (isPublic())
+            }
+        } else if (isPublic()) {
             chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
+        }
     }
 
     private boolean isValidCommand(String prefix, Message msg) {
         if (!msg.getRawContent().startsWith(prefix))
             return false; // It's not a command if it doesn't start with our prefix
         String cmdName = msg.getRawContent().substring(prefix.length());
-        if (cmdName.contains(" "))
+        if (cmdName.contains(" ")) {
             cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are parameters, remove them
-        if (cmdName.contains("\n"))
+        }
+        if (cmdName.contains("\n")) {
             cmdName = cmdName.substring(0, cmdName.indexOf("\n"));
+        }
         return getAlias().contains(cmdName.toLowerCase());
     }
 
     private String[] commandArgs(String prefix, Message msg) {
         String noPrefix = msg.getRawContent().substring(prefix.length());
-        if (!noPrefix.contains(" ")) // No whitespaces -> No args
+        if (!noPrefix.contains(" ")) { // No whitespaces -> No args
             return new String[]{};
+        }
         return noPrefix.substring(noPrefix.indexOf(" ") + 1).split("\\s+");
     }
 
@@ -188,16 +196,16 @@ public abstract class Command extends ListenerAdapter {
             sendMessage("**Usage:** " + getPrefix(event.getGuild()) + getUsage());
         }
 
-        public void sendMessageWithMentions(String content, String[] args) {
+        public void sendMessageWithMentions(String[] args, String content) {
             List<User> base = event.isFromType(ChannelType.PRIVATE)
                     ? Collections.singletonList(event.getAuthor())
                     : event.getGuild().getMembers().stream().map(Member::getUser).collect(Collectors.toList());
             List<User> mentionedUsers = new UserUtil().getMentionedUsers(event.getMessage(), args, base);
-            if (mentionedUsers.isEmpty())
+            if (mentionedUsers.isEmpty()) {
                 sendMessage(content);
-            else if (mentionedUsers.size() > 5)
+            } else if (mentionedUsers.size() > 5) {
                 sendMessage("Please don't mention so many users! \uD83E\uDD10");
-            else {
+            } else {
                 StringBuilder sb = new StringBuilder();
                 mentionedUsers.stream()
                         .map(u -> " <@" + u.getId() + ">")
@@ -210,10 +218,11 @@ public abstract class Command extends ListenerAdapter {
             Consumer<Message> success = s -> sendMessage("✅ Check your DMs!", fallbackChannel);
             Consumer<Throwable> failure = f -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
 
-            if (!event.getAuthor().hasPrivateChannel())
+            if (!event.getAuthor().hasPrivateChannel()) {
                 event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel, success, failure));
-            else
+            } else {
                 sendMessage(content, event.getAuthor().getPrivateChannel(), success, failure);
+            }
         }
     }
 }

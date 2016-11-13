@@ -28,9 +28,9 @@ public class YouTubeCommand extends GlobalCommand {
         }
 
         JSONArray arr = obj.getJSONArray("items");
-        if (arr.length() == 0)
+        if (arr.length() == 0) {
             chat.sendMessage("Your query returned zero results from YouTube!");
-        else {
+        } else {
             String watchUrl = arr.getJSONObject(0).getJSONObject("id").getString("videoId");
             chat.sendMessage("https://youtu.be/" + watchUrl);
         }

@@ -34,7 +34,9 @@ public class HelpCommand extends GlobalCommand {
 
         if (args.length > 0) {
             String cmdName = args[0].toLowerCase().startsWith(prefix) && !args[0].equalsIgnoreCase(prefix)
-                    ? args[0].substring(prefix.length()).trim() : args[0];
+                    ? args[0].substring(prefix.length()).trim()
+                    : args[0];
+
             Command argCmd = CommandRegistry.getCommand(cmdName);
             if (argCmd != null) { // Valid command passed as parameter
                 chat.sendMessage("**Usage: `" + prefix + argCmd.getUsage() + "`**"
@@ -55,8 +57,9 @@ public class HelpCommand extends GlobalCommand {
             // Page number passed as parameter
             try {
                 pageNum = Integer.parseInt(allArgs);
-                if (pageNum > totalPageCount)
+                if (pageNum > totalPageCount) {
                     throw new NumberFormatException();
+                }
             } catch (NumberFormatException ex) {
                 chat.sendMessage("**That's not a valid page number!** [1 - " + totalPageCount + "]");
                 return;

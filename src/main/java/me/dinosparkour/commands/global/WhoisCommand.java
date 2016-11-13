@@ -37,7 +37,9 @@ public class WhoisCommand extends GlobalCommand {
                     chat.sendMessage("Your query returned too many users!\nPlease narrow down your search.");
                     return;
             }
-        } else lookup = e.getAuthor();
+        } else {
+            lookup = e.getAuthor();
+        }
 
         StringBuilder sb = new StringBuilder();
 
@@ -54,13 +56,17 @@ public class WhoisCommand extends GlobalCommand {
 
         if (e.isFromType(ChannelType.TEXT)) {
             Member member = e.getGuild().getMember(lookup);
-            String nickname = member.getNickname();
-            if (nickname != null) nickname = MessageUtil.stripFormatting(nickname);
             String joinDate = MessageUtil.formatDate(member.getJoinDate());
             String roles = String.join(", ", member.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
+            String nickname = member.getNickname();
+            if (nickname != null) {
+                nickname = MessageUtil.stripFormatting(nickname);
+            }
 
             sb.append("**__GUILD__**\n");
-            if (nickname != null) sb.append("**Nickname**: ").append(nickname).append("\n");
+            if (nickname != null) {
+                sb.append("**Nickname**: ").append(nickname).append("\n");
+            }
             sb.append("**Join Date**: ").append(joinDate).append("\n")
                     .append("**Roles**: ").append(roles.isEmpty() ? "@everyone" : roles);
         }

@@ -23,7 +23,7 @@ public class LennyCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String lenny = LENNY_LIST.get(new Random().nextInt(LENNY_LIST.size()));
-        chat.sendMessageWithMentions(lenny, args);
+        chat.sendMessageWithMentions(args, lenny);
     }
 
     @Override

@@ -24,16 +24,17 @@ public class GetInviteCommand extends AdminCommand {
         List<Guild> guilds = new ArrayList<>();
         Guild idGuild = e.getJDA().getGuildById(allArgs);
 
-        if (idGuild != null)
+        if (idGuild != null) {
             guilds.add(idGuild);
-        else
+        } else {
             guilds.addAll(e.getJDA().getGuilds().stream()
                     .filter(g -> g.getName().toLowerCase().contains(allArgs.toLowerCase()))
                     .collect(Collectors.toList()));
+        }
 
-        if (guilds.isEmpty()) // No guilds match the arguments
+        if (guilds.isEmpty()) { // No guilds match the arguments
             chat.sendMessage("Your query returned no results!");
-        else if (guilds.size() > 1) { // More than one guild match the arguments
+        } else if (guilds.size() > 1) { // More than one guild match the arguments
             StringBuilder sb = new StringBuilder("Your query returned too many results!\n");
             guilds.stream()
                     .map(g -> String.format("%s (%s) by %s\n", g.getName(), g.getId(), g.getOwner().getUser().getName()))
@@ -44,23 +45,29 @@ public class GetInviteCommand extends AdminCommand {
             Member selfMember = guild.getSelfMember();
 
             List<InviteUtil.AdvancedInvite> existentInvites = new ArrayList<>();
-            if (selfMember.hasPermission(Permission.MANAGE_SERVER))
+            if (selfMember.hasPermission(Permission.MANAGE_SERVER)) {
                 existentInvites.addAll(InviteUtil.getInvites(guild));
+            }
 
             if (existentInvites.isEmpty()) {
                 List<TextChannel> channelList = guilds.get(0).getTextChannels();
                 TextChannel channel;
-                if (canGenerate(guild.getPublicChannel(), selfMember))
+                if (canGenerate(guild.getPublicChannel(), selfMember)) {
                     channel = guild.getPublicChannel();
-                else
+                } else {
                     channel = channelList.stream()
                             .filter(c -> canGenerate(c, selfMember))
                             .findAny().orElse(null);
-                if (channel == null)
+                }
+
+                if (channel == null) {
                     chat.sendMessage("I cannot generate an invite to that guild!");
-                else
+                } else {
                     chat.sendMessage(INVITE_PREFIX + InviteUtil.createInvite(channel, InviteUtil.InviteDuration.THIRTY_MINUTES, 0, false).getCode());
-            } else chat.sendMessage(INVITE_PREFIX + existentInvites.get(0).getCode());
+                }
+            } else {
+                chat.sendMessage(INVITE_PREFIX + existentInvites.get(0).getCode());
+            }
         }
     }
 

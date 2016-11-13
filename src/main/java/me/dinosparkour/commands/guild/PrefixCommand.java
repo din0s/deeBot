@@ -33,8 +33,9 @@ public class PrefixCommand extends GuildCommand {
             chat.sendMessage("__Set the prefix to__: " + MessageUtil.stripFormatting(allArgs).replaceAll("(?i)%s%", "__ __"));
         } else if (allArgs.equals(prefix))
             chat.sendMessage("The prefix is already set to " + MessageUtil.stripFormatting(prefix));
-        else
+        else {
             chat.sendMessage("The prefix can't have a space as its first char!");
+        }
     }
 
     @Override

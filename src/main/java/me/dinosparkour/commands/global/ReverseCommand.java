@@ -14,10 +14,9 @@ public class ReverseCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
-        if (e.getMessage().getMentionedUsers().size() > 5)
-            chat.sendMessage("Please don't mention so many users! \uD83E\uDD10");
-        else
-            chat.sendMessage(allArgs.startsWith(RTL_OVERRIDE) ? allArgs.substring(RTL_OVERRIDE.length()) : RTL_OVERRIDE + allArgs);
+        chat.sendMessage(e.getMessage().getMentionedUsers().size() > 5
+                ? "Please don't mention so many users! \uD83E\uDD10"
+                : allArgs.startsWith(RTL_OVERRIDE) ? allArgs.substring(RTL_OVERRIDE.length()) : RTL_OVERRIDE + allArgs);
     }
 
     @Override

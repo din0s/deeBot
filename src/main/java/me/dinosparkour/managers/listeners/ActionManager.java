@@ -29,7 +29,9 @@ public class ActionManager extends ListenerAdapter {
 
     @Override
     public void onGuildMemberLeave(GuildMemberLeaveEvent e) {
-        if (ServerManager.hasData(e.getGuild())) onEvent(e, false);
+        if (ServerManager.hasData(e.getGuild())) {
+            onEvent(e, false);
+        }
     }
 
     public void onEvent(GenericGuildMemberEvent e, boolean isJoin) {
@@ -45,23 +47,26 @@ public class ActionManager extends ListenerAdapter {
         if (message != null) {
             message = parseVariables(message, e.getMember().getUser(), guild);
             TextChannel channel = e.getJDA().getTextChannelById(isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId());
-            if (channel == null || !guild.getTextChannels().contains(channel)) // Make sure we always have a channel
+            if (channel == null || !guild.getTextChannels().contains(channel)) { // Make sure we always have a channel
                 channel = guild.getPublicChannel();
+            }
             MessageUtil.sendMessage(message, channel);
         }
 
         if (isJoin && role != null) {
             String reason;
-            if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
                 reason = "the bot not having `[MANAGE_ROLES]`";
-            else if (guild.getSelfMember().canInteract(role)) {
+            } else if (guild.getSelfMember().canInteract(role)) {
                 // We have to use a timer because otherwise the bot cannot assign the custom role to
                 // new bots joining the guild due to a race condition when Discord generates their role..
                 roleScheduler.schedule(() -> guild.getController().addRolesToMember(e.getMember(), role).queue(), 11L, TimeUnit.MILLISECONDS);
                 return;
-            } else reason = "the role's position being higher in the hierarchy.\n"
-                    + "Please move the bot's role to the top in order to fix this issue";
-            MessageUtil.sendMessage(unableToGiveRole(role, e.getMember().getUser(), reason), guild.getPublicChannel()); // Hopefully we don't reach this statement!!
+            } else {
+                reason = "the role's position being higher in the hierarchy.\n"
+                        + "Please move the bot's role to the top in order to fix this issue";
+            }
+            MessageUtil.sendMessage(unableToGiveRole(role, e.getMember().getUser(), reason), guild.getPublicChannel());
         }
     }
 

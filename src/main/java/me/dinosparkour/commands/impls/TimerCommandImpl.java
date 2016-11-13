@@ -33,7 +33,7 @@ public abstract class TimerCommandImpl extends Command {
     private JDA jda;
 
     public TimerCommandImpl() {
-        if (IOUtil.createFile(getFile()))
+        if (IOUtil.createFile(getFile())) {
             IOUtil.readDataFileBlocking(getFile().getName(), () ->
                     IOUtil.readLinesFromFile(getFile()).forEach(s -> {
                         String[] constructors = s.split("\\|");
@@ -47,11 +47,14 @@ public abstract class TimerCommandImpl extends Command {
                         if (repeatable) message = removeFlag(message);
                         */
                         TimerImpl impl = new TimerImpl(odt, authorId, targetId, message /*, repeatable */);
-                        if (impl.getSecondsLeft() < 0)
-                            IOUtil.removeTextFromFile(getFile(), s); // Delete reminder if it's been skipped
-                        else addEntry(impl); // Add a new entry if the reminder is valid
+                        if (impl.getSecondsLeft() < 0) { // Delete reminder if it's been skipped
+                            IOUtil.removeTextFromFile(getFile(), s);
+                        } else { // Add a new entry if the reminder is valid
+                            addEntry(impl);
+                        }
                     })
             );
+        }
     }
 
     protected abstract Type getType();
@@ -74,12 +77,14 @@ public abstract class TimerCommandImpl extends Command {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         final String[] targetId = new String[1];
         if (isReminder()) {
-            if (!e.getAuthor().hasPrivateChannel())
+            if (!e.getAuthor().hasPrivateChannel()) {
                 e.getAuthor().openPrivateChannel().queue(c -> targetId[0] = c.getId());
-            else
+            } else {
                 targetId[0] = e.getAuthor().getPrivateChannel().getId();
-        } else
+            }
+        } else {
             targetId[0] = e.getTextChannel().getId();
+        }
 
         String typeName = getType().name().toLowerCase();
         String typeSet = getType().pronoun + typeName;
@@ -93,7 +98,9 @@ public abstract class TimerCommandImpl extends Command {
                             + typeName + " set "
                             + "with the following message:\n"
                             + (timer.getMessage() == null ? DEFAULT_MESSAGE : timer.getMessage()));
-                } else chat.sendMessage(noTimers); // No timer has been set
+                } else { // No timer has been set
+                    chat.sendMessage(noTimers);
+                }
                 break;
 
             case 1:
@@ -101,15 +108,18 @@ public abstract class TimerCommandImpl extends Command {
                     if (hasSetTimer(e.getAuthor())) {
                         chat.sendMessage("Successfully deleted your " + typeName + "!");
                         removeEntry(getSetTimer(e.getAuthor()));
-                    } else
+                    } else {
                         chat.sendMessage(noTimers);
-                } else chat.sendUsageMessage();
+                    }
+                } else {
+                    chat.sendUsageMessage();
+                }
                 break;
 
             default:
-                if (!isReminder() && !e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE))
+                if (!isReminder() && !e.getMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                     chat.sendMessage("You need `[MESSAGE_MANAGE]` in order to create announcements for this channel!");
-                else if (!hasSetTimer(e.getAuthor())) {
+                } else if (!hasSetTimer(e.getAuthor())) {
                 /*
                  * timer [duration] [time unit] (timer text)
                  *        args[0]    args[1]     args[...]
@@ -128,7 +138,9 @@ public abstract class TimerCommandImpl extends Command {
                     if (unit == null) {
                         chat.sendMessage("**That's not a valid time unit!** (seconds, minutes, hours, days)");
                         return;
-                    } else chronoUnit = unit.chronoUnit;
+                    } else {
+                        chronoUnit = unit.chronoUnit;
+                    }
 
                     OffsetDateTime odt = OffsetDateTime.now().plus(duration, chronoUnit);
                     String authorId = e.getAuthor().getId();
@@ -154,8 +166,9 @@ public abstract class TimerCommandImpl extends Command {
                     chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());
                     addEntry(impl);
                     IOUtil.writeTextToFile(getFile(), getEntryLine(impl), true);
-                } else
+                } else {
                     chat.sendMessage("You already have " + typeSet + " set! Use " + getPrefix(e.getGuild()) + getName() + " to review it.");
+                }
                 break;
         }
     }
@@ -230,7 +243,10 @@ public abstract class TimerCommandImpl extends Command {
             MessageChannel channel = isReminder()
                     ? jda.getPrivateChannelById(impl.getTargetId())
                     : jda.getTextChannelById(impl.getTargetId());
-            if (channel != null) MessageUtil.sendMessage(msg, channel);
+            if (channel != null) {
+                MessageUtil.sendMessage(msg, channel);
+            }
+
             /* if (!impl.isRepeatable()) */
             removeEntry(impl);
             //else impl.updateOdt();
@@ -278,9 +294,11 @@ public abstract class TimerCommandImpl extends Command {
         }
 
         static Unit get(String measurement) {
-            for (Unit u : Unit.values())
-                if (Arrays.asList(u.measurements).contains(measurement))
+            for (Unit u : Unit.values()) {
+                if (Arrays.asList(u.measurements).contains(measurement)) {
                     return u;
+                }
+            }
             return null;
         }
     }

@@ -25,7 +25,7 @@ public class ServerManager {
     private final String guildId;
 
     public ServerManager(Guild guild) {
-        this.guildId = guild.getId();
+        guildId = guild.getId();
         JSONObject obj = DATABASE.containsKey(guildId) ? DATABASE.get(guildId) : new JSONObject();
         Arrays.stream(DataType.values())
                 .filter(data -> data != DataType.COMMANDS)
@@ -35,7 +35,7 @@ public class ServerManager {
 
     // Database Initializer
     public static void init() {
-        if (IOUtil.createFolder(DATA_FOLDER))
+        if (IOUtil.createFolder(DATA_FOLDER)) {
             IOUtil.readDataFileBlocking("Guild Data", () -> {
                 try {
                     Files.walk(Paths.get(DATA_FOLDER.getPath()))
@@ -49,6 +49,7 @@ public class ServerManager {
                     ex.printStackTrace();
                 }
             });
+        }
     }
 
     public static void loadFromFile(Path path, String guildId) {
@@ -57,12 +58,16 @@ public class ServerManager {
         // Add the prefix to our map
         String prefix = DATABASE.get(guildId).has(DataType.PREFIX.configEntry)
                 ? DATABASE.get(guildId).getString(DataType.PREFIX.configEntry) : null;
-        if (prefix != null) PREFIXES.put(guildId, prefix);
+        if (prefix != null) {
+            PREFIXES.put(guildId, prefix);
+        }
 
         // Add the custom commands to our map
         JSONArray array = DATABASE.get(guildId).has(DataType.COMMANDS.configEntry)
                 ? DATABASE.get(guildId).getJSONArray(DataType.COMMANDS.configEntry) : null;
-        if (array != null) CUSTOM_COMMANDS.put(guildId, array);
+        if (array != null) {
+            CUSTOM_COMMANDS.put(guildId, array);
+        }
     }
 
     public static boolean reload(Guild guild) {
@@ -166,8 +171,9 @@ public class ServerManager {
     // Custom Command Getters
     public Map<String, List<String>> getCommands() {
         Map<String, List<String>> cmds = new HashMap<>();
-        if (!CUSTOM_COMMANDS.containsKey(guildId))
+        if (!CUSTOM_COMMANDS.containsKey(guildId)) {
             return cmds;
+        }
 
         CUSTOM_COMMANDS.get(guildId).forEach(obj -> {
             String name = ((JSONObject) obj).getString("name");
@@ -201,14 +207,16 @@ public class ServerManager {
             JSONArray array = CUSTOM_COMMANDS.get(guildId);
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = array.getJSONObject(i);
-                if (obj.getString("name").equalsIgnoreCase(name))
+                if (obj.getString("name").equalsIgnoreCase(name)) {
                     array.remove(i);
+                }
             }
 
-            if (array.length() == 0)
+            if (array.length() == 0) {
                 CUSTOM_COMMANDS.remove(guildId);
-            else
+            } else {
                 CUSTOM_COMMANDS.put(guildId, array);
+            }
         }
         return this;
     }
@@ -220,14 +228,17 @@ public class ServerManager {
                 .filter(set -> set.getValue() != null)
                 .forEach(set -> obj.put(set.getKey().configEntry, set.getValue()));
 
-        if (CUSTOM_COMMANDS.containsKey(guildId))
+        if (CUSTOM_COMMANDS.containsKey(guildId)) {
             obj.put(DataType.COMMANDS.configEntry, CUSTOM_COMMANDS.get(guildId));
+        }
 
         File guildFile = new File(DATA_FOLDER.getAbsolutePath() + File.separator + guildId + ".json");
         if (obj.length() != 0) { // JSONObject isn't empty
             DATABASE.put(guildId, obj);
             IOUtil.writeJsonToFile(guildFile, obj, true);
-        } else IOUtil.deleteFile(guildFile); // Delete the empty file
+        } else { // Delete the empty file
+            IOUtil.deleteFile(guildFile);
+        }
     }
 
     private enum DataType {

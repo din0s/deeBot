@@ -47,11 +47,13 @@ public class RoleCommand extends RoleCommandImpl {
                                         if (sb.length() + r.length() > 2000 - "```".length()) {
                                             chat.sendMessage(sb.append("```").toString());
                                             sb.setLength(0);
-                                        } else
+                                        } else {
                                             sb.append(r).append("\n");
+                                        }
                                     });
-                            if (sb.length() > 0)
+                            if (sb.length() > 0) {
                                 chat.sendMessage(sb.append("```").toString());
+                            }
                         } else
                             chat.sendMessage("*The rolelist is empty!*");
                         break;
@@ -92,9 +94,15 @@ public class RoleCommand extends RoleCommandImpl {
                                         chat.sendMessage("The bot needs the `[ADMINISTRATOR]` permission in order to apply the --full flag.");
                                         role.delete().queue();
                                         return;
-                                    } else roleCreator.getPermissionField().setValue(ALL_PERMS);
-                                } else roleCreator.getPermissionField().setValue(0L);
-                            } else roleCreator.getNameField().setValue(inputArgs);
+                                    } else {
+                                        roleCreator.getPermissionField().setValue(ALL_PERMS);
+                                    }
+                                } else {
+                                    roleCreator.getPermissionField().setValue(0L);
+                                }
+                            } else {
+                                roleCreator.getNameField().setValue(inputArgs);
+                            }
                             roleCreator.update().queue();
                         });
                         break;
@@ -182,12 +190,16 @@ public class RoleCommand extends RoleCommandImpl {
                         String hexCode = args[1].startsWith("#") ? args[1].substring(1) : args[1];
                         try {
                             colorHex = Integer.parseInt(hexCode, 16);
-                            if (colorHex == 0) colorHex = 1;
+                            if (colorHex == 0) {
+                                colorHex = 1;
+                            }
                         } catch (NumberFormatException ex) {
                             if (!args[1].equalsIgnoreCase("reset")) {
                                 chat.sendMessage("__Invalid color!__\nPlease use this tool to get a valid HEX value: <http://color-hex.com>");
                                 return;
-                            } else colorHex = 0;
+                            } else {
+                                colorHex = 0;
+                            }
                         }
                         assert targetRole != null;
                         targetRole.getManager().setColor(new Color(colorHex)).queue();
@@ -361,8 +373,11 @@ public class RoleCommand extends RoleCommandImpl {
         Role targetRole = getTargetRole(mentionedRoles);
         assert targetRole != null;
         RoleManager rm = targetRole.getManager();
-        if (give) rm.givePermissions(perm).queue();
-        else rm.revokePermissions(perm).queue();
+        if (give) {
+            rm.givePermissions(perm).queue();
+        } else {
+            rm.revokePermissions(perm).queue();
+        }
         return false;
     }
 

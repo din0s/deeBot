@@ -45,7 +45,9 @@ public class BlacklistCommand extends GuildCommand {
                             .map(id -> e.getJDA().getTextChannelById(id).getAsMention())
                             .collect(Collectors.toList());
                     chat.sendMessage("Blacklisted channels: " + (blacklist.isEmpty() ? "None" : String.join(", ", blacklist)));
-                } else chat.sendUsageMessage();
+                } else {
+                    chat.sendUsageMessage();
+                }
                 break;
         }
     }

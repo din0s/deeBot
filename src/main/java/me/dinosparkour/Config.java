@@ -18,9 +18,9 @@ class Config {
         }
 
         JSONObject object = IOUtil.readJsonFromFile(configFile);
-        if (object.has("token"))
+        if (object.has("token")) {
             configObject = object;
-        else {
+        } else {
             create(); // If the token value is missing, regenerate the config file.
             System.err.println("The token value is missing in the config file! Regenerating..");
             System.exit(1);

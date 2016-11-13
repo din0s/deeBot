@@ -13,10 +13,9 @@ public class EchoCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        if (e.getMessage().getMentionedUsers().size() > 5)
-            chat.sendMessage("Please don't mention so many users! \uD83E\uDD10");
-        else
-            chat.sendMessage(ZWSP + String.join(" ", Arrays.asList(args)));
+        chat.sendMessage(e.getMessage().getMentionedUsers().size() > 5
+                ? "Please don't mention so many users! \uD83E\uDD10"
+                : ZWSP + String.join(" ", Arrays.asList(args)));
     }
 
     @Override

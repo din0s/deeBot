@@ -42,8 +42,9 @@ public class DiscordStatusCommand extends GlobalCommand {
             JSONObject json = (JSONObject) obj;
             String name = json.getString("name");
             report.append("**~ ").append(name).append("**");
-            if (!isOperational(name))
+            if (!isOperational(name)) {
                 appendImpact(report, json.getString("impact"), true);
+            }
             report.append("\n\n");
         });
 
@@ -57,10 +58,11 @@ public class DiscordStatusCommand extends GlobalCommand {
         });
 
         // LENGTH CHECK & SEND
-        if (report.length() > 2000)
+        if (report.length() > 2000) {
             report.delete(0, report.length())
                     .append("The detailed report is too long!")
                     .append("Please visit " + STATUS_WEBSITE);
+        }
         chat.sendMessage(report.toString());
     }
 
@@ -95,7 +97,9 @@ public class DiscordStatusCommand extends GlobalCommand {
 
     private void appendImpact(StringBuilder sb, String impact, boolean excl) {
         sb.append(" - `").append(capitalize(impact)).append(" Impact`");
-        if (excl) sb.append(EXCLAMATION);
+        if (excl) {
+            sb.append(EXCLAMATION);
+        }
     }
 
     private enum Component {

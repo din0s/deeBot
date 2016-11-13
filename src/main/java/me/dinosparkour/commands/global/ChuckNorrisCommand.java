@@ -13,10 +13,9 @@ public class ChuckNorrisCommand extends GlobalCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JSONObject obj = HttpRequestUtil.getData("http://api.icndb.com/jokes/random");
-        if (obj != null && obj.get("type").equals("success"))
-            chat.sendMessage(obj.getJSONObject("value").getString("joke"));
-        else // GET request returned error, use static joke.
-            chat.sendMessage("Chuck Norris had a car accident. We have yet to find out if the car survived after the crash..");
+        chat.sendMessage(obj != null && obj.get("type").equals("success")
+                ? obj.getJSONObject("value").getString("joke")
+                : "Chuck Norris had a car accident. We have yet to find out if the car survived after the crash..");
     }
 
     @Override

@@ -46,11 +46,15 @@ public class CustomCmdCommand extends GuildCommand {
                 if (isNotAuthorized(chat, e.getMember())) return;
                 String inputArgs = String.join(" ", Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
                 ServerManager sm = new ServerManager(e.getGuild());
-                if (inputArgs.isEmpty()) chat.sendUsageMessage();
+                if (inputArgs.isEmpty()) {
+                    chat.sendUsageMessage();
+                }
                 else if (sm.isValid(inputArgs)) {
                     sm.deleteCommand(inputArgs).update();
                     chat.sendMessage(getSuccessMessage("deleted", inputArgs));
-                } else chat.sendMessage("That's not a valid command name!");
+                } else {
+                    chat.sendMessage("That's not a valid command name!");
+                }
                 break;
 
             case "update":
@@ -63,9 +67,9 @@ public class CustomCmdCommand extends GuildCommand {
             case "resetall":
                 if (isNotAuthorized(chat, e.getMember())) return;
                 Set<String> cmds = new ServerManager(e.getGuild()).getCommands().keySet();
-                if (cmds.isEmpty())
+                if (cmds.isEmpty()) {
                     chat.sendMessage("This guild has no custom commands!");
-                else {
+                } else {
                     ServerManager manager = new ServerManager(e.getGuild());
                     cmds.forEach(manager::deleteCommand);
                     manager.update();
@@ -83,10 +87,11 @@ public class CustomCmdCommand extends GuildCommand {
                     reloadGuild(e.getGuild(), chat);
                 else { // Reload specific guild
                     Guild g = e.getJDA().getGuildById(args[1]);
-                    if (g == null)
+                    if (g == null) {
                         chat.sendMessage("That's not a valid Guild ID!");
-                    else
+                    } else {
                         reloadGuild(g, chat);
+                    }
                 }
                 break;
         }
@@ -199,15 +204,18 @@ public class CustomCmdCommand extends GuildCommand {
         JSONObject obj = new JSONObject();
         obj.put("name", name);
         obj.put("responses", new JSONArray(responses));
-        if (!createNew) sm.deleteCommand(name);
+        if (!createNew) {
+            sm.deleteCommand(name);
+        }
         sm.addCommand(obj).update();
         chat.sendMessage(getSuccessMessage((createNew ? "created" : "updated"), name));
     }
 
     private void reloadGuild(Guild g, MessageSender chat) {
-        if (ServerManager.reload(g))
+        if (ServerManager.reload(g)) {
             chat.sendMessage("Successfully reloaded the guild's data file!");
-        else
+        } else {
             chat.sendMessage("**Error:** No data file found for this guild!");
+        }
     }
 }

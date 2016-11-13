@@ -18,8 +18,9 @@ public class PurgeCommand extends GuildCommand {
         int input;
         try {
             input = Integer.parseInt(args[0]);
-            if (input > 100 || input <= 0)
+            if (input > 100 || input <= 0) {
                 throw new NumberFormatException();
+            }
         } catch (NumberFormatException ex) {
             chat.sendMessage("**That's not a valid amount!** [1-100]");
             return;
@@ -47,13 +48,15 @@ public class PurgeCommand extends GuildCommand {
         if (input == 100) {
             e.getMessage().deleteMessage().queue();
             amount = input;
-        } else
+        } else {
             amount = input + 1;
+        }
 
         Member fMember = member;
         e.getChannel().getHistory().retrievePast(amount).queue(history -> {
-            if (!history.isEmpty() && fMember != null)
+            if (!history.isEmpty() && fMember != null) {
                 history = history.stream().filter(msg -> msg.getAuthor().equals(fMember.getUser())).collect(Collectors.toList());
+            }
 
             if (history.isEmpty()) {
                 chat.sendMessage("*There are no messages to delete!*");
@@ -61,18 +64,21 @@ public class PurgeCommand extends GuildCommand {
             }
 
             Consumer<Void> consumer = null;
-            if (!isSilent(args)) consumer = success ->
-                    e.getTextChannel().getHistory().retrievePast(1).queue(h ->
-                            chat.sendMessage("Successfully deleted " + (fMember == null
-                                    ? (h.isEmpty() ? "all" : input) + " messages!"
-                                    : "**" + MessageUtil.stripFormatting(fMember.getUser().getName()) + "**'s messages from the past " + input + " lines!")
-                            )
-                    );
+            if (!isSilent(args)) {
+                consumer = success ->
+                        e.getTextChannel().getHistory().retrievePast(1).queue(h ->
+                                chat.sendMessage("Successfully deleted " + (fMember == null
+                                        ? (h.isEmpty() ? "all" : input) + " messages!"
+                                        : "**" + MessageUtil.stripFormatting(fMember.getUser().getName()) + "**'s messages from the past " + input + " lines!")
+                                )
+                        );
+            }
 
-            if (history.size() == 1)
+            if (history.size() == 1) {
                 history.get(0).deleteMessage().queue(consumer);
-            else if (!history.isEmpty())
+            } else if (!history.isEmpty()) {
                 e.getTextChannel().deleteMessages(history).queue(consumer);
+            }
         });
     }
 

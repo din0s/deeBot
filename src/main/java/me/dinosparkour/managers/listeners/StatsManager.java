@@ -52,9 +52,10 @@ public class StatsManager extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent e) {
-        if (e.getAuthor() != null && e.getAuthor().equals(e.getJDA().getSelfUser()))
+        if (e.getAuthor() != null && e.getAuthor().equals(e.getJDA().getSelfUser())) {
             sent++;
-        else
+        } else {
             read++;
+        }
     }
 }

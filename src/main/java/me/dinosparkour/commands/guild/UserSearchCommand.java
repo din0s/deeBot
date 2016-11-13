@@ -35,18 +35,22 @@ public class UserSearchCommand extends GuildCommand {
                     Member member = e.getGuild().getMember(u);
                     String nick = member == null ? null : member.getNickname();
                     String sample = includeNicks ? nick == null ? u.getName() : nick : u.getName();
-                    if (!isCaseSensitive) sample = sample.toLowerCase();
+                    if (!isCaseSensitive) {
+                        sample = sample.toLowerCase();
+                    }
+
                     return sample.contains(isCaseSensitive ? query : query.toLowerCase());
                 }).map(MessageUtil::userDiscrimSet)
                 .collect(Collectors.toList());
 
-        if (results.size() > 20)
+        if (results.size() > 20) {
             chat.sendMessage("Your query returned " + results.size() + " users! Please narrow down your search.");
-        else if (results.size() == 0)
+        } else if (results.size() == 0) {
             chat.sendMessage("Your query returned no results! (You searched for _" + MessageUtil.stripFormatting(query) + "_)");
-        else
+        } else {
             chat.sendMessage((isGlobal ? "Global " : "") + (includeNicks ? "Nicknamed " : "")
                     + "Users matching \"" + MessageUtil.stripFormatting(query) + "\":\n" + String.join("\n", results));
+        }
     }
 
     @Override

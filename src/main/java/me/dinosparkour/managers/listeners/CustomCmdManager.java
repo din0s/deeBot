@@ -40,13 +40,15 @@ public class CustomCmdManager extends ListenerAdapter {
             List<String> optionList = new ArrayList<>();
             for (String s : randomMatch.group(2).split(";")) {
                 s = s.trim();
-                if (!s.isEmpty())
+                if (!s.isEmpty()) {
                     optionList.add(s);
+                }
             }
 
             String option = !optionList.isEmpty() ? optionList.get(new Random().nextInt(optionList.size())) : null;
-            if (option != null)
+            if (option != null) {
                 message = message.replace(randomMatch.group(1), option);
+            }
         }
 
         Set<String> flags = MessageUtil.parseFlags(message, CustomCmdCommand.getFlagSet());
@@ -64,15 +66,17 @@ public class CustomCmdManager extends ListenerAdapter {
 
         MessageChannel c = e.getChannel();
         if (flags.contains("--private")) {
-            if (!e.getAuthor().hasPrivateChannel())
+            if (!e.getAuthor().hasPrivateChannel()) {
                 e.getAuthor().openPrivateChannel().queue(channel -> MessageUtil.sendMessage(msg, channel));
-            else
+            } else {
                 c = e.getAuthor().getPrivateChannel();
+            }
         }
 
         if (flags.contains("--delete") &&
-                e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE))
+                e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE)) {
             e.getMessage().deleteMessage().queue();
+        }
 
         MessageUtil.sendMessage(msg, c);
     }

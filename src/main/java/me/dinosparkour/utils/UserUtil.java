@@ -28,9 +28,12 @@ public class UserUtil {
         for (String s : args) {
             if (noMatch(s)) {
                 if (!unmatchedArgs.isEmpty()) {
-                    if (noMatch(unmatchedArgs + " " + s))
+                    if (noMatch(unmatchedArgs + " " + s)) {
                         unmatchedArgs += " " + s;
-                } else unmatchedArgs = s;
+                    }
+                } else {
+                    unmatchedArgs = s;
+                }
             }
         }
         return new ArrayList<>(results);
@@ -60,13 +63,15 @@ public class UserUtil {
         Matcher m = USER_DISCRIM_PATTERN.matcher(s);
         if (m.matches()) {
             User u = getUserWithDiscrim(m.group(1), m.group(2));
-            if (u != null)
+            if (u != null) {
                 results.add(u);
+            }
             else return true;
         } else {
             List<User> matchedUsers = getUsersWithNameOrId(s);
-            if (matchedUsers.isEmpty()) return true;
-            else results.addAll(matchedUsers);
+            if (!matchedUsers.isEmpty()) {
+                results.addAll(matchedUsers);
+            } else return true;
         }
         return false;
     }

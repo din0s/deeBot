@@ -55,17 +55,19 @@ public class HttpRequestUtil {
 
     public static JSONObject getData(String url, Map<String, String> params, String username, String password) {
         try {
-            for (Map.Entry<String, String> set : params.entrySet()) // Add params for each set
+            for (Map.Entry<String, String> set : params.entrySet()) { // Add params for each set
                 url = url.replace("{" + set.getKey() + "}", URLEncoder.encode(set.getValue(), "UTF-8"));
+            }
         } catch (UnsupportedEncodingException ignored) {
         }
 
         GetRequest req = Unirest.get(url); // Create a GET request
         if (!password.isEmpty()) {
-            if (username.isEmpty()) // No username - Set authorization headers
+            if (username.isEmpty()) { // No username - Set authorization headers
                 req.header("Authorization", password);
-            else // Use Basic HTTP Authentication instead
+            } else { // Use Basic HTTP Authentication instead
                 req.basicAuth(username, password);
+            }
         }
 
         JSONObject obj = null;
@@ -79,21 +81,21 @@ public class HttpRequestUtil {
     public static HttpResponse postData(String url, Map<String, String> headers, String body) {
         HttpRequestWithBody request = Unirest.post(url); // Create a POST request
 
-        if (!headers.isEmpty()) // If we have a map of headers, iterate and include in the request
+        if (!headers.isEmpty()) { // If we have a map of headers, iterate and include in the request
             headers.entrySet().forEach(set -> request.header(set.getKey(), set.getValue()));
+        }
 
         request.body(body);
-
         HttpResponse response = null;
         try {
             response = request.asString(); // Send the request
-            if (!success(response)) // If we do not receive 2XX, print the response
+            if (!success(response)) {// If we do not receive 2XX, print the response
                 System.out.printf("Request to %s returned %s %s:\n%s\n", url, response.getStatus(), response.getStatusText(), response.getBody());
-            else if (SimpleLog.LEVEL.getPriority() <= SimpleLog.Level.DEBUG.getPriority()) // If we are in debug mode, print the status
+            } else if (SimpleLog.LEVEL.getPriority() <= SimpleLog.Level.DEBUG.getPriority()) { // If we are in debug mode, print the status
                 System.out.printf("Request to %s returned %s %s\n", url, response.getStatus(), response.getStatusText());
+            }
         } catch (UnirestException ignored) {
         }
-
         return response;
     }
 

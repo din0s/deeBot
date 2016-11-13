@@ -58,14 +58,17 @@ public class EvalCommand extends AdminCommand {
         }
 
         String outputS;
-        if (out == null)
+        if (out == null) {
             outputS = "`Task executed without errors.`";
-        else
+        } else {
             outputS = "Output: ```\n" + out.toString().replace("`", "\\`") + "\n```";
+        }
 
-        if (e.getJDA().getStatus() != JDA.Status.SHUTDOWN)
+        if (e.getJDA().getStatus() != JDA.Status.SHUTDOWN) {
             chat.sendMessage(outputS);
-        else System.exit(0);
+        } else {
+            System.exit(0);
+        }
     }
 
     @Override

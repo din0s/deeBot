@@ -58,7 +58,10 @@ public class SteamStatusCommand extends GlobalCommand {
 
     private String getStatus(App app, JSONObject statusObj) {
         JSONObject obj = statusObj.getJSONObject(app.getKey());
-        if (!app.isNotGame()) obj = obj.getJSONObject(app.getId());
+        if (!app.isNotGame()) {
+            obj = obj.getJSONObject(app.getId());
+        }
+
         boolean online = obj.getInt("online") == 1;
         boolean hasError = obj.has("error") && !obj.get("error").equals("No Error");
         boolean hasTime = !hasError && obj.has("time");
