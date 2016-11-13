@@ -21,6 +21,7 @@ public class HttpRequestUtil {
 
     static {
         JSON_MAP.put("Content-Type", "application/json");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.client.protocol.ResponseProcessCookies", "fatal");
     }
 
     public static InputStream getInputStream(String url) {
