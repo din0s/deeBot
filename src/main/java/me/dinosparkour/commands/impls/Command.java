@@ -124,7 +124,9 @@ public abstract class Command extends ListenerAdapter {
                 try {
                     executeCommand(args, e, chat);
                 } catch (Exception ex) {
-                    String msg = "Message:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
+                    ex.printStackTrace();
+                    String msg = "User: **" + MessageUtil.userDiscrimSet(e.getAuthor())
+                            + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
                             + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
                     if (msg.length() <= 2000) {
                         chat.sendMessage(msg, e.getJDA().getUserById(Info.AUTHOR_ID).getPrivateChannel());
