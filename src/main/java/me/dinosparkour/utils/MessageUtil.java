@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class MessageUtil {
 
     public static boolean canNotTalk(TextChannel channel) {
+        if (channel == null) return true;
         Member member = channel.getGuild().getSelfMember();
         return !member.hasPermission(channel, Permission.MESSAGE_READ)
                 || !member.hasPermission(channel, Permission.MESSAGE_WRITE);
