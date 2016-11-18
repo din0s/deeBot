@@ -15,7 +15,7 @@ public class YoMamaCommand extends GlobalCommand {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JSONObject obj = HttpRequestUtil.getData("http://api.yomomma.info/");
         chat.sendMessageWithMentions(args, (obj != null && obj.has("joke")
-                ? obj.getString("joke")
+                ? obj.get("joke").toString()
                 : "Yo mama so fat her blood type is Nutella."));
     }
 
