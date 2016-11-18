@@ -4,7 +4,6 @@ import me.dinosparkour.commands.CommandRegistry;
 import me.dinosparkour.commands.impls.Command;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -16,11 +15,14 @@ import java.util.stream.Collectors;
 
 public class HelpCommand extends GlobalCommand {
 
-    private final List<String> helpList = new ArrayList<>();
+    private static final List<String> helpList = new ArrayList<>();
 
-    @Override
-    public void onReady(ReadyEvent e) {
-        helpList.addAll(CommandRegistry.getPublicCommands().stream().map(this::getHelpMessage).collect(Collectors.toList()));
+    public static void loadMessage() {
+        helpList.addAll(CommandRegistry.getPublicCommands().stream().map(HelpCommand::getHelpMessage).collect(Collectors.toList()));
+    }
+
+    private static String getHelpMessage(Command cmd) {
+        return "- %PREFIX%" + cmd.getUsage() + ":\n+ " + cmd.getDescription().replace("\n", "\n+ ") + "\n\n";
     }
 
     @Override
@@ -98,9 +100,5 @@ public class HelpCommand extends GlobalCommand {
     @Override
     public int getArgMax() {
         return 1;
-    }
-
-    private String getHelpMessage(Command cmd) {
-        return "- %PREFIX%" + cmd.getUsage() + ":\n+ " + cmd.getDescription().replace("\n", "\n+ ") + "\n\n";
     }
 }

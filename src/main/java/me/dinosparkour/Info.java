@@ -18,6 +18,7 @@ public class Info {
     public static final String CARBON_KEY = CONFIG.getValue("carbon"); // https://www.carbonitex.net/discord/bots
     public static final String GOOGLE_CX = CONFIG.getValue("cx");      // https://cse.google.com
     public static final String GOOGLE_KEY = CONFIG.getValue("google"); // https://developers.google.com/
+    static final int SHARD_COUNT = CONFIG.hasValue("shards") ? Integer.parseInt(CONFIG.getValue("shards")) : 1;
     static final String TOKEN = CONFIG.getValue("token");
 
     public static String getUptime() {

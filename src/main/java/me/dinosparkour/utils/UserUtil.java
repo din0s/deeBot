@@ -1,5 +1,6 @@
 package me.dinosparkour.utils;
 
+import me.dinosparkour.managers.listeners.ShardManager;
 import net.dv8tion.jda.core.entities.*;
 
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class UserUtil {
     }
 
     public List<User> getMentionedUsers(Message msg, String[] args) {
-        return getMentionedUsers(msg, args, msg.getJDA().getUsers(), true);
+        return getMentionedUsers(msg, args, ShardManager.getGlobalUsers(), true);
     }
 
     public List<Member> getMentionedMembers(Message msg, String[] args, List<Member> baseCollection, boolean allowNicknames) {

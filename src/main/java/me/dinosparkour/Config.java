@@ -28,7 +28,11 @@ class Config {
     }
 
     String getValue(String key) {
-        return configObject == null ? null : configObject.getString(key);
+        return configObject == null ? null : configObject.get(key).toString();
+    }
+
+    boolean hasValue(String key) {
+        return configObject != null && configObject.has(key);
     }
 
     private void create() {
@@ -37,6 +41,7 @@ class Config {
                 .put("carbon", "")
                 .put("cx", "")
                 .put("google", "")
+                .put("shards", "")
                 .put("token", ""));
     }
 }

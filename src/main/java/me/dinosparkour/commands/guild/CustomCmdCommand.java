@@ -4,6 +4,7 @@ import me.dinosparkour.Info;
 import me.dinosparkour.commands.CommandRegistry;
 import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.managers.ServerManager;
+import me.dinosparkour.managers.listeners.ShardManager;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -86,7 +87,7 @@ public class CustomCmdCommand extends GuildCommand {
                 } else if (args[1].equalsIgnoreCase("this")) // Reload current guild
                     reloadGuild(e.getGuild(), chat);
                 else { // Reload specific guild
-                    Guild g = e.getJDA().getGuildById(args[1]);
+                    Guild g = ShardManager.getGlobalGuildById(args[1]);
                     if (g == null) {
                         chat.sendMessage("That's not a valid Guild ID!");
                     } else {

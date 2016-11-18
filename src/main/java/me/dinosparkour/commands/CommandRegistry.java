@@ -24,7 +24,9 @@ public class CommandRegistry {
     }
 
     public Command addCommand(Command cmd) {
-        commands.put(cmd.getName(), cmd);
+        if (!commands.containsKey(cmd.getName())) {
+            commands.put(cmd.getName(), cmd);
+        }
         return cmd;
     }
 }

@@ -1,6 +1,7 @@
 package me.dinosparkour.commands.guild;
 
 import me.dinosparkour.commands.impls.GuildCommand;
+import me.dinosparkour.managers.listeners.ShardManager;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
@@ -27,7 +28,7 @@ public class UserSearchCommand extends GuildCommand {
         }
 
         List<User> baseCollection = isGlobal
-                ? e.getJDA().getUsers()
+                ? ShardManager.getGlobalUsers()
                 : e.getGuild().getMembers().stream().map(Member::getUser).collect(Collectors.toList());
         String query = MessageUtil.stripFlags(allArgs, flagSet);
         List<String> results = baseCollection.stream()

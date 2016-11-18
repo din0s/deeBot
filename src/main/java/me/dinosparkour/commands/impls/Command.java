@@ -8,6 +8,7 @@ import me.dinosparkour.commands.global.HastebinCommand;
 import me.dinosparkour.commands.guild.JDAVersionCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
+import me.dinosparkour.managers.listeners.ShardManager;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.core.Permission;
@@ -133,7 +134,10 @@ public abstract class Command extends ListenerAdapter {
                             + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
                             + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
                     if (msg.length() <= 2000) {
-                        chat.sendMessage(msg, e.getJDA().getUserById(Info.AUTHOR_ID).getPrivateChannel());
+                        User author = ShardManager.getGlobalUserById(Info.AUTHOR_ID);
+                        if (author != null) {
+                            chat.sendMessage(msg, author.getPrivateChannel());
+                        }
                     }
                 }
             }

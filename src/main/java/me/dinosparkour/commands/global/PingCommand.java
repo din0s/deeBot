@@ -3,6 +3,7 @@ package me.dinosparkour.commands.global;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,8 +11,10 @@ public class PingCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        long start = System.currentTimeMillis();
-        chat.sendMessage("Pinging..", m -> m.editMessage("Ping: **" + (System.currentTimeMillis() - start) / 2 + "ms**").queue());
+        chat.sendMessage("Pinging..", m -> {
+            long diff = e.getMessage().getCreationTime().until(m.getCreationTime(), ChronoUnit.MILLIS);
+            m.editMessage("Ping: **" + (diff / 2) + "ms**").queue();
+        });
     }
 
     @Override

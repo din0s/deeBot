@@ -1,14 +1,12 @@
 package me.dinosparkour.commands.impls;
 
 import me.dinosparkour.managers.ServerManager;
+import me.dinosparkour.managers.listeners.ShardManager;
 import me.dinosparkour.utils.IOUtil;
 import me.dinosparkour.utils.MessageUtil;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
@@ -30,7 +28,6 @@ public abstract class TimerCommandImpl extends Command {
     private final Map<String, ScheduledFuture> scheduledAnnouncements = new HashMap<>(); // Map<AuthorId, Runnable>
     private final Map<String, ScheduledFuture> scheduledReminders = new HashMap<>();     // Map<AuthorId, Runnable>
     private final String noTimers = "You have no " + getType().name().toLowerCase() + "s set!";
-    private JDA jda;
 
     public TimerCommandImpl() {
         if (IOUtil.createFile(getFile())) {
@@ -58,20 +55,6 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     protected abstract Type getType();
-
-    private void init(JDA jda) {
-        this.jda = jda;
-    }
-
-    @Override
-    public void onReady(ReadyEvent e) {
-        init(e.getJDA());
-    }
-
-    @Override
-    public void onReconnect(ReconnectedEvent e) {
-        init(e.getJDA());
-    }
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
@@ -241,10 +224,10 @@ public abstract class TimerCommandImpl extends Command {
         return () -> {
             String msg = impl.getMessage().isEmpty() ? DEFAULT_MESSAGE : impl.getMessage().replace("\\n", "\n");
             MessageChannel channel = isReminder()
-                    ? jda.getPrivateChannelById(impl.getTargetId())
-                    : jda.getTextChannelById(impl.getTargetId());
+                    ? ShardManager.getGlobalPrivateChannelById(impl.getTargetId())
+                    : ShardManager.getGlobalTextChannelById(impl.getTargetId());
             if (channel != null) {
-                MessageUtil.sendMessage(msg, channel);
+                MessageUtil.sendMessage(msg, channel, null, t -> { /* Do nothing */ });
             }
 
             /* if (!impl.isRepeatable()) */

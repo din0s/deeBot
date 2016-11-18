@@ -1,6 +1,7 @@
 package me.dinosparkour.commands.admin;
 
 import me.dinosparkour.commands.impls.AdminCommand;
+import me.dinosparkour.managers.listeners.ShardManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -37,6 +38,7 @@ public class EvalCommand extends AdminCommand {
         engine.put("api", e.getJDA());
         engine.put("jda", e.getJDA());
         engine.put("chat", chat);
+        engine.put("instances", ShardManager.getInstances());
         engine.put("channel", e.getChannel());
         engine.put("author", e.getAuthor());
         engine.put("member", e.getMember());

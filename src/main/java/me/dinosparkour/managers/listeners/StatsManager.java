@@ -27,7 +27,6 @@ public class StatsManager extends ListenerAdapter {
 
     @Override
     public void onGuildJoin(GuildJoinEvent e) {
-        String serverCount = String.valueOf(e.getJDA().getGuilds().size());
         String abalKey = Info.ABAL_KEY;
         String carbonKey = Info.CARBON_KEY;
 
@@ -36,14 +35,16 @@ public class StatsManager extends ListenerAdapter {
             headers.put("Authorization", abalKey);
 
             JSONObject data = new JSONObject()
-                    .put("server_count", serverCount);
+                    .put("shard_id", e.getJDA().getShardInfo().getShardId())
+                    .put("shard_count", e.getJDA().getShardInfo().getShardTotal())
+                    .put("server_count", e.getJDA().getGuilds().size());
 
             HttpRequestUtil.postData(DISCORD_BOTS, headers, data);
         }
 
         if (!carbonKey.isEmpty()) {
             JSONObject data = new JSONObject()
-                    .put("servercount", serverCount)
+                    .put("servercount", ShardManager.getInstances().stream().flatMap(jda -> jda.getGuilds().stream()).count())
                     .put("key", carbonKey);
 
             HttpRequestUtil.postData(CARBONITEX, data);
