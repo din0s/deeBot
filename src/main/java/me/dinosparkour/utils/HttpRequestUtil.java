@@ -6,6 +6,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -21,7 +25,9 @@ public class HttpRequestUtil {
 
     static {
         JSON_MAP.put("Content-Type", "application/json");
-        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.client.protocol.ResponseProcessCookies", "fatal");
+        RequestConfig globalConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+        HttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(globalConfig).build();
+        Unirest.setHttpClient(httpclient);
     }
 
     public static InputStream getInputStream(String url) {
