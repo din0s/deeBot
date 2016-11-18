@@ -10,7 +10,7 @@ public class InviteCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        chat.sendMessage(e.getAuthor().getAsMention() + "\nIf you want to invite me to your guild, click on this link: <http://invite.deebot.xyz>"
+        chat.sendMessage(e.getAuthor().getAsMention() + ":\nIf you want to invite me to your guild, click on this link: <http://invite.deebot.xyz>"
                 + "\n\nIn case something goes wrong, feel free to join my support server and ask fror help!\nhttps://discord.gg/0wEZsVCXid2URhDY");
     }
 
