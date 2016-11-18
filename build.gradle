@@ -1,0 +1,18 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'application'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'commons-io:commons-io:2.5'
+    compile 'net.dv8tion:JDA:3.0.BETA_90'
+}
+
+//noinspection GroovyUnusedAssignment
+mainClassName = 'me.dinosparkour.Bot'
+compileJava.options.encoding = 'UTF-8'
+shadowJar.archiveName = 'deeBot.jar'

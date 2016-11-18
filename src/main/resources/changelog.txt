@@ -1,5 +1,6 @@
 ```diff
-- [v 2.3.1]
-+ Lots and lots of internal fixes for issues caused by the rewrite.
-+ Preparing for Christmas...
+- [v 2.3.2]
++ Sharding support! [ BREAKING CHANGE ]
++ Internal refactoring and fine tuning
++ Concurrency and null pointer fixes
 ```
