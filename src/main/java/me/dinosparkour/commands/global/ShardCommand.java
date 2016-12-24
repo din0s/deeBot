@@ -10,11 +10,15 @@ public class ShardCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        chat.sendMessage("Info about __**`Shard #" + e.getJDA().getShardInfo().getShardId() + "`**__:\n"
-                + "**› " + e.getJDA().getGuilds().size() + "** guilds\n"
-                + "**› " + e.getJDA().getTextChannels().size() + "** text channels\n"
-                + "**› " + e.getJDA().getVoiceChannels().size() + "** voice channels\n"
-                + "**› " + e.getJDA().getUsers().size() + "** unique users");
+        if (e.getJDA().getShardInfo() == null) { // Not sharding
+            chat.sendMessage("This bot isn't running on separate shards!");
+        } else {
+            chat.sendMessage("Info about __**`Shard #" + e.getJDA().getShardInfo().getShardId() + "`**__:\n"
+                    + "**› " + e.getJDA().getGuilds().size() + "** guilds\n"
+                    + "**› " + e.getJDA().getTextChannels().size() + "** text channels\n"
+                    + "**› " + e.getJDA().getVoiceChannels().size() + "** voice channels\n"
+                    + "**› " + e.getJDA().getUsers().size() + "** unique users");
+        }
     }
 
     @Override
