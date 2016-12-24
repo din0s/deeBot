@@ -2,6 +2,8 @@ package me.dinosparkour.commands.admin;
 
 import me.dinosparkour.Info;
 import me.dinosparkour.commands.impls.AdminCommand;
+import me.dinosparkour.managers.listeners.ShardManager;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Collections;
@@ -12,7 +14,7 @@ public class ShutdownCommand extends AdminCommand {
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         if (args[0].equalsIgnoreCase(Info.VERSION)) {
-            e.getJDA().shutdown();
+            ShardManager.getInstances().forEach(JDA::shutdown);
             System.exit(0);
             // Goodbye!
         }
