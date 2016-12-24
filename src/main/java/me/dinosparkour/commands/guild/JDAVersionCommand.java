@@ -30,16 +30,9 @@ public class JDAVersionCommand extends GuildCommand {
 
             e.getChannel().sendTyping().queue();
             StringBuilder sb = new StringBuilder();
-
             Map<String, String> params = new HashMap<>(1);
             params.put("package", "JDA");
             sendRequest(sb, params);
-
-            params.replace("package", "JDA-Player");
-            sendRequest(sb, params);
-
-            // No further updates to the Legacy build
-            sb.append("__**JDA Legacy**__\nLatest Build: **2.3.0_379**\nRelease Date: `12/11/2016 00:02:58 UTC`");
             chat.sendMessage(sb.toString());
         }
     }
