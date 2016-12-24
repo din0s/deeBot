@@ -8,7 +8,6 @@ import me.dinosparkour.commands.global.HastebinCommand;
 import me.dinosparkour.commands.guild.JDAVersionCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
-import me.dinosparkour.managers.listeners.ShardManager;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.core.Permission;
@@ -134,10 +133,10 @@ public abstract class Command extends ListenerAdapter {
                             + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
                             + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
                     if (msg.length() <= 2000) {
-                        User author = ShardManager.getGlobalUserById(Info.AUTHOR_ID);
-                        if (author != null) {
-                            chat.sendMessage(msg, author.getPrivateChannel());
-                        }
+                        User author = e.getJDA().getUserById(Info.AUTHOR_ID);
+                        chat.sendMessage(msg, author.hasPrivateChannel()
+                                ? author.getPrivateChannel()
+                                : author.openPrivateChannel().complete());
                     }
                 }
             }
@@ -170,7 +169,7 @@ public abstract class Command extends ListenerAdapter {
     private boolean permissionCheck(MessageReceivedEvent e, User u) {
         return e.isFromType(ChannelType.PRIVATE) // Private Commands have no permissions
                 || requiredPermissions() == null // No permissions are required to execute the command
-                || requiredPermissions().stream().noneMatch(p -> !e.getGuild().getMember(u).hasPermission(e.getTextChannel(), p)) // The user has all permissions needed
+                || requiredPermissions().stream().allMatch(p -> e.getGuild().getMember(u).hasPermission(e.getTextChannel(), p)) // The user has all permissions needed
                 || u.getId().equals(Info.AUTHOR_ID); // The user is the bot's author
     }
 
