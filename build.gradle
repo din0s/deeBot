@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.3'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'application'
 }
 
@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     compile 'commons-io:commons-io:2.5'
-    compile 'net.dv8tion:JDA:3.0.BETA_90'
+    compile 'net.dv8tion:JDA:3.0.BETA2_112'
 }
 
 //noinspection GroovyUnusedAssignment

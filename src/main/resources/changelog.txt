@@ -1,6 +1,4 @@
 ```diff
-- [v 2.3.2]
-+ Sharding support! [ BREAKING CHANGE ]
-+ Internal refactoring and fine tuning
-+ Concurrency and null pointer fixes
+- [v 2.3.3]
++ Internal fixes.
 ```
