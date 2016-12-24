@@ -52,7 +52,7 @@ public class MemeCommand extends GlobalCommand {
 
             e.getChannel().sendTyping().queue();
             e.getChannel().sendFile(HttpRequestUtil.getInputStream(requestUrl), "PNG",
-                    new MessageBuilder().appendString("Here's your meme:").build()).queue();
+                    new MessageBuilder().append("Here's your meme:").build()).queue();
 
         } else chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
     }
