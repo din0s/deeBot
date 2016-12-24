@@ -44,7 +44,7 @@ public class StatsManager extends ListenerAdapter {
 
         if (!carbonKey.isEmpty()) {
             JSONObject data = new JSONObject()
-                    .put("servercount", ShardManager.getInstances().stream().flatMap(jda -> jda.getGuilds().stream()).count())
+                    .put("servercount", ShardManager.getInstances().stream().mapToLong(jda -> jda.getGuilds().size()).sum())
                     .put("key", carbonKey);
 
             HttpRequestUtil.postData(CARBONITEX, data);

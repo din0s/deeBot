@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 public class CustomCmdManager extends ListenerAdapter {
 
-    private static final Pattern RANDOM = Pattern.compile(".*(\\$random\\{(.*)\\}).*");
+    private static final Pattern RANDOM = Pattern.compile(".*(\\$random\\{(.*)}).*");
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent e) {

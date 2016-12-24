@@ -102,7 +102,7 @@ public class ShardManager extends ListenerAdapter {
             new StatsManager()
     };
 
-    private static Set<JDA> instances = new HashSet<>();
+    private static final Set<JDA> instances = new HashSet<>();
 
     public static Collection<JDA> getInstances() {
         return instances;
@@ -123,6 +123,7 @@ public class ShardManager extends ListenerAdapter {
                 .findAny().orElse(null);
     }
 
+    /*
     public static JDA getInstanceWithUser(String id) {
         return getInstances().stream().filter(jda -> jda.getUserById(id) != null)
                 .findAny().orElse(null);
@@ -133,6 +134,7 @@ public class ShardManager extends ListenerAdapter {
         if (instance == null) return null;
         return instance.getUserById(id);
     }
+    */
 
     public static Guild getGlobalGuildById(String id) {
         JDA instance = getInstanceWithGuild(id);

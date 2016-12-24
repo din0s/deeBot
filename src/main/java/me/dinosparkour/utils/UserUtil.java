@@ -66,8 +66,7 @@ public class UserUtil {
             User u = getUserWithDiscrim(m.group(1), m.group(2));
             if (u != null) {
                 results.add(u);
-            }
-            else return true;
+            } else return true;
         } else {
             List<User> matchedUsers = getUsersWithNameOrId(s);
             if (!matchedUsers.isEmpty()) {

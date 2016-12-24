@@ -49,8 +49,7 @@ public class CustomCmdCommand extends GuildCommand {
                 ServerManager sm = new ServerManager(e.getGuild());
                 if (inputArgs.isEmpty()) {
                     chat.sendUsageMessage();
-                }
-                else if (sm.isValid(inputArgs)) {
+                } else if (sm.isValid(inputArgs)) {
                     sm.deleteCommand(inputArgs).update();
                     chat.sendMessage(getSuccessMessage("deleted", inputArgs));
                 } else {

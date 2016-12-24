@@ -13,9 +13,9 @@ public class StatsCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        long globalGuilds = ShardManager.getInstances().stream().flatMap(jda -> jda.getGuilds().stream()).count();
-        long globalTextChannels = ShardManager.getInstances().stream().flatMap(jda -> jda.getTextChannels().stream()).count();
-        long globalVoiceChannels = ShardManager.getInstances().stream().flatMap(jda -> jda.getVoiceChannels().stream()).count();
+        long globalGuilds = ShardManager.getInstances().stream().mapToLong(jda -> jda.getGuilds().size()).sum();
+        long globalTextChannels = ShardManager.getInstances().stream().mapToLong(jda -> jda.getTextChannels().size()).sum();
+        long globalVoiceChannels = ShardManager.getInstances().stream().mapToLong(jda -> jda.getVoiceChannels().size()).sum();
         long globalResponses = ShardManager.getInstances().stream().mapToLong(JDA::getResponseTotal).sum();
         int globalUsers = ShardManager.getGlobalUsers().size();
 
