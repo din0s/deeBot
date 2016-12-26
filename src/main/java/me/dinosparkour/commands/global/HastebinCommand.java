@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class HastebinCommand extends GlobalCommand {
 
-    private static final String HASTEBIN_URL = "http://hastebin.com/documents";
+    private static final String HASTEBIN_URL = "https://hastebin.com/documents";
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
@@ -26,7 +26,7 @@ public class HastebinCommand extends GlobalCommand {
         }
 
         String key = new JSONObject(HttpRequestUtil.postData(HASTEBIN_URL, input).getBody().toString()).getString("key");
-        chat.sendMessage(e.getAuthor().getAsMention() + ": http://hastebin.com/" + key + "." + flag, msg -> {
+        chat.sendMessage(e.getAuthor().getAsMention() + ": https://hastebin.com/" + key + "." + flag, msg -> {
             if (e.isFromType(ChannelType.TEXT)
                     && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)) {
                 e.getMessage().deleteMessage().queue();
