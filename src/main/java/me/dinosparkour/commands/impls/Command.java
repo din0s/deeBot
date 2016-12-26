@@ -133,10 +133,7 @@ public abstract class Command extends ListenerAdapter {
                             + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
                             + "*\n\nStackTrace:```java\n" + ExceptionUtils.getStackTrace(ex) + "```";
                     if (msg.length() <= 2000) {
-                        User author = e.getJDA().getUserById(Info.AUTHOR_ID);
-                        chat.sendMessage(msg, author.hasPrivateChannel()
-                                ? author.getPrivateChannel()
-                                : author.openPrivateChannel().complete());
+                        chat.sendPrivateMessageToUser(msg, e.getJDA().getUserById(Info.AUTHOR_ID));
                     }
                 }
             }
@@ -232,14 +229,13 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
-            Consumer<Message> success = s -> sendMessage("✅ Check your DMs!", fallbackChannel);
-            Consumer<Throwable> failure = f -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel);
+            event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel,
+                    s -> sendMessage("✅ Check your DMs!", fallbackChannel),
+                    f -> sendMessage("Please allow the bot to be able to send you Private Messages.", fallbackChannel)));
+        }
 
-            if (!event.getAuthor().hasPrivateChannel()) {
-                event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel, success, failure));
-            } else {
-                sendMessage(content, event.getAuthor().getPrivateChannel(), success, failure);
-            }
+        public void sendPrivateMessageToUser(String content, User user) {
+            user.openPrivateChannel().queue(c -> sendMessage(content, c));
         }
     }
 }

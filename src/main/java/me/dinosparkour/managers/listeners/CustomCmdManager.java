@@ -66,18 +66,14 @@ public class CustomCmdManager extends ListenerAdapter {
 
         MessageChannel c = e.getChannel();
         if (flags.contains("--private")) {
-            if (!e.getAuthor().hasPrivateChannel()) {
-                e.getAuthor().openPrivateChannel().queue(channel -> MessageUtil.sendMessage(msg, channel));
-            } else {
-                c = e.getAuthor().getPrivateChannel();
-            }
+            e.getAuthor().openPrivateChannel().queue(channel -> MessageUtil.sendMessage(msg, channel));
+        } else {
+            MessageUtil.sendMessage(msg, c);
         }
 
         if (flags.contains("--delete") &&
                 e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE)) {
             e.getMessage().deleteMessage().queue();
         }
-
-        MessageUtil.sendMessage(msg, c);
     }
 }
