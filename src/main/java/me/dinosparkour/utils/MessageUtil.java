@@ -1,5 +1,6 @@
 package me.dinosparkour.utils;
 
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
@@ -23,9 +24,18 @@ public class MessageUtil {
                 || !member.hasPermission(channel, Permission.MESSAGE_WRITE);
     }
 
-    public static void sendMessage(String message, MessageChannel channel, Consumer<Message> success, Consumer<Throwable> failure) {
+    public static void sendMessage(Message message, MessageChannel channel, Consumer<Message> success, Consumer<Throwable> failure) {
         if (channel instanceof TextChannel && canNotTalk((TextChannel) channel)) return;
-        channel.sendMessage(MessageUtil.filter(message)).queue(success, failure);
+        channel.sendMessage(message).queue(success, failure);
+    }
+
+
+    public static void sendMessage(MessageEmbed embed, MessageChannel channel) {
+        sendMessage(new MessageBuilder().setEmbed(embed).build(), channel, null, null);
+    }
+
+    public static void sendMessage(String message, MessageChannel channel, Consumer<Message> success, Consumer<Throwable> failure) {
+        sendMessage(new MessageBuilder().append(filter(message)).build(), channel, success, failure);
     }
 
     public static void sendMessage(String message, MessageChannel channel) {

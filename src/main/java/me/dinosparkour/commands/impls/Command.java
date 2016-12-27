@@ -228,6 +228,16 @@ public abstract class Command extends ListenerAdapter {
             }
         }
 
+        /*
+        void sendEmbed(String title, String description) {
+            if (event.isFromType(ChannelType.TEXT) && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
+                MessageUtil.sendMessage(new EmbedBuilder().setTitle(title).setDescription(description).build(), event.getChannel());
+            } else {
+                sendMessage("Please give the bot permissions to `EMBED LINKS`.");
+            }
+        }
+        */
+
         public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
             event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel,
                     s -> sendMessage("✅ Check your DMs!", fallbackChannel),
