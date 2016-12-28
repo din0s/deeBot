@@ -48,6 +48,12 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
                                     + "To fix this issue, drag the bot's role to the top of the role list.");
                             return;
                         }
+                        if (role.isManaged()) {
+                            chat.sendMessage("You cannot "
+                                    + getTask().perfect.substring(0, getTask().perfect.length() - 1)
+                                    + " a managed role " + getTask().preposition + " a user!");
+                            return;
+                        }
                         if (isPlus()) {
                             if (member.getRoles().contains(role)) {
                                 chat.sendMessage("That user already has the role specified!");

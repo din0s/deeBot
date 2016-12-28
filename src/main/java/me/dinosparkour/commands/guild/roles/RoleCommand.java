@@ -335,6 +335,9 @@ public class RoleCommand extends RoleCommandImpl {
             chat.sendMessage("The bot's role is lower in hierarchy than the specified role!"
                     + "\nPlease move it to the top of the list to fix this issue.");
             return true;
+        } else if (targetRole.isManaged()) {
+            chat.sendMessage("You cannot interact with a managed role!");
+            return true;
         } else return false;
     }
 
