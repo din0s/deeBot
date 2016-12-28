@@ -17,7 +17,7 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), args, e.getGuild().getMembers(), false);
+        List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), Arrays.copyOfRange(args, 0, Math.min(1, args.length)), e.getGuild().getMembers(), false);
         switch (memberList.size()) {
             case 0:
                 chat.sendMessage(getNotEnoughArguments("user"));
