@@ -32,6 +32,7 @@ public class BanCommand extends GuildCommand {
 
                 if (id.length() < 17 || id.length() > 18 || !NumberUtils.isDigits(id)) {
                     chat.sendMessage("**That's not a valid user!**");
+                    return;
                 }
 
                 if (invalidDays(chat, days)) return;
