@@ -17,10 +17,11 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), Arrays.copyOfRange(args, 0, Math.min(1, args.length)), e.getGuild().getMembers(), false);
+        String[] firstArg = Arrays.copyOfRange(args, 0, 1);
+        List<Member> memberList = new UserUtil().getMentionedMembers(e.getMessage(), firstArg, e.getGuild().getMembers(), false);
         switch (memberList.size()) {
             case 0:
-                chat.sendMessage(getNotEnoughArguments("user"));
+                chat.sendMessage(getNotEnoughArguments("user", firstArg[0]));
                 break;
 
             case 1:
@@ -34,7 +35,7 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
                 List<Role> roleList = new RoleUtil().getMentionedRoles(e.getMessage(), stripUser);
                 switch (roleList.size()) {
                     case 0:
-                        chat.sendMessage(getNotEnoughArguments("role"));
+                        chat.sendMessage(getNotEnoughArguments("role", stripUser));
                         break;
 
                     case 1:
@@ -105,8 +106,8 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
         return 2;
     }
 
-    private String getNotEnoughArguments(String type) {
-        return "No " + type + "s were found that meet the criteria!";
+    private String getNotEnoughArguments(String type, String query) {
+        return "No " + type + "s were found that match \"" + MessageUtil.stripFormatting(query) + "\"";
     }
 
     private String getTooManyArguments(String type) {
