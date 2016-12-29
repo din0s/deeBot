@@ -1,8 +1,5 @@
 ```diff
-- [v 2.3.4]
-+ Fixed the hastebin command (now enforcing SSL)
-+ Fixed internal errors with role parsing
-+ Fixed a double message when banning an invalid user
-+ Fixed interaction with managed roles
-+ Reimplemented support for invites (lib update)
+- [v 2.3.5]
++ Reimplemented support for invites (actual code support this time..)
++ Active bug hunting - if you see any issues contact !!support
 ```
