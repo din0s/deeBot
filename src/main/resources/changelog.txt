@@ -1,5 +1,6 @@
 ```diff
-- [v 2.3.5]
+- [v 2.3.6]
 + Reimplemented support for invites (actual code support this time..)
 + Active bug hunting - if you see any issues contact !!support
++ Finally put an end to the role parsing bug (thanks Huntress#7237)
 ```
