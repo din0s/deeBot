@@ -2,10 +2,7 @@ package me.dinosparkour.managers.listeners;
 
 import me.dinosparkour.Info;
 import me.dinosparkour.commands.CommandRegistry;
-import me.dinosparkour.commands.admin.CleanupCommand;
-import me.dinosparkour.commands.admin.EvalCommand;
-import me.dinosparkour.commands.admin.GameCommand;
-import me.dinosparkour.commands.admin.ShutdownCommand;
+import me.dinosparkour.commands.admin.*;
 import me.dinosparkour.commands.global.*;
 import me.dinosparkour.commands.guild.*;
 import me.dinosparkour.commands.guild.actions.AutoRoleCommand;
@@ -35,7 +32,7 @@ public class ShardManager extends ListenerAdapter {
             REGISTRY.addCommand(new CleanupCommand()),
             REGISTRY.addCommand(new EvalCommand()),
             REGISTRY.addCommand(new GameCommand()),
-            //REGISTRY.addCommand(new GetInviteCommand()),
+            REGISTRY.addCommand(new GetInviteCommand()),
             REGISTRY.addCommand(new ShutdownCommand()),
 
             // GLOBAL
@@ -98,7 +95,7 @@ public class ShardManager extends ListenerAdapter {
             // Managers
             new ActionManager(),
             new CustomCmdManager(),
-            //new InviteManager(),
+            new InviteManager(),
             new StatsManager()
     };
 

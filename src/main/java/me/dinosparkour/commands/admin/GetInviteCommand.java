@@ -1,6 +1,5 @@
 package me.dinosparkour.commands.admin;
 
-/* JDA 3.x doesn't support InviteUtil yet
 import me.dinosparkour.commands.impls.AdminCommand;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
@@ -42,31 +41,17 @@ public class GetInviteCommand extends AdminCommand {
             chat.sendMessage(sb.toString());
         } else { // Exactly one guild matches the arguments
             Guild guild = guilds.get(0);
-            Member selfMember = guild.getSelfMember();
-
-            List<InviteUtil.AdvancedInvite> existentInvites = new ArrayList<>();
-            if (selfMember.hasPermission(Permission.MANAGE_SERVER)) {
-                existentInvites.addAll(InviteUtil.getInvites(guild));
-            }
-
-            if (existentInvites.isEmpty()) {
-                List<TextChannel> channelList = guilds.get(0).getTextChannels();
-                TextChannel channel;
-                if (canGenerate(guild.getPublicChannel(), selfMember)) {
-                    channel = guild.getPublicChannel();
-                } else {
-                    channel = channelList.stream()
-                            .filter(c -> canGenerate(c, selfMember))
-                            .findAny().orElse(null);
-                }
-
-                if (channel == null) {
-                    chat.sendMessage("I cannot generate an invite to that guild!");
-                } else {
-                    chat.sendMessage(INVITE_PREFIX + InviteUtil.createInvite(channel, InviteUtil.InviteDuration.THIRTY_MINUTES, 0, false).getCode());
-                }
+            if (guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER)) {
+                guild.getInvites().queue(existentInvites -> {
+                    if (existentInvites.isEmpty()) { // No existent invites, generate one for ourselves
+                        createInvite(guild.getTextChannels(), guild, chat);
+                    } else { // Pull a random invite, it will do.
+                        chat.sendMessage(INVITE_PREFIX + existentInvites.get(0).getCode());
+                    }
+                });
             } else {
-                chat.sendMessage(INVITE_PREFIX + existentInvites.get(0).getCode());
+                // We cannot see existent invites, attempt to generate one anyway
+                createInvite(guild.getTextChannels(), guild, chat);
             }
         }
     }
@@ -104,5 +89,21 @@ public class GetInviteCommand extends AdminCommand {
     private boolean canGenerate(TextChannel channel, Member selfMember) {
         return selfMember.hasPermission(channel, Permission.CREATE_INSTANT_INVITE);
     }
+
+    private void createInvite(List<TextChannel> channelList, Guild guild, MessageSender chat) {
+        TextChannel channel;
+        if (canGenerate(guild.getPublicChannel(), guild.getSelfMember())) {
+            channel = guild.getPublicChannel();
+        } else {
+            channel = channelList.stream()
+                    .filter(c -> canGenerate(c, guild.getSelfMember()))
+                    .findAny().orElse(null);
+        }
+
+        if (channel == null) {
+            chat.sendMessage("I cannot generate an invite to that guild!");
+        } else {
+            channel.createInvite().setMaxUses(1).queue(invite -> chat.sendMessage(INVITE_PREFIX + invite.getCode()));
+        }
+    }
 }
-*/
