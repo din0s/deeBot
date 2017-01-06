@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ShardCommand extends GlobalCommand {
@@ -24,7 +25,7 @@ public class ShardCommand extends GlobalCommand {
                     try {
                         if (args[0].equals("*")) { // Get info for all shards
                             StringBuilder sb = new StringBuilder();
-                            ShardManager.getInstances()
+                            Collections.synchronizedCollection(ShardManager.getInstances())
                                     .forEach(jda -> sb.append(getShardInfo(jda.getShardInfo().getShardId(), jda)).append("\n\n"));
                             chat.sendMessage(sb.toString());
                             return;
