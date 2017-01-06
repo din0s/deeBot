@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -51,10 +52,16 @@ public class MemeCommand extends GlobalCommand {
             String requestUrl = String.format("http://memegen.link/%s/%s/%s.jpg", type, line1, line2);
 
             e.getChannel().sendTyping().queue();
-            e.getChannel().sendFile(HttpRequestUtil.getInputStream(requestUrl), "PNG",
-                    new MessageBuilder().append("Here's your meme:").build()).queue();
-
-        } else chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
+            InputStream img = HttpRequestUtil.getInputStream(requestUrl);
+            if (img == null) {
+                chat.sendMessage("Something went wrong while trying to generate the image.. Please try again later!");
+            } else {
+                e.getChannel().sendFile(img, "PNG",
+                        new MessageBuilder().append("Here's your meme:").build()).queue();
+            }
+        } else {
+            chat.sendMessage("The bot needs `[ATTACH_FILES]` in order to be able to send memes.");
+        }
     }
 
     @Override
