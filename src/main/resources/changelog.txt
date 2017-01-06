@@ -1,5 +1,5 @@
 ```diff
-- [v 2.3.7]
+- [v 2.3.8]
 + Internal exception handling to compensate for invalid input & API errors
   (this fixes the following commands: !!shorten, !!choice, !!meme, !!commands)
 + Refactored statistics manager for carbonitex.net to follow discord bots' format
@@ -7,4 +7,5 @@
 + Reformatted !!guildinfo in order to utilize embeds
 + Removed hidden commands ;(
 + Internal rework for !!shard related commands and instance management
++ Internal fix for synchronized collection access
 ```
