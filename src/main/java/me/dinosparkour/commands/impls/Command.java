@@ -9,6 +9,7 @@ import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -216,15 +217,13 @@ public abstract class Command extends ListenerAdapter {
             }
         }
 
-        /*
-        void sendEmbed(String title, String description) {
+        public void sendEmbed(EmbedBuilder builder) {
             if (event.isFromType(ChannelType.TEXT) && event.getGuild().getSelfMember().hasPermission(event.getTextChannel(), Permission.MESSAGE_EMBED_LINKS)) {
-                MessageUtil.sendMessage(new EmbedBuilder().setTitle(title).setDescription(description).build(), event.getChannel());
+                MessageUtil.sendMessage(builder.build(), event.getChannel());
             } else {
                 sendMessage("Please give the bot permissions to `EMBED LINKS`.");
             }
         }
-        */
 
         public void sendPrivateMessage(String content, TextChannel fallbackChannel) {
             event.getAuthor().openPrivateChannel().queue(channel -> sendMessage(content, channel,
