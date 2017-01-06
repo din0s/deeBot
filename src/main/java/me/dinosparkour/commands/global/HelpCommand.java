@@ -59,7 +59,7 @@ public class HelpCommand extends GlobalCommand {
             // Page number passed as parameter
             try {
                 pageNum = Integer.parseInt(allArgs);
-                if (pageNum > totalPageCount) {
+                if (pageNum > totalPageCount || pageNum <= 0) {
                     throw new NumberFormatException();
                 }
             } catch (NumberFormatException ex) {
