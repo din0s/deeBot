@@ -47,7 +47,6 @@ public class ShardManager extends ListenerAdapter {
             REGISTRY.addCommand(new HelpCommand()),
             REGISTRY.addCommand(new InfoCommand()),
             REGISTRY.addCommand(new InviteCommand()),
-            REGISTRY.addCommand(new JDAVersionCommand()),
             REGISTRY.addCommand(new LennyCommand()),
             REGISTRY.addCommand(new MemeCommand()),
             REGISTRY.addCommand(new PatreonCommand()),

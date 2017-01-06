@@ -5,7 +5,6 @@ import me.dinosparkour.commands.admin.CleanupCommand;
 import me.dinosparkour.commands.admin.EvalCommand;
 import me.dinosparkour.commands.global.DiscordStatusCommand;
 import me.dinosparkour.commands.global.HastebinCommand;
-import me.dinosparkour.commands.guild.JDAVersionCommand;
 import me.dinosparkour.managers.BlacklistManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.utils.MessageUtil;
@@ -70,10 +69,6 @@ public abstract class Command extends ListenerAdapter {
         return null;
     }
 
-    public boolean isPublic() {
-        return true;
-    }
-
     public final String getUsage() {
         return getName()
                 + (getRequiredParams() != null ? " " + String.join(" ", getRequiredParams().stream()
@@ -110,20 +105,14 @@ public abstract class Command extends ListenerAdapter {
         MessageSender chat = new MessageSender(e);
 
         if (e.isFromType(ChannelType.PRIVATE) && !allowsPrivate()) { // Check if the command is guild-only
-            if (isPublic()) {
-                chat.sendMessage("**This command can only be used in a guild!**");
-            }
+            chat.sendMessage("**This command can only be used in a guild!**");
         } else if (permissionCheck(e, e.getAuthor())) { // Check if the user is authorized to execute the command
             if (!permissionCheck(e, e.getJDA().getSelfUser())) { // Check if the bot can execute the actions needed
-                if (isPublic()) {
-                    chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
-                }
+                chat.sendMessage("The bot doesn't have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
             } else if ((getArgMax() > -1            // A maximum argument limit has been set AND
                     && args.length > getArgMax())   // There are more arguments than we expected, OR
                     || args.length < getArgMin()) { // There are fewer arguments than we required
-                if (isPublic()) {
-                    chat.sendUsageMessage();
-                }
+                chat.sendUsageMessage();
             } else if (!e.getChannel().getId().equals("125227483518861312") || jdaCheck()) { // Of all commands, only JDAVersion can be issued in JDA #general
                 try {
                     executeCommand(args, e, chat);
@@ -137,7 +126,7 @@ public abstract class Command extends ListenerAdapter {
                     }
                 }
             }
-        } else if (isPublic()) {
+        } else {
             chat.sendMessage("You do not have the required permissions to execute this command!\n`" + requiredPermissions() + "`");
         }
     }
@@ -174,11 +163,10 @@ public abstract class Command extends ListenerAdapter {
         return this instanceof CleanupCommand
                 || this instanceof EvalCommand
                 || this instanceof DiscordStatusCommand
-                || this instanceof HastebinCommand
-                || this instanceof JDAVersionCommand;
+                || this instanceof HastebinCommand;
     }
 
-    protected class MessageSender {
+    public class MessageSender {
         private final MessageReceivedEvent event;
 
         MessageSender(MessageReceivedEvent event) {
