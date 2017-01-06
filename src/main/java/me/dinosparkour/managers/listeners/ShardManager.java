@@ -13,10 +13,7 @@ import me.dinosparkour.commands.guild.roles.RemoveRoleCommand;
 import me.dinosparkour.commands.guild.roles.RoleCommand;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -99,14 +96,18 @@ public class ShardManager extends ListenerAdapter {
             new StatsManager()
     };
 
-    private static final Set<JDA> instances = new HashSet<>();
+    private static final Map<Integer, JDA> instances = new HashMap<>();
 
     public static Collection<JDA> getInstances() {
-        return instances;
+        return instances.values();
+    }
+
+    public static List<JDA> getInstanceList() {
+        return new LinkedList<>(getInstances());
     }
 
     public static List<User> getGlobalUsers() {
-        return new ArrayList<>(getInstances().stream().flatMap(jda -> jda.getUsers().stream()).collect(Collectors.toSet()));
+        return getInstances().stream().flatMap(jda -> jda.getUsers().stream()).collect(Collectors.toList());
     }
 
     public static JDA getInstanceWithChannel(String id) {
@@ -154,7 +155,11 @@ public class ShardManager extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent e) {
         e.getJDA().addEventListener((Object[]) LISTENERS);
-        instances.add(e.getJDA());
+        if (e.getJDA().getShardInfo() != null) {
+            int id = e.getJDA().getShardInfo().getShardId();
+            instances.put(id, e.getJDA());
+            e.getJDA().getPresence().setGame(Game.of("on Shard [" + id + "]"));
+        }
 
         // Check if the current guild contains @deeBot Central
         Guild botGuild = e.getJDA().getGuildById("168154663932264448"); // @deeBot Central

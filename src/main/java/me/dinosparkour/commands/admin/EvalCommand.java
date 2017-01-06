@@ -38,7 +38,9 @@ public class EvalCommand extends AdminCommand {
         engine.put("api", e.getJDA());
         engine.put("jda", e.getJDA());
         engine.put("chat", chat);
-        engine.put("instances", ShardManager.getInstances());
+        engine.put("presence", e.getJDA().getPresence());
+        engine.put("shards", ShardManager.getInstanceList());
+        engine.put("instances", ShardManager.getInstanceList());
         engine.put("channel", e.getChannel());
         engine.put("author", e.getAuthor());
         engine.put("member", e.getMember());
