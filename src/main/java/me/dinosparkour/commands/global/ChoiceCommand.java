@@ -22,12 +22,20 @@ public class ChoiceCommand extends GlobalCommand {
             }
 
             int count = choices.size();
-            if (count == 1) {
-                chat.sendMessage("Please give me more than 1 option to choose from..");
-            } else {
-                int rand = new Random().nextInt(count);
-                String choice = choices.get(rand).replace("`", "");
-                chat.sendMessage("\ud83e\udd14 *I'd say..* `" + MessageUtil.stripFormatting(choice) + "`!");
+            switch (count) {
+                case 0:
+                    chat.sendUsageMessage();
+                    break;
+
+                case 1:
+                    chat.sendMessage("Please give me more than 1 option to choose from..");
+                    break;
+
+                default:
+                    int rand = new Random().nextInt(count);
+                    String choice = choices.get(rand).replace("`", "");
+                    chat.sendMessage("\ud83e\udd14 *I'd say..* `" + MessageUtil.stripFormatting(choice) + "`!");
+                    break;
             }
         }
     }
