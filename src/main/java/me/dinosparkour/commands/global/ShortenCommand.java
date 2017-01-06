@@ -20,7 +20,9 @@ public class ShortenCommand extends GlobalCommand {
         body.put("longUrl", String.join(" ", Arrays.asList(args)));
         e.getChannel().sendTyping().queue();
         JSONObject response = new JSONObject(HttpRequestUtil.postData(REQUEST_URL, body).getBody().toString());
-        chat.sendMessage("**Shortened URL:** <" + response.getString("id") + ">");
+        chat.sendMessage(response.has("id")
+                ? "**Shortened URL:** <" + response.getString("id") + ">"
+                : "**The API responded with:** `" + response.getJSONObject("error").getString("message") + "`");
     }
 
     @Override
