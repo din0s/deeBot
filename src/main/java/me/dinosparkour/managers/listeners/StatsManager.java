@@ -30,23 +30,22 @@ public class StatsManager extends ListenerAdapter {
         String abalKey = Info.ABAL_KEY;
         String carbonKey = Info.CARBON_KEY;
 
+        JSONObject data = new JSONObject()
+                .put("server_count", e.getJDA().getGuilds().size());
+
+        if (e.getJDA().getShardInfo() != null) {
+            data.put("shard_id", e.getJDA().getShardInfo().getShardId())
+                    .put("shard_count", e.getJDA().getShardInfo().getShardTotal());
+        }
+
         if (!abalKey.isEmpty()) {
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", abalKey);
-
-            JSONObject data = new JSONObject()
-                    .put("shard_id", e.getJDA().getShardInfo().getShardId())
-                    .put("shard_count", e.getJDA().getShardInfo().getShardTotal())
-                    .put("server_count", e.getJDA().getGuilds().size());
-
             HttpRequestUtil.postData(DISCORD_BOTS, headers, data);
         }
 
         if (!carbonKey.isEmpty()) {
-            JSONObject data = new JSONObject()
-                    .put("servercount", ShardManager.getInstances().stream().mapToLong(jda -> jda.getGuilds().size()).sum())
-                    .put("key", carbonKey);
-
+            data.put("key", carbonKey);
             HttpRequestUtil.postData(CARBONITEX, data);
         }
     }
