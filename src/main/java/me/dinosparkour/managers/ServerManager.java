@@ -14,14 +14,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerManager {
 
     private static final File DATA_FOLDER = new File("data");
-    private static final Map<String, JSONObject> DATABASE = new HashMap<>();            // Map<GuildId, Data>
-    private static final Map<String, String> PREFIXES = new HashMap<>();                // Map<GuildId, Prefix> (never-null prefix)
-    private static final Map<String, JSONArray> CUSTOM_COMMANDS = new HashMap<>();      // Map<GuildId, CommandList>
-    private final Map<DataType, String> dataMap = new HashMap<>();                      // Map<DataType, Value> (possibly-null value)
+    private static final Map<String, JSONObject> DATABASE = new HashMap<>();                  // Map<GuildId, Data>
+    private static final Map<String, String> PREFIXES = new HashMap<>();                      // Map<GuildId, Prefix> (never-null prefix)
+    private static final Map<String, JSONArray> CUSTOM_COMMANDS = new ConcurrentHashMap<>();  // Map<GuildId, CommandList>
+    private final Map<DataType, String> dataMap = new HashMap<>();                            // Map<DataType, Value> (possibly-null value)
     private final String guildId;
 
     public ServerManager(Guild guild) {
