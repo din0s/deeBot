@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 public class RoleCommand extends RoleCommandImpl {
 
-    private static final long ALL_PERMS = Permission.getRaw(Arrays.stream(Permission.values()).filter(p -> p != Permission.UNKNOWN).toArray(Permission[]::new));
     private final List<String> helpContents = IOUtil.readLinesFromResource("rolecommand.txt");
 
     @Override
@@ -95,7 +94,7 @@ public class RoleCommand extends RoleCommandImpl {
                                         role.delete().queue();
                                         return;
                                     } else {
-                                        roleCreator.getPermissionField().setValue(ALL_PERMS);
+                                        roleCreator.getPermissionField().setValue(Permission.ALL_PERMISSIONS);
                                     }
                                 } else {
                                     roleCreator.getPermissionField().setValue(0L);
