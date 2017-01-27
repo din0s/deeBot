@@ -7,6 +7,8 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -58,6 +60,12 @@ public class PurgeCommand extends GuildCommand {
                 history = history.stream().filter(msg -> msg.getAuthor().equals(fMember.getUser())).collect(Collectors.toList());
             }
 
+            int initialCount = history.size();
+            String out = history.removeIf(msg -> msg.getCreationTime().isBefore(OffsetDateTime.now().minus(2, ChronoUnit.WEEKS)))
+                    ? "Found " + (initialCount - history.size()) + " messages older than 2 weeks in history.. Discarding!\n"
+                    : "";
+            int finalCount = history.size();
+
             if (history.isEmpty()) {
                 chat.sendMessage("*There are no messages to delete!*");
                 return;
@@ -67,14 +75,14 @@ public class PurgeCommand extends GuildCommand {
             if (!isSilent(args)) {
                 consumer = success ->
                         e.getTextChannel().getHistory().retrievePast(1).queue(h ->
-                                chat.sendMessage("Successfully deleted " + (fMember == null
-                                        ? (h.isEmpty() ? "all" : input) + " messages!"
+                                chat.sendMessage(out + "Successfully deleted " + (fMember == null
+                                        ? (h.isEmpty() ? "all" : finalCount - 1) + " messages!"
                                         : "**" + MessageUtil.stripFormatting(fMember.getUser().getName()) + "**'s messages from the past " + input + " lines!")
                                 )
                         );
             }
 
-            if (history.size() == 1) {
+            if (finalCount == 1) {
                 history.get(0).deleteMessage().queue(consumer);
             } else if (!history.isEmpty()) {
                 e.getTextChannel().deleteMessages(history).queue(consumer);
