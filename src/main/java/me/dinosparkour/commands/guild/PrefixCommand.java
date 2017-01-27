@@ -21,7 +21,7 @@ public class PrefixCommand extends GuildCommand {
             return;
         }
 
-        String allArgs = String.join(" ", Arrays.asList(args));
+        String allArgs = String.join(" ", Arrays.asList(args)).trim();
         String prefix = getPrefix(e.getGuild());
         ServerManager sm = new ServerManager(e.getGuild());
         if (allArgs.equalsIgnoreCase("reset")) {
@@ -31,9 +31,9 @@ public class PrefixCommand extends GuildCommand {
         } else if (!allArgs.equals(prefix) && !allArgs.toLowerCase().startsWith("%s%")) {
             sm.setPrefix(allArgs.replaceAll("(?i)%s%", " ")).update();
             chat.sendMessage("__Set the prefix to__: " + MessageUtil.stripFormatting(allArgs).replaceAll("(?i)%s%", "__ __"));
-        } else if (allArgs.equals(prefix))
+        } else if (allArgs.equals(prefix)) {
             chat.sendMessage("The prefix is already set to " + MessageUtil.stripFormatting(prefix));
-        else {
+        } else {
             chat.sendMessage("The prefix can't have a space as its first char!");
         }
     }
