@@ -29,7 +29,7 @@ public class CleanupCommand extends AdminCommand {
             }
         }
 
-        e.getTextChannel().getHistory().retrievePast(amount + 1).queue(history -> {
+        e.getTextChannel().getHistory().retrievePast(amount).queue(history -> {
             history.remove(0);
             history = history.stream()
                     .filter(msg -> msg.getAuthor().equals(e.getJDA().getSelfUser()))
