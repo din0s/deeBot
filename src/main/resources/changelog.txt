@@ -1,11 +1,6 @@
 ```diff
-- [v 2.3.8]
-+ Internal exception handling to compensate for invalid input & API errors
-  (this fixes the following commands: !!shorten, !!choice, !!meme, !!commands)
-+ Refactored statistics manager for carbonitex.net to follow discord bots' format
-+ Fixed a ConcurrentModificationException that occurred while deleting a custom command
-+ Reformatted !!guildinfo in order to utilize embeds
-+ Removed hidden commands ;(
-+ Internal rework for !!shard related commands and instance management
-+ Internal fix for synchronized collection access
+- [v 2.3.9]
++ Fixed message deleting to comply with Discord's 2 week limit
++ Fixed an issue where users could accidentally set a prefix starting with a whitespace
++ Reworked !!guildinfo (it's prettier now)
 ```

@@ -1,7 +1,11 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '1.2.4'
     id 'application'
+    id 'java'
 }
+
+version '2.3.9'
+shadowJar.archiveName = 'deeBot.jar'
 
 repositories {
     jcenter()
@@ -9,10 +13,22 @@ repositories {
 
 dependencies {
     compile 'commons-io:commons-io:2.5'
-    compile 'net.dv8tion:JDA:3.0.BETA2_118'
+    compile 'net.dv8tion:JDA:3.0.BETA2_122'
 }
 
-//noinspection GroovyUnusedAssignment
-mainClassName = 'me.dinosparkour.Bot'
-compileJava.options.encoding = 'UTF-8'
-shadowJar.archiveName = 'deeBot.jar'
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task replaceTokens(type: Copy) {
+    from 'src/main/java'
+    into 'build/tmp/replaceTokens'
+    filter(ReplaceTokens, tokens: [ version: version ])
+}
+
+compileJava {
+    source = replaceTokens.destinationDir
+    classpath = sourceSets.main.compileClasspath
+    dependsOn replaceTokens
+
+    options.encoding = 'UTF-8'
+    mainClassName = 'me.dinosparkour.Bot'
+}
