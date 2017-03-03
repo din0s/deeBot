@@ -48,7 +48,7 @@ public class PurgeCommand extends GuildCommand {
 
         int amount;
         if (input == 100) {
-            e.getMessage().deleteMessage().queue();
+            e.getMessage().delete().queue();
             amount = input;
         } else {
             amount = input + 1;
@@ -83,7 +83,7 @@ public class PurgeCommand extends GuildCommand {
             }
 
             if (finalCount == 1) {
-                history.get(0).deleteMessage().queue(consumer);
+                history.get(0).delete().queue(consumer);
             } else if (!history.isEmpty()) {
                 e.getTextChannel().deleteMessages(history).queue(consumer);
             }

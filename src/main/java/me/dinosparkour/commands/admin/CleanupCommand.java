@@ -37,7 +37,7 @@ public class CleanupCommand extends AdminCommand {
             if (bulk && history.size() > 1) {
                 e.getTextChannel().deleteMessages(history).queue();
             } else {
-                history.forEach(msg -> msg.deleteMessage().queue());
+                history.forEach(msg -> msg.delete().queue());
             }
         });
     }

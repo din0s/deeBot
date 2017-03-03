@@ -46,7 +46,7 @@ public class GuildInfoCommand extends GuildCommand {
                     + "\uD83D\uDD07 | **AFK Channel** › " + afkChannel + "\n"
                     + "\u23F0 | **AFK Timeout** › " + afkTimeout);
         } else {
-            EmbedBuilder builder = new EmbedBuilder().setTitle(title).setDescription("_ _").setThumbnail(guild.getIconUrl());
+            EmbedBuilder builder = new EmbedBuilder().setTitle(title, null).setDescription("_ _").setThumbnail(guild.getIconUrl());
 
             builder.addField("Owner:", owner, true);
             builder.addField("Users:", users, true);

@@ -29,7 +29,7 @@ public class HastebinCommand extends GlobalCommand {
         chat.sendMessage(e.getAuthor().getAsMention() + ": https://hastebin.com/" + key + "." + flag, msg -> {
             if (e.isFromType(ChannelType.TEXT)
                     && e.getGuild().getSelfMember().hasPermission(e.getTextChannel(), Permission.MESSAGE_MANAGE)) {
-                e.getMessage().deleteMessage().queue();
+                e.getMessage().delete().queue();
             }
         });
     }

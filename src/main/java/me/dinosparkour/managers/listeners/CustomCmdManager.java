@@ -73,7 +73,7 @@ public class CustomCmdManager extends ListenerAdapter {
 
         if (flags.contains("--delete") &&
                 e.getGuild().getSelfMember().hasPermission(e.getChannel(), Permission.MESSAGE_MANAGE)) {
-            e.getMessage().deleteMessage().queue();
+            e.getMessage().delete().queue();
         }
     }
 }
