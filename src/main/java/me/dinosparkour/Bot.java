@@ -22,7 +22,7 @@ public class Bot {
 
         for (int shardNum = 0; shardNum < Info.SHARD_COUNT; shardNum++) {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
-                    .addListener(new ShardManager()) // Handle the Ready Event separately
+                    .addEventListener(new ShardManager()) // Handle the Ready Event separately
                     .setAudioEnabled(false) // We don't utilise JDA's audio subsystem
                     .setToken(Info.TOKEN) // Set the Authentication Token
                     .setBulkDeleteSplittingEnabled(false) // Performance reasons
