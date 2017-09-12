@@ -9,6 +9,7 @@ import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 
 import javax.security.auth.login.LoginException;
 import java.util.concurrent.ExecutorService;
@@ -17,22 +18,24 @@ import java.util.concurrent.Executors;
 public class Bot {
 
 
-    public static void main(String[] args) throws LoginException, RateLimitedException {
+    public static void main(String[] args) throws LoginException, RateLimitedException, InterruptedException {
         ServerManager.init(); // Initialize the ServerManager and load the files
 
-        for (int shardNum = 0; shardNum < Info.SHARD_COUNT; shardNum++) {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
                     .addEventListener(new ShardManager()) // Handle the Ready Event separately
                     .setAudioEnabled(false) // We don't utilise JDA's audio subsystem
                     .setToken(Info.TOKEN) // Set the Authentication Token
                     .setBulkDeleteSplittingEnabled(false) // Performance reasons
+                    .setReconnectQueue(new SessionReconnectQueue()) // Let JDA handle reconnections
                     .setEventManager(new ThreadedEventManager()); // Allow for simultaneous command processing
 
+        for (int shardNum = 0; shardNum < Info.SHARD_COUNT; shardNum++) {
             if (Info.SHARD_COUNT > 1) {
                 builder.useSharding(shardNum, Info.SHARD_COUNT); // Create a shard
             }
 
             builder.buildAsync(); // Finally establish a connection to Discord's servers!
+            Thread.sleep(5000);
         }
 
         LogManager.init(); // Initialize the log manager after everything's been set up
