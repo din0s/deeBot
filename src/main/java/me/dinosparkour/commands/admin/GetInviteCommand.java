@@ -96,7 +96,7 @@ public class GetInviteCommand extends AdminCommand {
 
     private void createInvite(List<TextChannel> channelList, Guild guild, MessageSender chat) {
         TextChannel channel;
-        TextChannel defaultChannel = guild.getSelfMember().getDefaultChannel();
+        TextChannel defaultChannel = guild.getDefaultChannel();
         if (canGenerate(defaultChannel, guild.getSelfMember())) {
             channel = defaultChannel;
         } else {

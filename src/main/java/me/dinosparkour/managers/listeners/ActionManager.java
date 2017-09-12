@@ -36,7 +36,7 @@ public class ActionManager extends ListenerAdapter {
 
     public void onEvent(GenericGuildMemberEvent e, boolean isJoin) {
         Guild guild = e.getGuild();
-        TextChannel defaultChannel = guild.getSelfMember().getDefaultChannel();
+        TextChannel defaultChannel = guild.getDefaultChannel();
 
         if (e.getMember().equals(guild.getSelfMember()))
             return; // Ignore our own Join/Leave events
