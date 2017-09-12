@@ -1,6 +1,5 @@
 ```diff
-- [v 2.3.9]
-+ Fixed message deleting to comply with Discord's 2 week limit
-+ Fixed an issue where users could accidentally set a prefix starting with a whitespace
-+ Reworked !!guildinfo (it's prettier now)
+- [v 2.4.1]
++ Internal dependency updates and code rewrite to accommodate said updates
++ Mentioning the bot will now display its prefix
 ```

@@ -6,7 +6,7 @@ plugins {
 
 sourceCompatibility = 1.8
 group 'DinosParkour'
-version '2.4'
+version '2.4.1'
 shadowJar.archiveName = 'deeBot.jar'
 
 repositories {
