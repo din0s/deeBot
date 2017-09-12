@@ -29,7 +29,11 @@ public class AutoRoleCommand extends GuildCommand {
 
             case 1:
                 // Check if args[0] is an ID
-                Role tmpRole = e.getGuild().getRoleById(args[0]);
+                Role tmpRole = null;
+                if (args[0].matches("\\d+")) {
+                    tmpRole = e.getGuild().getRoleById(args[0]);
+                }
+
                 if (tmpRole != null) {
                     sm.setAutoRole(tmpRole).update();
                     chat.sendMessage(SUCCESS + MessageUtil.stripFormatting(tmpRole.getName()));

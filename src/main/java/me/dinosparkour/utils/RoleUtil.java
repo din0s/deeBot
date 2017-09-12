@@ -16,7 +16,11 @@ public class RoleUtil {
 
         Set<Role> results = new HashSet<>(msg.getMentionedRoles());
         Guild guild = msg.getGuild();
-        Role idRole = guild.getRoleById(allArgs);
+        Role idRole = null;
+        if (allArgs.matches("\\d+")) {
+            idRole = guild.getRoleById(allArgs);
+        }
+
         if (idRole != null) { // Passed arguments were a role id
             results.add(idRole);
         } else { // Get all roles with matching names

@@ -43,10 +43,6 @@ public class ActionManager extends ListenerAdapter {
 
         ServerManager sm = new ServerManager(guild);
         String message = isJoin ? sm.getWelcomeMessage() : sm.getFarewellMessage();
-        Role role = null;
-        if (sm.getAutoRoleId() != null) {
-            role = guild.getRoleById(sm.getAutoRoleId());
-        }
 
         if (message != null) {
             message = parseVariables(message, e.getMember().getUser(), guild);
@@ -57,15 +53,16 @@ public class ActionManager extends ListenerAdapter {
             MessageUtil.sendMessage(message, channel);
         }
 
-        if (isJoin && role != null) {
+        Role role;
+        String autoRoleId = sm.getAutoRoleId();
+        if (isJoin && autoRoleId != null && (role = guild.getRoleById(autoRoleId)) != null) {
             String reason;
             if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES)) {
                 reason = "the bot not having `[MANAGE_ROLES]`";
             } else if (guild.getSelfMember().canInteract(role)) {
                 // We have to use a timer because otherwise the bot cannot assign the custom role to
                 // new bots joining the guild due to a race condition when Discord generates their role..
-                Role fRole = role;
-                roleScheduler.schedule(() -> guild.getController().addRolesToMember(e.getMember(), fRole).queue(), 11L, TimeUnit.MILLISECONDS);
+                roleScheduler.schedule(() -> guild.getController().addRolesToMember(e.getMember(), role).queue(), 11L, TimeUnit.MILLISECONDS);
                 return;
             } else {
                 reason = "the role's position being higher in the hierarchy.\n"
