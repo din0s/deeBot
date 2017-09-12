@@ -231,6 +231,8 @@ public abstract class Command extends ListenerAdapter {
         }
 
         public void sendPrivateMessageToUser(String content, User user) {
+            if (user == null)
+                return;
             user.openPrivateChannel().queue(c -> sendMessage(content, c));
         }
     }
