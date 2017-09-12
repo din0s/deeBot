@@ -1,5 +1,6 @@
 ```diff
-- [v 2.4.1]
+- [v 2.4.3]
 + Internal dependency updates and code rewrite to accommodate said updates
 + Mentioning the bot will now display its prefix
++ Internal ID processing fixes
 ```
