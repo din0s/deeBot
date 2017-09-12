@@ -24,6 +24,12 @@ public class CustomCmdManager extends ListenerAdapter {
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
         String rawContent = e.getMessage().getRawContent();
+
+        if (rawContent.equals(e.getJDA().getSelfUser().getAsMention())) {
+            e.getChannel().sendMessage("Prefix for this guild: " + MessageUtil.stripFormatting(prefix)).queue();
+            return;
+        }
+
         if (rawContent.length() <= prefix.length() || !rawContent.startsWith(prefix))
             return; // Ignore message if it's shorter than the prefix itself
         String noPrefix = rawContent.substring(prefix.length());
