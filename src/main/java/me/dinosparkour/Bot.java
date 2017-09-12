@@ -20,16 +20,17 @@ public class Bot {
 
     public static void main(String[] args) throws LoginException, RateLimitedException, InterruptedException {
         ServerManager.init(); // Initialize the ServerManager and load the files
+        SessionReconnectQueue rq = new SessionReconnectQueue();
 
+        for (int shardNum = 0; shardNum < Info.SHARD_COUNT; shardNum++) {
             JDABuilder builder = new JDABuilder(AccountType.BOT)
                     .addEventListener(new ShardManager()) // Handle the Ready Event separately
                     .setAudioEnabled(false) // We don't utilise JDA's audio subsystem
                     .setToken(Info.TOKEN) // Set the Authentication Token
                     .setBulkDeleteSplittingEnabled(false) // Performance reasons
-                    .setReconnectQueue(new SessionReconnectQueue()) // Let JDA handle reconnections
+                    .setReconnectQueue(rq) // Let JDA handle reconnections
                     .setEventManager(new ThreadedEventManager()); // Allow for simultaneous command processing
 
-        for (int shardNum = 0; shardNum < Info.SHARD_COUNT; shardNum++) {
             if (Info.SHARD_COUNT > 1) {
                 builder.useSharding(shardNum, Info.SHARD_COUNT); // Create a shard
             }
