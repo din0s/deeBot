@@ -23,7 +23,11 @@ public class AutoRoleCommand extends GuildCommand {
         ServerManager sm = new ServerManager(e.getGuild());
         switch (args.length) {
             case 0: // Get the current autorole
-                Role joinRole = e.getGuild().getRoleById(sm.getAutoRoleId());
+                Role joinRole = null;
+                String roleId = sm.getAutoRoleId();
+                if (roleId != null) {
+                    joinRole = e.getGuild().getRoleById(roleId);
+                }
                 chat.sendMessage("__Current role given upon joining__: " + (joinRole == null ? "None" : MessageUtil.stripFormatting(joinRole.getName())));
                 break;
 
@@ -49,7 +53,7 @@ public class AutoRoleCommand extends GuildCommand {
                 }
 
                 List<Role> roles = e.getGuild().getRoles().stream()
-                        .filter(role -> role.getName().equals(allArgs))
+                        .filter(role -> role.getName().equalsIgnoreCase(allArgs))
                         .collect(Collectors.toList());
 
                 if (roles.size() > 1) { // More than one roles share the given name

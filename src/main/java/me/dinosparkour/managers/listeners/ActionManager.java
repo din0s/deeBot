@@ -46,7 +46,11 @@ public class ActionManager extends ListenerAdapter {
 
         if (message != null) {
             message = parseVariables(message, e.getMember().getUser(), guild);
-            TextChannel channel = e.getJDA().getTextChannelById(isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId());
+            TextChannel channel = null;
+            String channelId = isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId();
+            if (channelId != null) {
+                channel = e.getJDA().getTextChannelById(channelId);
+            }
             if (channel == null || !guild.getTextChannels().contains(channel)) { // Make sure we always have a channel
                 channel = defaultChannel;
             }
