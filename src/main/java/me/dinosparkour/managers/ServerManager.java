@@ -146,7 +146,7 @@ public class ServerManager {
 
     // Prefix
     public String getPrefix() {
-        return PREFIXES.containsKey(guildId) ? PREFIXES.get(guildId) : Info.DEFAULT_PREFIX;
+        return PREFIXES.getOrDefault(guildId, Info.DEFAULT_PREFIX);
     }
 
     public ServerManager setPrefix(String prefix) {

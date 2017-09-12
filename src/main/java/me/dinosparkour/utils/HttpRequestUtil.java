@@ -88,7 +88,7 @@ public class HttpRequestUtil {
         HttpRequestWithBody request = Unirest.post(url); // Create a POST request
 
         if (!headers.isEmpty()) { // If we have a map of headers, iterate and include in the request
-            headers.entrySet().forEach(set -> request.header(set.getKey(), set.getValue()));
+            headers.forEach(request::header);
         }
 
         request.body(body);

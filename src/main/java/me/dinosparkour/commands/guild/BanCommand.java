@@ -10,7 +10,6 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.GuildController;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +29,7 @@ public class BanCommand extends GuildCommand {
                 String id = args[0];
                 days = args.length > 1 ? parseDays(allArgs.replace(id + " ", "")) : 0;
 
-                if (id.length() < 17 || id.length() > 18 || !NumberUtils.isDigits(id)) {
+                if (id.length() < 17 || id.length() > 18 || !id.matches("\\d+")) {
                     chat.sendMessage("**That's not a valid user!**");
                     return;
                 }
@@ -44,7 +43,7 @@ public class BanCommand extends GuildCommand {
             case 1: // Ban a user we know
                 Member m = memberList.get(0);
                 String lastArg = args[args.length - 1];
-                days = args.length > 1 && NumberUtils.isDigits(lastArg) ? parseDays(lastArg) : 0;
+                days = args.length > 1 && lastArg.matches("\\d+") ? parseDays(lastArg) : 0;
                 if (invalidDays(chat, days) || !canBan(chat, m, e.getMessage())) return;
 
                 controller.ban(m, days).queue(success -> sendBanMessage(MessageUtil.userDiscrimSet(m.getUser()), e.getAuthor(), chat));

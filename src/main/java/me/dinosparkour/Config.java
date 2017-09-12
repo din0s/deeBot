@@ -41,7 +41,7 @@ class Config {
                 .put("carbon", "")
                 .put("cx", "")
                 .put("google", "")
-                .put("shards", "")
+                .put("shards", "1")
                 .put("token", ""));
     }
 }

@@ -13,7 +13,7 @@ public class BanListCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getGuild().getController().getBans().queue(bannedUsers -> {
+        e.getGuild().getBans().queue(bannedUsers -> {
             if (!bannedUsers.isEmpty()) {
                 StringBuilder sb = new StringBuilder("```xl\n");
                 bannedUsers.stream().map(MessageUtil::userDiscrimSet).forEach(user -> {

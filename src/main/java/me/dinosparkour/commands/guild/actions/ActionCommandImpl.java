@@ -52,7 +52,8 @@ abstract class ActionCommandImpl extends GuildCommand {
                                             .filter(textChannel ->
                                                     textChannel.getId().equals(isJoin()
                                                             ? sm.getWelcomeChannelId() : sm.getFarewellChannelId()))
-                                            .findFirst().orElse(e.getGuild().getPublicChannel());
+                                            .findFirst().orElse(e.getGuild().getDefaultChannel());
+                                    assert tc != null; // No public text channels?
                                     chat.sendMessage("__Current " + getAction().noun + " channel__: " + tc.getAsMention());
                                 }
                                 break;

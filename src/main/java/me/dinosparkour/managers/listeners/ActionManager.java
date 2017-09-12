@@ -36,6 +36,7 @@ public class ActionManager extends ListenerAdapter {
 
     public void onEvent(GenericGuildMemberEvent e, boolean isJoin) {
         Guild guild = e.getGuild();
+        TextChannel defaultChannel = guild.getSelfMember().getDefaultChannel();
 
         if (e.getMember().equals(guild.getSelfMember()))
             return; // Ignore our own Join/Leave events
@@ -48,7 +49,7 @@ public class ActionManager extends ListenerAdapter {
             message = parseVariables(message, e.getMember().getUser(), guild);
             TextChannel channel = e.getJDA().getTextChannelById(isJoin ? sm.getWelcomeChannelId() : sm.getFarewellChannelId());
             if (channel == null || !guild.getTextChannels().contains(channel)) { // Make sure we always have a channel
-                channel = guild.getPublicChannel();
+                channel = defaultChannel;
             }
             MessageUtil.sendMessage(message, channel);
         }
@@ -66,7 +67,7 @@ public class ActionManager extends ListenerAdapter {
                 reason = "the role's position being higher in the hierarchy.\n"
                         + "Please move the bot's role to the top in order to fix this issue";
             }
-            MessageUtil.sendMessage(unableToGiveRole(role, e.getMember().getUser(), reason), guild.getPublicChannel());
+            MessageUtil.sendMessage(unableToGiveRole(role, e.getMember().getUser(), reason), defaultChannel);
         }
     }
 

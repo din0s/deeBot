@@ -14,7 +14,7 @@ public class UnbanCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getGuild().getController().getBans().queue(bannedUsers -> {
+        e.getGuild().getBans().queue(bannedUsers -> {
             List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args, bannedUsers);
             switch (userList.size()) {
                 case 0:

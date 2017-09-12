@@ -6,14 +6,12 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MemeCommand extends GlobalCommand {
 
@@ -34,7 +32,7 @@ public class MemeCommand extends GlobalCommand {
         String type = args[0].contains("|") ? args[0].substring(0, args[0].indexOf("|")) : args[0];
         if (type.equalsIgnoreCase("help") || type.equalsIgnoreCase("list") || invalidType(type)) {
             chat.sendMessage("Here are the valid meme types.```xl\n"
-                    + String.join(", ", MEMES.stream().collect(Collectors.toList())) + "```");
+                    + String.join(", ", new ArrayList<>(MEMES)) + "```");
             return;
         }
 
@@ -95,7 +93,7 @@ public class MemeCommand extends GlobalCommand {
     }
 
     private boolean enoughArgs() {
-        return StringUtils.countMatches(allArgs, "|") == 2;
+        return allArgs.chars().filter(ch -> ch == '|').count() == 2;
     }
 
     private boolean invalidType(String type) {

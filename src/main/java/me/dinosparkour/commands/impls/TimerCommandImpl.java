@@ -58,17 +58,6 @@ public abstract class TimerCommandImpl extends Command {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        final String[] targetId = new String[1];
-        if (isReminder()) {
-            if (!e.getAuthor().hasPrivateChannel()) {
-                e.getAuthor().openPrivateChannel().queue(c -> targetId[0] = c.getId());
-            } else {
-                targetId[0] = e.getAuthor().getPrivateChannel().getId();
-            }
-        } else {
-            targetId[0] = e.getTextChannel().getId();
-        }
-
         String typeName = getType().name().toLowerCase();
         String typeSet = getType().pronoun + typeName;
 
@@ -143,12 +132,13 @@ public abstract class TimerCommandImpl extends Command {
                         }
                     }
                     */
-                    TimerImpl impl = new TimerImpl(odt, authorId, targetId[0], message /*, repeatable */);
 
-                    // Add the entry
+                    if (isReminder()) {
+                        e.getAuthor().openPrivateChannel().queue(c -> createImpl(odt, authorId, c.getId(), message));
+                    } else {
+                        createImpl(odt, authorId, e.getTextChannel().getId(), message);
+                    }
                     chat.sendMessage("Your " + typeName + " has been set!", e.getChannel());
-                    addEntry(impl);
-                    IOUtil.writeTextToFile(getFile(), getEntryLine(impl), true);
                 } else {
                     chat.sendMessage("You already have " + typeSet + " set! Use " + getPrefix(e.getGuild()) + getName() + " to review it.");
                 }
@@ -187,6 +177,12 @@ public abstract class TimerCommandImpl extends Command {
                 + impl.getTargetId() + "|"
                 + impl.getMessage()
                 /* + (impl.isRepeatable() ? " --repeat" : "") */;
+    }
+
+    private void createImpl(OffsetDateTime odt, String authorId, String targetId, String message) {
+        TimerImpl impl = new TimerImpl(odt, authorId, targetId, message);
+        addEntry(impl);
+        IOUtil.writeTextToFile(getFile(), getEntryLine(impl), true);
     }
 
     private void addEntry(TimerImpl impl) {
@@ -287,7 +283,6 @@ public abstract class TimerCommandImpl extends Command {
     }
 
     public class TimerImpl {
-
         private final String authorId;
         private final String targetId;
         private final String message;

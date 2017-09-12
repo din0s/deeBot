@@ -13,7 +13,10 @@ import me.dinosparkour.commands.guild.roles.RemoveRoleCommand;
 import me.dinosparkour.commands.guild.roles.RoleCommand;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -154,11 +157,8 @@ public class ShardManager extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent e) {
         e.getJDA().addEventListener((Object[]) LISTENERS);
-        if (e.getJDA().getShardInfo() != null) {
-            int id = e.getJDA().getShardInfo().getShardId();
-            instances.put(id, e.getJDA());
-            e.getJDA().getPresence().setGame(Game.of("on Shard [" + id + "]"));
-        }
+        int id = e.getJDA().getShardInfo() == null ? 0 : e.getJDA().getShardInfo().getShardId();
+        instances.put(id, e.getJDA());
 
         // Check if the current guild contains @deeBot Central
         Guild botGuild = e.getJDA().getGuildById("168154663932264448"); // @deeBot Central

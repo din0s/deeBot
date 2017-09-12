@@ -21,7 +21,11 @@ public class GetInviteCommand extends AdminCommand {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String allArgs = String.join(" ", Arrays.asList(args));
         List<Guild> guilds = new ArrayList<>();
-        Guild idGuild = e.getJDA().getGuildById(allArgs);
+
+        Guild idGuild = null;
+        if (allArgs.matches("\\d+")) { // If it's just digits
+            idGuild = e.getJDA().getGuildById(allArgs);
+        }
 
         if (idGuild != null) {
             guilds.add(idGuild);
@@ -92,8 +96,9 @@ public class GetInviteCommand extends AdminCommand {
 
     private void createInvite(List<TextChannel> channelList, Guild guild, MessageSender chat) {
         TextChannel channel;
-        if (canGenerate(guild.getPublicChannel(), guild.getSelfMember())) {
-            channel = guild.getPublicChannel();
+        TextChannel defaultChannel = guild.getSelfMember().getDefaultChannel();
+        if (canGenerate(defaultChannel, guild.getSelfMember())) {
+            channel = defaultChannel;
         } else {
             channel = channelList.stream()
                     .filter(c -> canGenerate(c, guild.getSelfMember()))

@@ -5,7 +5,6 @@ import me.dinosparkour.commands.impls.Command;
 import me.dinosparkour.commands.impls.GlobalCommand;
 import me.dinosparkour.utils.MessageUtil;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +50,7 @@ public class HelpCommand extends GlobalCommand {
                 return;
             }
 
-            if (!NumberUtils.isDigits(allArgs)) { // Non-existent command passed as parameter
+            if (!allArgs.matches("\\d+")) { // Non-existent command passed as parameter
                 chat.sendMessage("**That's not a valid command!**");
                 return;
             }
