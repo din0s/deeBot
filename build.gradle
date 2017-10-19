@@ -6,7 +6,7 @@ plugins {
 
 sourceCompatibility = 1.8
 group 'DinosParkour'
-version '2.4.4'
+version '2.4.5'
 shadowJar.archiveName = 'deeBot.jar'
 
 repositories {
@@ -16,7 +16,8 @@ repositories {
 dependencies {
     compile 'commons-io:commons-io:2.5'
     compile 'com.mashape.unirest:unirest-java:1.4.9'
-    compile 'net.dv8tion:JDA:3.3.0_266'
+    compile 'ch.qos.logback:logback-classic:1.0.13'
+    compile 'net.dv8tion:JDA:3.3.1_291'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens

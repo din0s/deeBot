@@ -1,7 +1,6 @@
 package me.dinosparkour;
 
 import me.dinosparkour.commands.global.HelpCommand;
-import me.dinosparkour.managers.LogManager;
 import me.dinosparkour.managers.ServerManager;
 import me.dinosparkour.managers.listeners.ShardManager;
 import net.dv8tion.jda.core.AccountType;
@@ -14,6 +13,8 @@ import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import javax.security.auth.login.LoginException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+// import me.dinosparkour.managers.LogManager;
 
 public class Bot {
 
@@ -38,8 +39,7 @@ public class Bot {
             builder.buildAsync(); // Finally establish a connection to Discord's servers!
             Thread.sleep(5000);
         }
-
-        LogManager.init(); // Initialize the log manager after everything's been set up
+//        LogManager.init(); // Initialize the log manager after everything's been set up
         HelpCommand.loadMessage(); // Build the help message once all commands have been registered
     }
 

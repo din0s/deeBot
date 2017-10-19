@@ -1,5 +1,4 @@
 ```diff
-- [v 2.4.4]
-+ Fixed autorole and join/leave messages
-~ (improved internal ID handling)
+- [v 2.4.5]
++ Updated JDA and disabled outdated modules
 ```

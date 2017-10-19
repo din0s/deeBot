@@ -5,7 +5,6 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
@@ -97,9 +96,9 @@ public class HttpRequestUtil {
             response = request.asString(); // Send the request
             if (!success(response)) {// If we do not receive 2XX, print the response
                 System.out.printf("Request to %s returned %s %s:\n%s\n", url, response.getStatus(), response.getStatusText(), response.getBody());
-            } else if (SimpleLog.LEVEL.getPriority() <= SimpleLog.Level.DEBUG.getPriority()) { // If we are in debug mode, print the status
-                System.out.printf("Request to %s returned %s %s\n", url, response.getStatus(), response.getStatusText());
-            }
+            } // else if (SimpleLog.LEVEL.getPriority() <= SimpleLog.Level.DEBUG.getPriority()) { // If we are in debug mode, print the status
+            //  System.out.printf("Request to %s returned %s %s\n", url, response.getStatus(), response.getStatusText());
+            // }
         } catch (UnirestException ignored) {
         }
         return response;
