@@ -56,7 +56,6 @@ public class ShardManager extends ListenerAdapter {
             REGISTRY.addCommand(new PingCommand()),
             REGISTRY.addCommand(new RektCommand()),
             REGISTRY.addCommand(new ReminderCommand()),
-            REGISTRY.addCommand(new ReverseCommand()),
             REGISTRY.addCommand(new SaltCommand()),
             REGISTRY.addCommand(new ShardCommand()),
             REGISTRY.addCommand(new ShortenCommand()),

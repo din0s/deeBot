@@ -24,7 +24,7 @@ public class GameCommand extends AdminCommand {
                 break;
 
             default:
-                p.setGame(Game.of(allArgs));
+                p.setGame(Game.playing(allArgs));
                 chat.sendMessage("Set the game to \"" + MessageUtil.stripFormatting(e.getJDA().getPresence().getGame().getName()) + "\"");
                 break;
         }
