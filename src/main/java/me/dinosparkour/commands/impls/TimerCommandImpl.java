@@ -116,8 +116,8 @@ public abstract class TimerCommandImpl extends Command {
 
                     OffsetDateTime odt = OffsetDateTime.now().plus(duration, chronoUnit);
                     String authorId = e.getAuthor().getId();
-                    String message = e.getMessage().getRawContent()
-                            .substring(e.getMessage().getRawContent().indexOf(" ") + 1 + args[0].length() + 1 + args[1].length())
+                    String message = e.getMessage().getContentRaw()
+                            .substring(e.getMessage().getContentRaw().indexOf(" ") + 1 + args[0].length() + 1 + args[1].length())
                             .trim().replace("\n", "\\n");
 
                     /*

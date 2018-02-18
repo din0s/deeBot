@@ -4,17 +4,20 @@ import me.dinosparkour.commands.impls.GuildCommand;
 import me.dinosparkour.utils.MessageUtil;
 import me.dinosparkour.utils.UserUtil;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UnbanCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getGuild().getBans().queue(bannedUsers -> {
+        e.getGuild().getBanList().queue(banList -> {
+            List<User> bannedUsers = banList.stream().map(Guild.Ban::getUser).collect(Collectors.toList());
             List<User> userList = new UserUtil().getMentionedUsers(e.getMessage(), args, bannedUsers);
             switch (userList.size()) {
                 case 0:

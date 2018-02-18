@@ -28,7 +28,7 @@ public class EvalCommand extends AdminCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        String allArgs = e.getMessage().getContent();
+        String allArgs = e.getMessage().getContentDisplay();
         if (allArgs.contains(" ")) {
             allArgs = allArgs.substring(allArgs.indexOf(' ')).trim();
         }

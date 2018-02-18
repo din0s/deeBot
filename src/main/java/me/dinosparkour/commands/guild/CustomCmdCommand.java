@@ -175,8 +175,8 @@ public class CustomCmdCommand extends GuildCommand {
         ServerManager sm = new ServerManager(e.getGuild());
 
         String name = inputArgs.substring(0, inputArgs.indexOf("|")).trim();
-        String allResponses = e.getMessage().getRawContent()
-                .substring(e.getMessage().getRawContent().indexOf("|") + 1)
+        String allResponses = e.getMessage().getContentRaw()
+                .substring(e.getMessage().getContentRaw().indexOf("|") + 1)
                 .trim().replace("\n", "\\n");
 
         if (name.isEmpty()) {

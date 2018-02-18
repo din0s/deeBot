@@ -23,7 +23,7 @@ public class CustomCmdManager extends ListenerAdapter {
             return; // Ignore message if the author is a bot or if the channel is blacklisted
         ServerManager sm = new ServerManager(e.getGuild());
         String prefix = sm.getPrefix();
-        String rawContent = e.getMessage().getRawContent();
+        String rawContent = e.getMessage().getContentRaw();
 
         if (rawContent.equals(e.getJDA().getSelfUser().getAsMention())) {
             e.getChannel().sendMessage("Prefix for this guild: " + MessageUtil.stripFormatting(prefix)).queue();

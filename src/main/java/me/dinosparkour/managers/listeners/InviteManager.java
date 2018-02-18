@@ -18,7 +18,7 @@ public class InviteManager extends ListenerAdapter {
         if (e.getAuthor().isBot())
             return; // Ignore if the invite was sent by a bot
 
-        Matcher matcher = INVITE_PATTERN.matcher(e.getMessage().getContent());
+        Matcher matcher = INVITE_PATTERN.matcher(e.getMessage().getContentDisplay());
         while (matcher.find()) {
             Invite.resolve(e.getJDA(), matcher.group(1)).queue(invite -> {
                 if (invite != null) {

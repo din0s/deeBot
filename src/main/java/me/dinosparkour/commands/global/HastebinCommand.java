@@ -19,7 +19,7 @@ public class HastebinCommand extends GlobalCommand {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         String flag = "txt";
         String lastArg = args[args.length - 1];
-        String input = stripFirstArg(e.getMessage().getContent());
+        String input = stripFirstArg(e.getMessage().getContentDisplay());
         if (lastArg.startsWith("--") && args.length > 1) { // Flag detection
             flag = lastArg.substring(2);
             input = stripLastArg(input);

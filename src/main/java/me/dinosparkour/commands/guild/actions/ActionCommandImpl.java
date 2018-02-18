@@ -14,7 +14,7 @@ abstract class ActionCommandImpl extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        String allArgs = e.getMessage().getRawContent().substring(getPrefix(e.getGuild()).length()); // Custom argument parsing
+        String allArgs = e.getMessage().getContentRaw().substring(getPrefix(e.getGuild()).length()); // Custom argument parsing
         if (allArgs.contains(" ")) {                                                                 //    to allow the use
             allArgs = allArgs.substring(allArgs.indexOf(" ") + 1);                                   //      of newlines
         }

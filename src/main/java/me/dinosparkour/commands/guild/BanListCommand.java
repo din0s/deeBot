@@ -13,10 +13,10 @@ public class BanListCommand extends GuildCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        e.getGuild().getBans().queue(bannedUsers -> {
-            if (!bannedUsers.isEmpty()) {
+        e.getGuild().getBanList().queue(banList -> {
+            if (!banList.isEmpty()) {
                 StringBuilder sb = new StringBuilder("```xl\n");
-                bannedUsers.stream().map(MessageUtil::userDiscrimSet).forEach(user -> {
+                banList.stream().map(ban -> MessageUtil.userDiscrimSet(ban.getUser())).forEach(user -> {
                     if (sb.length() + user.length() > 2000 - "```".length()) {
                         chat.sendMessage(sb.append("```").toString());
                         sb.setLength(0);

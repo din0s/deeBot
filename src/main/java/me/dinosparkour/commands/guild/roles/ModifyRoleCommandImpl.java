@@ -26,7 +26,7 @@ abstract class ModifyRoleCommandImpl extends RoleCommandImpl {
 
             case 1:
                 Member member = memberList.get(0);
-                String stripUser = e.getMessage().getRawContent().substring(e.getMessage().getRawContent().indexOf(' '))
+                String stripUser = e.getMessage().getContentRaw().substring(e.getMessage().getContentRaw().indexOf(' '))
                         .replaceFirst("<@!?\\d+>", "")
                         .replaceFirst(MessageUtil.userDiscrimSet(member.getUser()), "")
                         .replaceFirst(member.getUser().getName(), "")

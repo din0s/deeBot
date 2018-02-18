@@ -119,7 +119,7 @@ public abstract class Command extends ListenerAdapter {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                     String msg = "User: **" + MessageUtil.userDiscrimSet(e.getAuthor())
-                            + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContent())
+                            + "**\nMessage:\n*" + MessageUtil.stripFormatting(e.getMessage().getContentDisplay())
                             + "*\n\nError:```java\n" + ex.getMessage() + "```";
                     if (msg.length() <= 2000) {
                         chat.sendPrivateMessageToUser(msg, e.getJDA().getUserById(Info.AUTHOR_ID));
@@ -132,9 +132,9 @@ public abstract class Command extends ListenerAdapter {
     }
 
     private boolean isValidCommand(String prefix, Message msg) {
-        if (!msg.getRawContent().startsWith(prefix))
+        if (!msg.getContentRaw().startsWith(prefix))
             return false; // It's not a command if it doesn't start with our prefix
-        String cmdName = msg.getRawContent().substring(prefix.length());
+        String cmdName = msg.getContentRaw().substring(prefix.length());
         if (cmdName.contains(" ")) {
             cmdName = cmdName.substring(0, cmdName.indexOf(" ")); // If there are parameters, remove them
         }
@@ -145,7 +145,7 @@ public abstract class Command extends ListenerAdapter {
     }
 
     private String[] commandArgs(String prefix, Message msg) {
-        String noPrefix = msg.getRawContent().substring(prefix.length());
+        String noPrefix = msg.getContentRaw().substring(prefix.length());
         if (!noPrefix.contains(" ")) { // No whitespaces -> No args
             return new String[]{};
         }
