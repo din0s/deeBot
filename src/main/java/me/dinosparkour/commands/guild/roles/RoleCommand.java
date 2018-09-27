@@ -11,7 +11,6 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.managers.RoleManager;
-import net.dv8tion.jda.core.managers.RoleManagerUpdatable;
 
 import java.awt.*;
 import java.util.*;
@@ -81,9 +80,9 @@ public class RoleCommand extends RoleCommandImpl {
                 switch (args[0].toLowerCase()) {
                     case "create": // Create new role
                         e.getGuild().getController().createRole().queue(role -> {
-                            RoleManagerUpdatable roleCreator = role.getManagerUpdatable();
+                            RoleManager roleCreator = role.getManager();
                             if (hasFullFlag(inputArgs) || hasNullFlag(inputArgs)) {
-                                roleCreator.getNameField().setValue(inputArgs.substring(0, inputArgs.length() - 7));
+                                roleCreator.setName(inputArgs.substring(0, inputArgs.length() - 7));
                                 if (hasFullFlag(inputArgs)) {
                                     if (!e.getMember().hasPermission(Permission.ADMINISTRATOR)) {
                                         chat.sendMessage("You need the `[ADMINISTRATOR]` permission in order to apply the --full flag.");
@@ -94,15 +93,15 @@ public class RoleCommand extends RoleCommandImpl {
                                         role.delete().queue();
                                         return;
                                     } else {
-                                        roleCreator.getPermissionField().setValue(Permission.ALL_PERMISSIONS);
+                                        roleCreator.setPermissions(Permission.ALL_PERMISSIONS);
                                     }
                                 } else {
-                                    roleCreator.getPermissionField().setValue(0L);
+                                    roleCreator.setPermissions(0L);
                                 }
                             } else {
-                                roleCreator.getNameField().setValue(inputArgs);
+                                roleCreator.setName(inputArgs);
                             }
-                            roleCreator.update().queue();
+                            roleCreator.queue();
                         });
                         break;
 

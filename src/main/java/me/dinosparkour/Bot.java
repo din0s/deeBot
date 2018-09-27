@@ -32,7 +32,7 @@ public class Bot {
                 builder.useSharding(shardNum, Info.SHARD_COUNT); // Create a shard
             }
 
-            builder.buildAsync(); // Finally establish a connection to Discord's servers!
+            builder.build(); // Finally establish a connection to Discord's servers!
             Thread.sleep(5000);
         }
 //        LogManager.init(); // Initialize the log manager after everything's been set up

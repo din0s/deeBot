@@ -109,7 +109,7 @@ public class MessageUtil {
         message = message.replace("\\", Matcher.quoteReplacement("\\"))
                 .replace("$", Matcher.quoteReplacement("$"));
 
-        String[] varArray = vars.keySet().toArray(new String[vars.size()]);
+        String[] varArray = vars.keySet().toArray(new String[0]);
         for (String var : varArray) {
             message = replace(message, var, vars.get(var));
         }
@@ -129,7 +129,7 @@ public class MessageUtil {
     }
 
     public static String stripFlags(String message, Set<String> flags) {
-        String[] flagArray = flags.toArray(new String[flags.size()]);
+        String[] flagArray = flags.toArray(new String[0]);
         for (String flag : flagArray) {
             message = replace(message, flag, "");
         }

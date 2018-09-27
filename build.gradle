@@ -1,12 +1,12 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.github.johnrengelman.shadow' version '4.0.0'
     id 'application'
     id 'java'
 }
 
 sourceCompatibility = 1.8
 group 'DinosParkour'
-version '2.4.7'
+version '2.5'
 shadowJar.archiveName = 'deeBot.jar'
 
 repositories {
@@ -14,10 +14,10 @@ repositories {
 }
 
 dependencies {
-    compile 'commons-io:commons-io:2.5'
+    compile 'commons-io:commons-io:2.6'
     compile 'com.mashape.unirest:unirest-java:1.4.9'
-    compile 'ch.qos.logback:logback-classic:1.0.13'
-    compile 'net.dv8tion:JDA:3.5.1_339'
+    compile 'ch.qos.logback:logback-classic:1.2.3'
+    compile 'net.dv8tion:JDA:3.8.0_427'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
