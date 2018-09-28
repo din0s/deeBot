@@ -7,15 +7,19 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.hooks.InterfacedEventManager;
+import net.dv8tion.jda.core.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
+import java.util.EnumSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 // import me.dinosparkour.managers.LogManager;
 
 public class Bot {
 
+    private static ExecutorService pools = new ScheduledThreadPoolExecutor(2);
 
     public static void main(String[] args) throws LoginException, InterruptedException {
         ServerManager.init(); // Initialize the ServerManager and load the files
@@ -26,6 +30,8 @@ public class Bot {
                     .setAudioEnabled(false) // We don't utilise JDA's audio subsystem
                     .setToken(Info.TOKEN) // Set the Authentication Token
                     .setBulkDeleteSplittingEnabled(false) // Performance reasons
+                    .setCallbackPool(pools)
+                    .setDisabledCacheFlags(EnumSet.allOf(CacheFlag.class))
                     .setEventManager(new ThreadedEventManager()); // Allow for simultaneous command processing
 
             if (Info.SHARD_COUNT > 1) {

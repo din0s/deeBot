@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '4.0.0'
+    id 'com.github.johnrengelman.shadow' version '2.0.0'
     id 'application'
     id 'java'
 }
@@ -17,7 +17,7 @@ dependencies {
     compile 'commons-io:commons-io:2.6'
     compile 'com.mashape.unirest:unirest-java:1.4.9'
     compile 'ch.qos.logback:logback-classic:1.2.3'
-    compile 'net.dv8tion:JDA:3.8.0_427'
+    compile 'net.dv8tion:JDA:3.8.0_428'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
