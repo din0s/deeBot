@@ -54,7 +54,7 @@ public class MemeCommand extends GlobalCommand {
             if (img == null) {
                 chat.sendMessage("Something went wrong while trying to generate the image.. Please try again later!");
             } else {
-                e.getChannel().sendFile(img, "PNG",
+                e.getChannel().sendFile(img, "meme.PNG",
                         new MessageBuilder().append("Here's your meme:").build()).queue();
             }
         } else {
