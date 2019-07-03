@@ -12,9 +12,9 @@ public class CatCommand extends GlobalCommand {
 
     @Override
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
-        JSONObject obj = HttpRequestUtil.getData("http://catfacts-api.appspot.com/api/facts");
-        chat.sendMessage(obj != null && obj.has("facts")
-                ? obj.getJSONArray("facts").get(0).toString()
+        JSONObject obj = HttpRequestUtil.getData("https://catfact.ninja/fact");
+        chat.sendMessage(obj != null && obj.has("fact")
+                ? obj.getJSONArray("fact").get(0).toString()
                 : "There was an issue while contacting the database, try again later.");
     }
 
