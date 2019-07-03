@@ -14,7 +14,7 @@ public class CatCommand extends GlobalCommand {
     public void executeCommand(String[] args, MessageReceivedEvent e, MessageSender chat) {
         JSONObject obj = HttpRequestUtil.getData("https://catfact.ninja/fact");
         chat.sendMessage(obj != null && obj.has("fact")
-                ? obj.getJSONArray("fact").get(0).toString()
+                ? obj.getString("fact")
                 : "There was an issue while contacting the database, try again later.");
     }
 
