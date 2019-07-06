@@ -1,4 +1,0 @@
-```diff
-- [v 2.4.5]
-+ Updated JDA and disabled outdated modules
-```
