@@ -22,10 +22,23 @@
  * SOFTWARE.
  */
 
-package me.din0s.const
+package me.din0s.deebot.cmds.global
 
-object Regex {
-    val INTEGER = "\\d+".toRegex()
-    val PIPE = "\\s*\\|\\s*".toRegex()
-    val WHITESPACE = "\\s+".toRegex()
+import me.din0s.deebot.entities.Command
+import me.din0s.deebot.reply
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+
+class Invite : Command(
+    name = "invite",
+    description = "Get a link to invite the bot to your server"
+) {
+    private val INVITE_URL = "http://invite.deebot.xyz"
+    override fun execute(event: MessageReceivedEvent, args: List<String>) {
+        event.reply(
+            "${event.author.asMention}:\n" +
+                    "If you want to invite me to your server, click on this link: <$INVITE_URL>\n\n" +
+                    "In case anything goes wrong, feel free to join my support server.\n" +
+                    "https://discord.gg/0wEZsVCXid2URhDY"
+        )
+    }
 }

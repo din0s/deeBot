@@ -24,6 +24,7 @@
 
 package me.din0s.deebot.entities
 
+import me.din0s.const.Regex
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
@@ -44,19 +45,40 @@ abstract class Command(
     val flags: Map<String, String> = emptyMap(),
     val variables: Map<String, String> = emptyMap(),
     val examples: Array<String> = arrayOf()
-    ) {
+) {
     val usage by lazy {
         val sb = StringBuilder(name)
         if (requiredParams.isNotEmpty()) {
-            sb.append(" ").append(requiredParams.joinToString(" "))
+            sb.append(" [").append(requiredParams.joinToString(" ")).append("]")
         }
         if (optionalParams.isNotEmpty()) {
-            sb.append(" ").append(optionalParams.joinToString(" "))
+            sb.append(" (").append(optionalParams.joinToString(" ")).append(")")
         }
         sb.toString()
     }
 
     abstract fun execute(event: MessageReceivedEvent, args: List<String>)
+
+    protected fun MessageReceivedEvent.parseFlags(boolean: Boolean = false) : Map<String, String?> {
+        val args = message.contentRaw.split(Regex.WHITESPACE).drop(1)
+        if (args.isEmpty()) {
+            return emptyMap()
+        }
+
+        val map = mutableMapOf<String, String?>()
+        args.forEachIndexed { index, arg ->
+            val key = when {
+                arg.startsWith("-") && arg.length == 2 -> "${arg[1]}"
+                arg.startsWith("--") && arg.length > 2 -> arg.substring(2)
+                else -> return@forEachIndexed
+            }
+            map[key] = when {
+                boolean || index == args.size - 1 -> null
+                else -> args[index + 1]
+            }
+        }
+        return map
+    }
 
     override fun toString() : String {
         return javaClass.simpleName

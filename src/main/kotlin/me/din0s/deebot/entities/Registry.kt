@@ -27,6 +27,7 @@ package me.din0s.deebot.entities
 import me.din0s.const.Regex
 import me.din0s.deebot.Bot
 import me.din0s.deebot.Config
+import me.din0s.deebot.cmds.global.Help
 import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -36,7 +37,7 @@ import org.reflections.Reflections
 import java.lang.reflect.Modifier
 
 object Registry : ListenerAdapter() {
-    private val commandList: Map<String, Command>
+    val commandList: Map<String, Command>
     private val log = LogManager.getLogger(Registry::class.java)
     private val prefix = Config.defaultPrefix
 
@@ -57,6 +58,9 @@ object Registry : ListenerAdapter() {
             }
         commandList = cmds
         log.debug("Registered {} commands", commandList.size)
+
+        val help = cmds["help"] as Help
+        help.generate()
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {

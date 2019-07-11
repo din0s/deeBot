@@ -24,9 +24,19 @@
 
 package me.din0s.deebot
 
+import me.din0s.deebot.entities.Registry
+import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import java.lang.StringBuilder
+import java.util.*
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
+import java.util.function.Predicate
+import java.util.function.UnaryOperator
 
 fun MessageChannel.send(msg: String) {
     sendMessage(msg).queue()
@@ -46,4 +56,58 @@ fun User.whisper(msg: String) {
     openPrivateChannel().queue {
         it.send(msg)
     }
+}
+
+fun Member.canDelete(textChannel: TextChannel) : Boolean {
+    return hasPermission(textChannel, Permission.MESSAGE_MANAGE)
+}
+
+fun Collection<Any>.paginate(str: UnaryOperator<Any>, size: Int) : List<String> {
+    var i = 0
+    val pages = mutableListOf<String>()
+    val sb = StringBuilder()
+
+    forEach {
+        if (i != 0) {
+            if (i % size == 0) {
+                pages.add(sb.toString())
+                sb.clear()
+            } else {
+                sb.append("\n")
+            }
+        }
+
+        sb.append(str.apply(it))
+        i++
+    }
+
+    if (sb.isNotEmpty()) {
+        pages.add(sb.toString())
+    }
+    return pages
+}
+
+fun Long.asTime() : String {
+    var time = this
+    val days = TimeUnit.MILLISECONDS.toDays(time)
+    time -= TimeUnit.DAYS.toMillis(days)
+
+    val hours = TimeUnit.MILLISECONDS.toHours(time)
+    time -= TimeUnit.HOURS.toMillis(hours)
+
+    val mins = TimeUnit.MILLISECONDS.toMinutes(time)
+    time -= TimeUnit.MINUTES.toMillis(mins)
+
+    val secs = TimeUnit.MILLISECONDS.toSeconds(time)
+    val sb = StringBuilder()
+    for (unit in setOf(Pair(days, "day"), Pair(hours, "hour"), Pair(mins, "minute"), Pair(secs, "second"))) {
+        if (unit.first > 0) {
+            sb.append(unit.first).append(" ").append(unit.second)
+            if (unit.first > 1) {
+                sb.append("s")
+            }
+            sb.append(" ")
+        }
+    }
+    return sb.toString()
 }
