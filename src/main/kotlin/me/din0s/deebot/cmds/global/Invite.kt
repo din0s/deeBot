@@ -34,11 +34,11 @@ class Invite : Command(
 ) {
     private val INVITE_URL = "http://invite.deebot.xyz"
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        event.reply(
-            "${event.author.asMention}:\n" +
-                    "If you want to invite me to your server, click on this link: <$INVITE_URL>\n\n" +
-                    "In case anything goes wrong, feel free to join my support server.\n" +
-                    "https://discord.gg/0wEZsVCXid2URhDY"
-        )
+        event.reply("""
+            ${event.author.asMention}:
+            If you want to invite me to your server, click on this link: <$INVITE_URL>
+            In case anything goes wrong, feel free to join my support server.
+            https://discord.gg/0wEZsVCXid2URhDY
+        """.trimIndent())
     }
 }

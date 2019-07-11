@@ -42,16 +42,17 @@ class Info : Command(
         val totalMemory = runtime.totalMemory() / UNIT
         val freeMemory = runtime.freeMemory() / UNIT
         val usedMemory = totalMemory - freeMemory
-        event.reply(
-            "__Bot Info__:\n" +
-                    "**Bot Creator**: dinos#0649\n" +
-                    "**Bot Version**: ${Variables.VERSION}\n" +
-                    "**API Library**: JDA ${JDAInfo.VERSION}\n" +
-                    "**RAM Used**: ${usedMemory / UNIT}/${totalMemory / UNIT} MB\n" +
-                    "**Bot Uptime**: ${ManagementFactory.getRuntimeMXBean().uptime.asTime()}\n\n" +
-                    "Do you have any suggestions for the bot?\n" +
-                    "Join the official server and let me know!\n" +
-                    "https://discord.gg/0wEZsVCXid2URhDY"
-        )
+        event.reply("""
+            __Bot Info__:
+            **Bot Creator**: dinos#0649
+            **Bot Version**: ${Variables.VERSION}
+            **API Library**: JDA ${JDAInfo.VERSION}
+            **RAM Used**: ${usedMemory / UNIT}/${totalMemory / UNIT} MB
+            **Bot Uptime**: ${ManagementFactory.getRuntimeMXBean().uptime.asTime()}
+            
+            Do you have any suggestions for the bot?
+            Join the official server and let me know!
+            https://discord.gg/0wEZsVCXid2URhDY
+        """.trimIndent())
     }
 }
