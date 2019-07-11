@@ -32,8 +32,6 @@ import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.paginate
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.lang.StringBuilder
-import java.util.function.Consumer
 import java.util.function.UnaryOperator
 
 class Help : Command(
@@ -94,7 +92,7 @@ class Help : Command(
             .sortedBy { it.name }
             .toSet()
             .paginate(UnaryOperator { it as Command
-                "+ %PREFIX% ${it.usage}\n- ${it.description}\n"
+                "+ %PREFIX%${it.usage}\n- ${it.description}\n"
             }, PAGE_SIZE)
     }
 
