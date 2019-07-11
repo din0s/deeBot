@@ -49,15 +49,16 @@ class Meme : Command(
     minArgs = 1,
     botPermissions = arrayOf(Permission.MESSAGE_ATTACH_FILES),
     requiredParams = arrayOf("type | top line | bottom line"),
-    examples = arrayOf("kermit | that's still | none of my business")
+    examples = arrayOf("kermit | that's still | none of my business", "list", "xy | generate | all the memes!")
 ) {
-    private val helpCmds = setOf("help", "list", "templates")
+    private val helpCmds = setOf("help", "list", "templates", "info")
     private val log = LogManager.getLogger(Meme::class.java)
     private lateinit var templatePages: List<String>
     private lateinit var templates: Set<String>
 
-    private val GENERATOR_URL = "https://memegen.link/%s/%s/%s.jpg"
-    private val TEMPLATE_URL = "https://memegen.link/api/templates/"
+    private val URL = "https://memegen.link/"
+    private val GENERATOR_URL = "$URL%s/%s/%s.jpg"
+    private val TEMPLATE_URL = "${URL}api/templates/"
     private val PAGE_SIZE = 10
 
     init {
@@ -93,9 +94,15 @@ class Meme : Command(
         }
 
         if (helpCmds.contains(args[0].toLowerCase())) {
+            val arg1 = args[1].toLowerCase()
+            if (templates.contains(arg1)) {
+                event.sendExample(arg1)
+                return
+            }
+
             val index = when {
-                args.size == 1 || !args[1].matches(Regex.INTEGER) -> 1
-                else -> args[1].toInt()
+                args.size == 1 || !arg1.matches(Regex.INTEGER) -> 1
+                else -> arg1.toInt()
             }
 
             if (index > templatePages.size || index <= 0) {
@@ -119,7 +126,7 @@ class Meme : Command(
         val template = args[0].toLowerCase()
         if (!allArgs.contains('|')) {
             if (templates.contains(template)) {
-                // TODO example
+                event.sendExample(template)
             } else {
                 event.reply("**That's not a valid template!**\nUse ${prefix}meme list to see the full template list.")
             }
@@ -155,6 +162,45 @@ class Meme : Command(
                     })
                 }
             }
+        }
+    }
+
+    private fun MessageReceivedEvent.sendExample(template: String) {
+        channel.sendTyping().queue {
+            HttpUtil.get("$TEMPLATE_URL$template", cb = object : BaseCallback() {
+                override fun onFailure(call: Call, e: IOException) {
+                    super.onFailure(call, e)
+                    fail()
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+                    super.onResponse(call, response)
+                    val json = response.asJson()
+                    if (!json.has("example")) {
+                        fail()
+                        return
+                    }
+
+                    val directUrl = "$URL${json.getString("example").substringAfter("/api/templates/")}.jpg"
+                    HttpUtil.get(directUrl, cb = object : BaseCallback() {
+                        override fun onFailure(call: Call, e: IOException) {
+                            super.onFailure(call, e)
+                            fail()
+                        }
+
+                        override fun onResponse(call: Call, response: Response) {
+                            super.onResponse(call, response)
+                            channel.sendMessage("${author.asMention}: Here's what the meme looks like")
+                                .addFile(response.body()!!.byteStream(), "meme.jpg")
+                                .queue()
+                        }
+                    })
+                }
+
+                fun fail() {
+                    reply("Could not access the meme generator website. Please try again later!")
+                }
+            })
         }
     }
 
