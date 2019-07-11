@@ -45,6 +45,7 @@ object Config {
                 jsonObj.put("prefix", "")
                 jsonObj.put("google_key", "")
                 jsonObj.put("google_search", "")
+                jsonObj.put("patreon", "")
                 cfgFile.writeText(jsonObj.toString(4))
 
                 log.info("Created config.json! Please fill in your credentials.")
@@ -69,9 +70,10 @@ object Config {
     val defaultPrefix: String = cfgJson.getString("prefix")
     val googleKey: String = cfgJson.getString("google_key")
     val googleSearch: String = cfgJson.getString("google_search")
+    val patreon: String = cfgJson.getString("patreon")
 
     private fun verify(jsonObj: JSONObject) : JSONObject {
-        for (key in setOf("token", "prefix", "google_key", "google_search")) {
+        for (key in setOf("token", "prefix", "google_key", "google_search", "patreon")) {
             if (!jsonObj.has(key) || jsonObj.get(key).toString().isEmpty()) {
                 log.warn(Errors.CONFIG_MISSING_VAL, key)
 
