@@ -32,7 +32,6 @@ import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.paginate
 import me.din0s.deebot.reply
 import me.din0s.deebot.util.HttpUtil
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
@@ -82,6 +81,7 @@ class Meme : Command(
                         set.add(template)
                         "+ $it ($template)\n"
                     }, PAGE_SIZE)
+                templates = set
             }
         })
     }
@@ -128,6 +128,11 @@ class Meme : Command(
             if (lines.size > 2) {
                 // TODO too many
             } else {
+                if (!templates.contains(template)) {
+                    event.reply("**That's not a valid template!**\nUse ${prefix}meme list to see the full template list.")
+                    return
+                }
+
                 val top = lines[0].encode()
                 val bot = when {
                     lines.size == 1 -> "_"
@@ -167,7 +172,7 @@ class Meme : Command(
                         .replace("_", "__")
                         .trim()
                         .replace(" ", "_"),
-                    StandardCharsets.UTF_8
+                    StandardCharsets.UTF_8.displayName()
                 )
             }
         }
