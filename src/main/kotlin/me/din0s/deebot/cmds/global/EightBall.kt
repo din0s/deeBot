@@ -58,7 +58,7 @@ class EightBall : Command(
         // TODO: parse / strip etc
         val questionFinal = when {
             questionOriginal.endsWith('?') -> questionOriginal
-            else -> "$questionOriginal.cap?"
+            else -> "$questionOriginal?"
         }
         val reply = replies.random()
         val emoji1 = when (Random.nextBoolean()) {
