@@ -25,7 +25,9 @@
 package me.din0s.const
 
 object Regex {
+    val DISCORD_ID = "\\d{17,19}".toRegex()
     val INTEGER = "\\d+".toRegex()
     val PIPE = "\\s*\\|\\s*".toRegex()
+    val USER_TAG = ".{2,32}#\\d{4}".toRegex()
     val WHITESPACE = "\\s+".toRegex()
 }

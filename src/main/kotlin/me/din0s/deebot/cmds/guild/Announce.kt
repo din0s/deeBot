@@ -22,43 +22,24 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot
+package me.din0s.deebot.cmds.guild
 
-import me.din0s.Variables
-import me.din0s.deebot.entities.Registry
-import net.dv8tion.jda.api.events.ReadyEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import me.din0s.deebot.entities.Command
+import me.din0s.deebot.reply
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import java.util.*
 
-object Bot {
-    private val DISABLED_FLAGS = EnumSet.allOf(CacheFlag::class.java)
+class Announce : Command(
+    name = "announce",
+    description = "Set a timer to send a message in a server channel",
+    alias = setOf("announcement"),
+    guildOnly = true,
+    examples = arrayOf("30 mins Join the Minecraft server!")
+) {
+    private val log = LogManager.getLogger(Announce::class.java)
 
-    val DEV_ID = Variables.DEV_ID.value.toLong()
-    val LOG: Logger = LogManager.getLogger(Bot::class.java)
-
-    fun init() {
-        DefaultShardManagerBuilder()
-            .setBulkDeleteSplittingEnabled(false)
-            .setDisabledCacheFlags(DISABLED_FLAGS)
-            .setToken(Config.token)
-            .setShardsTotal(2)
-            .addEventListeners(OnReadyListener)
-            .build()
+    override fun execute(event: MessageReceivedEvent, args: List<String>) {
+        event.reply("This command has been temporarily disabled")
+        log.info("")
     }
-}
-
-private object OnReadyListener : ListenerAdapter() {
-    override fun onReady(event: ReadyEvent) {
-        Bot.LOG.trace("Received READY")
-        event.jda.addEventListener(Registry)
-        Bot.LOG.trace("Setup DONE")
-    }
-}
-
-fun main() {
-    Bot.init()
 }

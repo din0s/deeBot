@@ -24,18 +24,14 @@
 
 package me.din0s.deebot
 
-import me.din0s.deebot.entities.Registry
+import me.din0s.const.Regex
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.lang.StringBuilder
-import java.util.*
+import net.dv8tion.jda.api.sharding.ShardManager
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
-import java.util.function.Predicate
 import java.util.function.UnaryOperator
 
 fun MessageChannel.send(msg: String) {
@@ -110,4 +106,47 @@ fun Long.asTime() : String {
         }
     }
     return sb.toString()
+}
+
+fun Guild.getUser(name: String) : List<User> {
+    val user = when {
+        name.matches(Regex.USER_TAG) -> getMemberByTag(name)?.user
+        name.matches(Regex.DISCORD_ID) -> getMemberById(name)?.user
+        else -> null
+    }
+    return if (user == null) {
+        val byName = members.filter { it.user.name.equals(name, true) }.map { it.user }.toList()
+        return if (byName.isEmpty()) {
+            members.filter { it.nickname?.equals(name, true) ?: false }.map { it.user }.toList()
+        } else {
+            byName
+        }
+    } else {
+        listOf(user)
+    }
+}
+
+fun ShardManager.getUser(name: String) : List<User> {
+    val user = when {
+        name.matches(Regex.USER_TAG) -> getUserByTag(name)
+        name.matches(Regex.DISCORD_ID) -> getUserById(name)
+        else -> null
+    }
+    return if (user == null) {
+        users.filter { it.name.equals(name, true) }.toList()
+    } else {
+        listOf(user)
+    }
+}
+
+fun OffsetDateTime.format() : String {
+    return format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")) + " UTC"
+}
+
+fun String.strip() : String {
+    return replace("*", "\\*")
+        .replace("`", "\\`")
+        .replace("_", "\\_")
+        .replace("~~", "\\~\\~")
+        .replace(">", "\u180E>")
 }
