@@ -22,20 +22,12 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot.managers
+package me.din0s.deebot.entities
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-
-object StatsManager : ListenerAdapter() {
-    var read = 0
-    var sent = 0
-
-    override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.author == event.jda.selfUser) {
-            sent++
-        } else {
-            read++
-        }
-    }
-}
+data class CustomCommand(
+    val label: String,
+    val response: String,
+    val guildId: Long,
+    val private: Boolean = false,
+    val delete: Boolean = false
+)

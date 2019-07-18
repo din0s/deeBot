@@ -66,7 +66,7 @@ class Help : Command(
                 index
             }
             else -> {
-                val cmd = Registry.commandList[args[0]]
+                val cmd = Registry.getCommand(args[0])
                 if (cmd == null) {
                     event.reply("That command doesn't exist!")
                 } else {
@@ -88,9 +88,8 @@ class Help : Command(
     }
 
     fun generate() {
-        helpPages = Registry.commandList.values
+        helpPages = Registry.getCommands()
             .sortedBy { it.name }
-            .toSet()
             .paginate(UnaryOperator { it as Command
                 "+ %PREFIX%${it.usage}\n- ${it.description}\n"
             }, PAGE_SIZE)

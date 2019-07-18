@@ -32,6 +32,8 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.reflections.Reflections
+import java.lang.reflect.Modifier
 import java.util.*
 
 object Bot {
@@ -54,6 +56,13 @@ object Bot {
 private object OnReadyListener : ListenerAdapter() {
     override fun onReady(event: ReadyEvent) {
         Bot.LOG.trace("Received READY")
+        Reflections("me.din0s.deebot.handlers")
+            .getSubTypesOf(ListenerAdapter::class.java)
+            .filter { !Modifier.isAbstract(it.modifiers) }
+            .forEach {
+                val handler = it.getDeclaredConstructor().newInstance()
+                event.jda.addEventListener(handler)
+            }
         event.jda.addEventListener(Registry)
         Bot.LOG.trace("Setup DONE")
     }

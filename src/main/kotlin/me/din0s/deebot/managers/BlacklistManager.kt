@@ -22,32 +22,35 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot.cmds.global
+package me.din0s.deebot.managers
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.handlers.StatsHandler
-import me.din0s.deebot.reply
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.TextChannel
 
-class Stats : Command(
-    name = "stats",
-    description = "Display the bot's statistics",
-    alias = setOf("statistics")
-) {
-    private val c = "\u00b7"
+object BlacklistManager {
+    private val ids = mutableSetOf<Long>()
 
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val sm = event.jda.shardManager!!
-        event.reply("""
-            __Connections__
-            **$c ${sm.guildCache.size()}** total servers
-            **$c ${sm.textChannelCache.size()}** text channels
-            **$c ${sm.voiceChannelCache.size()}** voice channels
-            **$c ${sm.userCache.size()}** unique users
-            
-            __Callbacks__
-            **$c ${StatsHandler.read}** read messages
-            **$c ${StatsHandler.sent}** sent messages
-        """.trimIndent())
+    init {
+        // TODO: Load from DB
+    }
+
+    fun toggle(id: Long) : Boolean {
+        return if (ids.contains(id)) {
+            ids.remove(id)
+            false
+        } else {
+            ids.add(id)
+            true
+        }
+    }
+
+    fun isBlacklisted(id: Long) : Boolean {
+        return ids.contains(id)
+    }
+
+    fun getForGuild(guild: Guild) : Set<TextChannel> {
+        return guild.textChannels
+            .filter { ids.contains(it.idLong) }
+            .toSet()
     }
 }

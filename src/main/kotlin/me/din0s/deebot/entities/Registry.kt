@@ -37,7 +37,7 @@ import org.reflections.Reflections
 import java.lang.reflect.Modifier
 
 object Registry : ListenerAdapter() {
-    val commandList: Map<String, Command>
+    private val commandList: Map<String, Command>
     private val log = LogManager.getLogger(Registry::class.java)
     private val prefix = Config.defaultPrefix
 
@@ -61,6 +61,14 @@ object Registry : ListenerAdapter() {
 
         val help = cmds["help"] as Help
         help.generate()
+    }
+
+    fun getCommands() : Set<Command> {
+        return commandList.values.toSet()
+    }
+
+    fun getCommand(label: String) : Command? {
+        return commandList[label.toLowerCase()]
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {

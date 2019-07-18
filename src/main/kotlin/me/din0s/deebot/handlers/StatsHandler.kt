@@ -22,32 +22,22 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot.cmds.global
+package me.din0s.deebot.handlers
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.handlers.StatsHandler
-import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.hooks.ListenerAdapter
 
-class Stats : Command(
-    name = "stats",
-    description = "Display the bot's statistics",
-    alias = setOf("statistics")
-) {
-    private val c = "\u00b7"
+class StatsHandler : ListenerAdapter() {
+    companion object {
+        var read = 0
+        var sent = 0
+    }
 
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val sm = event.jda.shardManager!!
-        event.reply("""
-            __Connections__
-            **$c ${sm.guildCache.size()}** total servers
-            **$c ${sm.textChannelCache.size()}** text channels
-            **$c ${sm.voiceChannelCache.size()}** voice channels
-            **$c ${sm.userCache.size()}** unique users
-            
-            __Callbacks__
-            **$c ${StatsHandler.read}** read messages
-            **$c ${StatsHandler.sent}** sent messages
-        """.trimIndent())
+    override fun onMessageReceived(event: MessageReceivedEvent) {
+        if (event.author == event.jda.selfUser) {
+            sent++
+        } else {
+            read++
+        }
     }
 }
