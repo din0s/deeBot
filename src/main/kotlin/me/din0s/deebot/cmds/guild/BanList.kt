@@ -43,7 +43,7 @@ class BanList: Command(
     userPermissions = arrayOf(Permission.BAN_MEMBERS),
     optionalParams = arrayOf("page")
 ) {
-    private val USERS_PER_PAGE = 10
+    private val USERS_PER_PAGE = 5
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.guild.retrieveBanList().queue { bans ->
             if (bans.isEmpty()) {
