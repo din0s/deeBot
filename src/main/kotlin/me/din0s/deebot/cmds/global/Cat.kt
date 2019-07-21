@@ -31,7 +31,6 @@ import me.din0s.deebot.util.HttpUtil
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
-import org.apache.logging.log4j.LogManager
 import java.io.IOException
 
 class Cat : Command(
@@ -40,29 +39,31 @@ class Cat : Command(
     alias = setOf("catfact")
 ) {
     private val BASE_URL = "https://catfact.ninja/fact"
-    private val log = LogManager.getLogger(Cat::class.java)
+//    private val log = LogManager.getLogger(Cat::class.java)
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
-            override fun onFailure(call: Call, e: IOException) {
-                super.onFailure(call, e)
-                noCat()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                super.onResponse(call, response)
-                val json = response.asJson()
-
-                if (json.has("fact")) {
-                    event.reply(json.getString("fact"))
-                } else {
+        event.channel.sendTyping().queue {
+            HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
+                override fun onFailure(call: Call, e: IOException) {
+                    super.onFailure(call, e)
                     noCat()
                 }
-            }
 
-            fun noCat() {
-                event.reply("*There was an issue with the cat fact database, please try again later.*")
-            }
-        })
+                override fun onResponse(call: Call, response: Response) {
+                    super.onResponse(call, response)
+                    val json = response.asJson()
+
+                    if (json.has("fact")) {
+                        event.reply(json.getString("fact"))
+                    } else {
+                        noCat()
+                    }
+                }
+
+                fun noCat() {
+                    event.reply("*There was an issue with the cat fact database, please try again later.*")
+                }
+            })
+        }
     }
 }

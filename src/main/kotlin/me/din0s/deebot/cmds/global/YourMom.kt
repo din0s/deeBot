@@ -45,25 +45,27 @@ class YourMom : Command(
     private val API_URL = "https://api.yomomma.info/"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        HttpUtil.get(API_URL, cb = object : BaseCallback() {
-            override fun onFailure(call: Call, e: IOException) {
-                super.onFailure(call, e)
-                fail()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                super.onResponse(call, response)
-                val json = response.asJson()
-                if (!json.has("joke")) {
+        event.channel.sendTyping().queue {
+            HttpUtil.get(API_URL, cb = object : BaseCallback() {
+                override fun onFailure(call: Call, e: IOException) {
+                    super.onFailure(call, e)
                     fail()
-                } else {
-                    event.reply(json.getString("joke"))
                 }
-            }
 
-            fun fail() {
-                event.reply("Ur mom gay")
-            }
-        })
+                override fun onResponse(call: Call, response: Response) {
+                    super.onResponse(call, response)
+                    val json = response.asJson()
+                    if (!json.has("joke")) {
+                        fail()
+                    } else {
+                        event.reply(json.getString("joke"))
+                    }
+                }
+
+                fun fail() {
+                    event.reply("Ur mom gay")
+                }
+            })
+        }
     }
 }

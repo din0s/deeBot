@@ -31,7 +31,6 @@ import me.din0s.deebot.util.HttpUtil
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
-import org.apache.logging.log4j.LogManager
 import java.io.IOException
 
 class ChuckNorris : Command(
@@ -40,29 +39,31 @@ class ChuckNorris : Command(
     alias = setOf("chuck", "norris")
 ) {
     private val BASE_URL = "http://api.icndb.com/jokes/random"
-    private val log = LogManager.getLogger(ChuckNorris::class.java)
+//    private val log = LogManager.getLogger(ChuckNorris::class.java)
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
-            override fun onFailure(call: Call, e: IOException) {
-                super.onFailure(call, e)
-                noChuck()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                super.onResponse(call, response)
-                val json = response.asJson()
-
-                if (json.has("value") && json.getJSONObject("value").has("joke")) {
-                    event.reply(json.getJSONObject("value").getString("joke"))
-                } else {
+        event.channel.sendTyping().queue() {
+            HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
+                override fun onFailure(call: Call, e: IOException) {
+                    super.onFailure(call, e)
                     noChuck()
                 }
-            }
 
-            fun noChuck() {
-                event.reply("*There was an issue with the Chuck Norris database, please try again later.*")
-            }
-        })
+                override fun onResponse(call: Call, response: Response) {
+                    super.onResponse(call, response)
+                    val json = response.asJson()
+
+                    if (json.has("value") && json.getJSONObject("value").has("joke")) {
+                        event.reply(json.getJSONObject("value").getString("joke"))
+                    } else {
+                        noChuck()
+                    }
+                }
+
+                fun noChuck() {
+                    event.reply("*There was an issue with the Chuck Norris database, please try again later.*")
+                }
+            })
+        }
     }
 }

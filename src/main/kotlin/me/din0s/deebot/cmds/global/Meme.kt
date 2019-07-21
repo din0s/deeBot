@@ -31,6 +31,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.paginate
 import me.din0s.deebot.reply
+import me.din0s.deebot.showUsage
 import me.din0s.deebot.util.HttpUtil
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -94,7 +95,7 @@ class Meme : Command(
         }
 
         if (helpCmds.contains(args[0].toLowerCase())) {
-            val arg1 = args[1].toLowerCase()
+            val arg1 = args[0].toLowerCase()
             if (templates.contains(arg1)) {
                 event.sendExample(arg1)
                 return
@@ -133,7 +134,7 @@ class Meme : Command(
         } else {
             val lines = allArgs.split(Regex.PIPE).drop(1)
             if (lines.size > 2) {
-                // TODO too many
+                event.showUsage(this)
             } else {
                 if (!templates.contains(template)) {
                     event.reply("**That's not a valid template!**\nUse ${prefix}meme list to see the full template list.")
