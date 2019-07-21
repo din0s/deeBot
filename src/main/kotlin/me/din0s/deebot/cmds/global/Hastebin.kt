@@ -38,7 +38,7 @@ import java.io.IOException
 class Hastebin : Command(
     name = "hastebin",
     description = "Upload a text snippet to Hastebin",
-    alias = setOf("hb"),
+    alias = setOf("hb", "haste", "paste", "pastebin"),
     minArgs = 1,
     requiredParams = arrayOf("your text/code snippet"),
     optionalParams = arrayOf("language flag"),
@@ -48,49 +48,54 @@ class Hastebin : Command(
     private val BASE_URL = "https://hastebin.com/documents"
     private val VALID_FLAGS = setOf("-l", "--lang", "--language")
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val flag = getLang(args) ?: "txt'"
-        HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
-            override fun onFailure(call: Call, e: IOException) {
-                super.onFailure(call, e)
-                failed()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                super.onResponse(call, response)
-                val json = response.asJson()
-                if (!json.has("key")) {
+        val (paste, flag) = parseArgs(args)
+        event.channel.sendTyping().queue {
+            HttpUtil.post(BASE_URL, paste, cb = object : BaseCallback() {
+                override fun onFailure(call: Call, e: IOException) {
+                    super.onFailure(call, e)
                     failed()
-                    return
                 }
-                if (event.isFromGuild && event.guild.selfMember.canDelete(event.textChannel)) {
-                    event.message.delete().queue {
+
+                override fun onResponse(call: Call, response: Response) {
+                    super.onResponse(call, response)
+                    val json = response.asJson()
+                    if (!json.has("key")) {
+                        failed()
+                        return
+                    }
+                    if (event.isFromGuild && event.guild.selfMember.canDelete(event.textChannel)) {
+                        event.message.delete().queue {
+                            success(json, flag)
+                        }
+                    } else {
                         success(json, flag)
                     }
-                } else {
-                    success(json, flag)
                 }
-            }
 
-            fun failed() {
-                event.reply("There was an error uploading your snippet, please try again later.")
-            }
+                fun failed() {
+                    event.reply("There was an error uploading your snippet, please try again later.")
+                }
 
-            fun success(json: JSONObject, flag: String) {
-                event.reply("${event.author.asMention}: https://hastebin.com/${json.getString("key")}.$flag")
-            }
-        })
+                fun success(json: JSONObject, flag: String?) {
+                    val ext = when (flag) {
+                        null -> "txt"
+                        else -> flag
+                    }
+                    event.reply("${event.author.asMention}: https://hastebin.com/${json.getString("key")}.$ext")
+                }
+            })
+        }
     }
 
-    private fun getLang(args: List<String>) : String? {
-        if (args.size < 2) {
-            return null
+    private fun parseArgs(args: List<String>) : Pair<String, String?> {
+        if (args.size > 1) {
+            if (VALID_FLAGS.contains(args[0].toLowerCase())) {
+                return Pair(args.drop(2).joinToString(" "), args[1])
+            }
+            if (VALID_FLAGS.contains(args[args.size - 2].toLowerCase())) {
+                return Pair(args.dropLast(2).joinToString(" "), args.last())
+            }
         }
-        if (VALID_FLAGS.contains(args[0].toLowerCase())) {
-            return args[1]
-        }
-        if (VALID_FLAGS.contains(args[args.size - 2].toLowerCase())) {
-            return args.last()
-        }
-        return null
+        return Pair(args.joinToString(" "), null)
     }
 }
