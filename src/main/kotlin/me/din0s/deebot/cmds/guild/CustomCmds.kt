@@ -25,10 +25,12 @@
 package me.din0s.deebot.cmds.guild
 
 import me.din0s.const.Regex
+import me.din0s.deebot.Config
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.entities.CustomCommand
 import me.din0s.deebot.entities.Registry
 import me.din0s.deebot.managers.CustomCmdManager
+import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.reply
 import me.din0s.deebot.strip
 import net.dv8tion.jda.api.Permission
@@ -64,7 +66,7 @@ class CustomCmds : Command(
             }
             "list" -> {
                 if (!CustomCmdManager.hasEntries(event.guild)) {
-                    event.reply("There are no Custom Commands for this server!")
+                    event.reply("There are no custom commands for this server!")
                     return
                 }
 
@@ -78,7 +80,7 @@ class CustomCmds : Command(
                                         "- ${list.joinToString("\n- ") { it.response } }"
                             )
                         } else {
-                            event.reply("That Custom Command doesn't exist!")
+                            event.reply("That custom command doesn't exist!")
                         }
                     }
                     1 -> {
@@ -86,7 +88,8 @@ class CustomCmds : Command(
                         event.reply("**Custom Commands:**\n${cmds.keys.joinToString(", ")}")
                     }
                     else -> {
-                        // TODO: usage
+                        val prefix = ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
+                        event.reply("**Usage:** ${prefix.strip()}customcommands list (command name)")
                     }
                 }
             }
@@ -94,21 +97,20 @@ class CustomCmds : Command(
                 event.createOrEdit(args, false)
             }
             "delete" -> {
-                if (args.size != 2) {
-                    // TODO: usage
-                    return
-                }
-                if (CustomCmdManager.delete(args[1], event.guild)) {
-                    event.reply("*Successfully deleted the Custom Command!*")
-                } else {
-                    event.reply("That Custom Command doesn't exist!")
+                when {
+                    args.size != 2 -> {
+                        val prefix = ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
+                        event.reply("**Usage:** ${prefix.strip()}customcommands delete [command name]")
+                    }
+                    CustomCmdManager.delete(args[1], event.guild) -> event.reply("*Successfully deleted that custom command!*")
+                    else -> event.reply("That custom command doesn't exist!")
                 }
             }
             "resetall", "deleteall" -> {
                 if (CustomCmdManager.deleteAll(event.guild)) {
-                    event.reply("**Deleted all Custom Commands!** \uD83D\uDE35")
+                    event.reply("**Deleted all custom commands!** \uD83D\uDE35")
                 } else {
-                    event.reply("There are no Custom Commands for this server!")
+                    event.reply("There are no custom commands for this server!")
                 }
             }
             "reload" -> {
@@ -120,7 +122,12 @@ class CustomCmds : Command(
     private fun MessageReceivedEvent.createOrEdit(args: List<String>, create: Boolean) {
         val split = message.contentRaw.substringAfter(args[0]).trim().split(Regex.PIPE)
         if (split.size < 2) {
-            // TODO: usage
+            val sub = when {
+                create -> "create"
+                else -> "modify"
+            }
+            val prefix = ServerManager.get(guild.id)?.prefix ?: Config.defaultPrefix
+            reply("**Usage:** ${prefix.strip()}customcommands $sub [command name] | [random responses separated by |]")
             return
         }
         val label = split[0]
