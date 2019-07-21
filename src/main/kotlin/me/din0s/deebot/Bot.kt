@@ -55,7 +55,7 @@ object Bot {
 
 private object OnReadyListener : ListenerAdapter() {
     override fun onReady(event: ReadyEvent) {
-        Bot.LOG.trace("Received READY")
+        Bot.LOG.debug("Received READY on shard #{}", event.jda.shardInfo.shardId)
         Reflections("me.din0s.deebot.handlers")
             .getSubTypesOf(ListenerAdapter::class.java)
             .filter { !Modifier.isAbstract(it.modifiers) }
@@ -64,7 +64,6 @@ private object OnReadyListener : ListenerAdapter() {
                 event.jda.addEventListener(handler)
             }
         event.jda.addEventListener(Registry)
-        Bot.LOG.trace("Setup DONE")
     }
 }
 
