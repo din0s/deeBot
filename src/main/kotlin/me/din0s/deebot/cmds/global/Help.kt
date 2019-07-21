@@ -39,6 +39,7 @@ class Help : Command(
     description = "Display information about any command",
     alias = setOf("h", "commands", "cmds"),
     maxArgs =  1,
+    optionalParams = arrayOf("command / page number"),
     examples = arrayOf("2", "choice")
 ) {
     private lateinit var helpPages : List<String>
@@ -70,10 +71,13 @@ class Help : Command(
                 if (cmd == null) {
                     event.reply("That command doesn't exist!")
                 } else {
-                    val info = StringBuilder(prefix)
+                    val info = StringBuilder()
+                        .append("**")
+                        .append(prefix)
                         .append(cmd.usage)
-                        .append("\n")
+                        .append("**\n")
                         .append(cmd.description)
+                        .append(".")
                     // TODO: add examples, flags, vars
                     event.reply(info.toString())
                 }
@@ -89,6 +93,7 @@ class Help : Command(
 
     fun generate() {
         helpPages = Registry.getCommands()
+            .filter { !it.devOnly }
             .sortedBy { it.name }
             .paginate(UnaryOperator { it as Command
                 "+ %PREFIX%${it.usage}\n- ${it.description}\n"
