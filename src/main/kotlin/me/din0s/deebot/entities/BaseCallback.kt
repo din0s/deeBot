@@ -42,12 +42,12 @@ open class BaseCallback : Callback {
     }
 
     override fun onResponse(call: Call, response: Response) {
-        log.debug("Request to {} returned {}", call.request().url().host(), response.code())
+        log.trace("Request to {} returned {}", call.request().url().host(), response.code())
     }
 
     fun Response.asJson() : JSONObject {
         val body = body()!!.string()
-        log.debug(body)
+        log.trace(body)
         return JSONObject(body)
     }
 }
