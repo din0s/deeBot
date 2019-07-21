@@ -37,7 +37,10 @@ class Echo : Command(
     examples = arrayOf("Hello World!", "2+2=4")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        // TODO: add user check / strip formatting
+        if (event.message.mentionedUsers.size > 5) {
+            event.reply("*Don't mention that many users!*")
+            return
+        }
         val msg = "*${event.author.asMention} says:* ${args.joinToString(" ")}"
         if (msg.length <= 2000) {
             event.reply(msg)

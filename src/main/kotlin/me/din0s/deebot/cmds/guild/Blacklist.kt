@@ -27,6 +27,7 @@ package me.din0s.deebot.cmds.guild
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.managers.BlacklistManager
 import me.din0s.deebot.reply
+import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
@@ -40,8 +41,15 @@ class Blacklist : Command(
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (args.isEmpty() || args[0].equals("info", true)) {
+            val channels = mutableListOf<String>()
+            BlacklistManager.getForGuild(event.guild).forEach { channels.add(" ${it.asMention}") }
+            if (channels.isEmpty()) {
+                event.reply("Blacklisted Channels: __None__")
+                return
+            }
+
             val sb = StringBuilder("Blacklisted Channels:")
-            BlacklistManager.getForGuild(event.guild).forEach { sb.append(" ").append(it.asMention) }
+            channels.forEach { sb.append(it) }
             if (sb.length > 2000) {
                 event.reply("Wow, you have blacklisted too many channels to display here...")
             } else {
@@ -51,9 +59,7 @@ class Blacklist : Command(
         }
         val channels = event.message.mentionedChannels
         when (channels.size) {
-            0 -> {
-                // TODO: Usage
-            }
+            0 -> event.showUsage(this)
             1 -> {
                 val id = channels[0].idLong
                 val toggle = BlacklistManager.toggle(id)

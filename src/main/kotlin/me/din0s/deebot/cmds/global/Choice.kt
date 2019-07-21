@@ -26,6 +26,7 @@ package me.din0s.deebot.cmds.global
 
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
+import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 class Choice : Command(
@@ -39,16 +40,16 @@ class Choice : Command(
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val params = args.joinToString(" ")
         if (!params.contains(';') || params == ";") {
-            // TODO: Usage msg
+            event.showUsage(this)
             return
         }
 
         val options = params.split(';').map { it.trim() }.filter { it.isNotEmpty() }
         when (options.size) {
-            0 -> {} // TODO: Usage
+            0 -> event.showUsage(this)
             1 -> event.reply("Give me more options to choose from!")
             else -> {
-                event.reply("\uD83E\uDD14 *I'd say..:* `${options.shuffled()[0]}`") // TODO: Strip formatting
+                event.reply("\uD83E\uDD14 *I'd say:* `${options.shuffled()[0].replace("`", "")}`")
             }
         }
     }

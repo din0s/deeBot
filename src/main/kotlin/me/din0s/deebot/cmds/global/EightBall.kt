@@ -54,8 +54,7 @@ class EightBall : Command(
     )
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val questionOriginal = args.joinToString(" ")
-        // TODO: parse / strip etc
+        val questionOriginal = args.joinToString(" ").replace("`", "")
         val questionFinal = when {
             questionOriginal.endsWith('?') -> questionOriginal
             else -> "$questionOriginal?"

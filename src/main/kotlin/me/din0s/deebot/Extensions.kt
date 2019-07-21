@@ -25,6 +25,9 @@
 package me.din0s.deebot
 
 import me.din0s.const.Regex
+import me.din0s.const.Unicode
+import me.din0s.deebot.entities.Command
+import me.din0s.deebot.managers.ServerManager
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -35,7 +38,9 @@ import java.util.concurrent.TimeUnit
 import java.util.function.UnaryOperator
 
 fun MessageChannel.send(msg: String) {
-    sendMessage(msg).queue()
+    val safeMsg = msg.replace("@everyone", "@${Unicode.ZWSP}everyone")
+        .replace("@here", "@${Unicode.ZWSP}here")
+    sendMessage(safeMsg).queue()
 }
 
 fun MessageReceivedEvent.reply(msg: String) {
@@ -46,6 +51,14 @@ fun MessageReceivedEvent.reply(msg: String) {
     } else {
         channel.send(msg)
     }
+}
+
+fun MessageReceivedEvent.showUsage(cmd: Command) {
+    val prefix = when {
+        isFromGuild -> ServerManager.get(guild.id)?.prefix ?: Config.defaultPrefix
+        else -> Config.defaultPrefix
+    }
+    reply("**Usage:** ${prefix.strip()}${cmd.usage}")
 }
 
 fun User.whisper(msg: String) {

@@ -28,8 +28,10 @@ import me.din0s.const.Regex
 import me.din0s.deebot.Bot
 import me.din0s.deebot.Config
 import me.din0s.deebot.cmds.global.Help
+import me.din0s.deebot.managers.BlacklistManager
 import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.reply
+import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.logging.log4j.LogManager
@@ -46,6 +48,7 @@ object Registry : ListenerAdapter() {
         Reflections("me.din0s.deebot.cmds")
             .getSubTypesOf(Command::class.java)
             .filter { !Modifier.isAbstract(it.modifiers) }
+            .sortedBy { it.simpleName }
             .forEach {
                 val cmd = it.getDeclaredConstructor().newInstance()
                 cmds[cmd.name] = cmd
@@ -100,10 +103,15 @@ object Registry : ListenerAdapter() {
 
             val isDev = event.author.idLong == Bot.DEV_ID
             if (command.devOnly && !isDev) {
+                log.trace("{} tried to run {}!", event.author.asTag, command.name)
                 return
             }
-            // TODO: if blacklisted
+            if (command.name != "blacklist" && event.isFromGuild && BlacklistManager.isBlacklisted(event.channel.idLong)) {
+                log.trace("Received command in blacklisted channel, ignoring.")
+                return
+            }
             if (event.isFromGuild && !event.textChannel.canTalk()) {
+                log.trace("Cannot talk in channel!")
                 return
             }
 
@@ -126,14 +134,8 @@ object Registry : ListenerAdapter() {
             }
 
             val commandArgs = allArgs.drop(1)
-            if (commandArgs.size < command.minArgs) {
-                event.reply("**Incorrect Usage!** You used less command arguments than expected.")
-                // TODO: Add usage message as well
-                return
-            }
-            if (commandArgs.size > command.maxArgs) {
-                event.reply("**Incorrect Usage!** You used more command arguments than expected.")
-                // TODO: Add usage
+            if (commandArgs.size < command.minArgs || commandArgs.size > command.maxArgs) {
+                event.showUsage(command)
                 return
             }
 

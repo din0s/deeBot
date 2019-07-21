@@ -28,6 +28,7 @@ import me.din0s.deebot.Config
 import me.din0s.deebot.entities.BaseCallback
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
+import me.din0s.deebot.strip
 import me.din0s.deebot.util.HttpUtil
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
@@ -79,11 +80,10 @@ class Google : Command(
                         return
                     }
 
-                    // TODO parse strip etc
                     val firstResult = results[0] as JSONObject
-                    val snippet = firstResult.getString("snippet").replace("\n", "")
+                    val snippet = firstResult.getString("snippet").replace("\n", "").strip()
                     val link = firstResult.getString("link")
-                    val msg = "**`Google Search Result for:`** $query\n<$link>\n$snippet"
+                    val msg = "**`Google Search Result for:`** ${query.strip()}\n<$link>\n$snippet"
                     event.reply(msg)
                 }
             })
