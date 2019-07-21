@@ -31,7 +31,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Patreon : Command(
+object Patreon : Command(
     name = "patreon",
     description = "Learn how to support the development of this bot"
 ) {

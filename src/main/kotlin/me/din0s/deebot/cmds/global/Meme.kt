@@ -25,13 +25,9 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Regex
-import me.din0s.deebot.Config
+import me.din0s.deebot.*
 import me.din0s.deebot.entities.BaseCallback
 import me.din0s.deebot.entities.Command
-import me.din0s.deebot.managers.ServerManager
-import me.din0s.deebot.paginate
-import me.din0s.deebot.reply
-import me.din0s.deebot.showUsage
 import me.din0s.deebot.util.HttpUtil
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -43,7 +39,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.function.UnaryOperator
 
-class Meme : Command(
+object Meme : Command(
     name = "meme",
     description = "Generate a meme using a template",
     alias = setOf("memegen", "memegenerator"),
@@ -89,10 +85,7 @@ class Meme : Command(
     }
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val prefix = when {
-            event.isFromGuild -> ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
-            else -> Config.defaultPrefix
-        }
+        val prefix = event.getPrefix().strip()
 
         if (helpCmds.contains(args[0].toLowerCase())) {
             val arg1 = args[0].toLowerCase()

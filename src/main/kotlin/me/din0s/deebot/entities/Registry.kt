@@ -25,13 +25,9 @@
 package me.din0s.deebot.entities
 
 import me.din0s.const.Regex
-import me.din0s.deebot.Bot
-import me.din0s.deebot.Config
+import me.din0s.deebot.*
 import me.din0s.deebot.cmds.global.Help
 import me.din0s.deebot.managers.BlacklistManager
-import me.din0s.deebot.managers.ServerManager
-import me.din0s.deebot.reply
-import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.logging.log4j.LogManager
@@ -41,7 +37,6 @@ import java.lang.reflect.Modifier
 object Registry : ListenerAdapter() {
     private val commandList: Map<String, Command>
     private val log = LogManager.getLogger(Registry::class.java)
-    private val prefix = Config.defaultPrefix
 
     init {
         val cmds = mutableMapOf<String, Command>()
@@ -50,7 +45,7 @@ object Registry : ListenerAdapter() {
             .filter { !Modifier.isAbstract(it.modifiers) }
             .sortedBy { it.simpleName }
             .forEach {
-                val cmd = it.getDeclaredConstructor().newInstance()
+                val cmd = it.getObject() as Command
                 cmds[cmd.name] = cmd
                 log.trace("{} -> {}", cmd, cmd.name)
 
@@ -77,14 +72,10 @@ object Registry : ListenerAdapter() {
     override fun onMessageReceived(event: MessageReceivedEvent) {
         if (event.author.isBot) return
 
+        val prefix = event.getPrefix()
         val rawMessage = event.message.contentRaw
-        val serverPrefix = when {
-            event.isFromGuild -> ServerManager.get(event.guild.id)?.prefix ?: prefix
-            else -> prefix
-        }
-
-        if (rawMessage.startsWith(serverPrefix) && rawMessage.length > serverPrefix.length) {
-            val allArgs = rawMessage.substring(serverPrefix.length).split(Regex.WHITESPACE)
+        if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
+            val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
             val label = allArgs[0].toLowerCase()
             val command = commandList[label] ?: return
 

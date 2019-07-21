@@ -35,7 +35,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class DiscordStatus : Command(
+object DiscordStatus : Command(
     name = "discordstatus",
     description = "Get info about discord's servers' status",
     alias = setOf("api", "apistatus", "status")

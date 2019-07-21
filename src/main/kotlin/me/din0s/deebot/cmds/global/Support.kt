@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Support : Command(
+object Support : Command(
     name = "support",
     description = "Get an invite link to the support server",
     alias = setOf("getsupport", "bug", "foundbug")

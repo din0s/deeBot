@@ -33,7 +33,7 @@ import okhttp3.Call
 import okhttp3.Response
 import java.io.IOException
 
-class ChuckNorris : Command(
+object ChuckNorris : Command(
     name = "chucknorris",
     description = "Gets the random fact about Chuck Norris",
     alias = setOf("chuck", "norris")

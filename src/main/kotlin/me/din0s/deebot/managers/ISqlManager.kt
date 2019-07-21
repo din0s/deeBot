@@ -24,12 +24,6 @@
 
 package me.din0s.deebot.managers
 
-import me.din0s.deebot.entities.Server
-
-object ServerManager {
-    private val map = mutableMapOf<String, Server>()
-
-    fun get(id: String) : Server? {
-        return map[id]
-    }
+interface ISqlManager {
+    fun init()
 }

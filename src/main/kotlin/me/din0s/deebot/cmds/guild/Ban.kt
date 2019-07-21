@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Ban : Command(
+object Ban : Command(
     name = "ban",
     description = "Ban a user",
     guildOnly = true,

@@ -29,7 +29,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.random.Random
 
-class Coin : Command(
+object Coin : Command(
     name = "coinflip",
     description = "Flip a coin",
     alias = setOf("flipcoin", "coin", "flip")

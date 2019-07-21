@@ -30,7 +30,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.sharding.ShardManager
 
-class Shard : Command(
+object Shard : Command(
     name = "shard",
     description = "Get information for the bot's shards",
     alias = setOf("sharding", "shards", "shardmanager"),

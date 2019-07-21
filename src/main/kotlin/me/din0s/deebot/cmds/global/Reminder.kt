@@ -29,7 +29,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
-class Reminder : Command(
+object Reminder : Command(
     name = "reminder",
     description = "Set a reminder to be notified in private",
     alias = setOf("timer"),

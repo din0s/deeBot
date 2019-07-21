@@ -29,7 +29,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
-class Announce : Command(
+object Announce : Command(
     name = "announce",
     description = "Set a timer to send a message in a server channel",
     alias = setOf("announcement"),

@@ -22,15 +22,17 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot.entities
+package me.din0s.deebot.entities.sql
 
-import me.din0s.deebot.Config
-import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.sql.Table
 
-class Server(val id: Long, var prefix: String = Config.defaultPrefix) {
-    val log = LogManager.getLogger(Server::class.java)
+object Commands : Table() {
+    private val uuid = uuid("id").autoIncrement().primaryKey()
 
-    init {
-        log.debug("Generated entry for guild {} - prefix {}", id, prefix)
-    }
+    val label = varchar("label", 20)
+    val response = varchar("response", 2000)
+    val guildId = long("guild_id")
+
+    val private = bool("is_private").default(false)
+    val delete = bool("delete_message").default(false)
 }

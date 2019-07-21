@@ -35,7 +35,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class Hastebin : Command(
+object Hastebin : Command(
     name = "hastebin",
     description = "Upload a text snippet to Hastebin",
     alias = setOf("hb", "haste", "paste", "pastebin"),

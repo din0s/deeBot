@@ -25,16 +25,15 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Regex
-import me.din0s.deebot.Config
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.entities.Registry
-import me.din0s.deebot.managers.ServerManager
+import me.din0s.deebot.getPrefix
 import me.din0s.deebot.paginate
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.function.UnaryOperator
 
-class Help : Command(
+object Help : Command(
     name = "help",
     description = "Display information about any command",
     alias = setOf("h", "commands", "cmds"),
@@ -46,11 +45,7 @@ class Help : Command(
     private val PAGE_SIZE = 5
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val prefix = when {
-            event.isFromGuild -> ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
-            else -> Config.defaultPrefix
-        }
-
+        val prefix = event.getPrefix()
         val sb = StringBuilder("```diff\n")
         val index = when {
             args.isEmpty() -> {

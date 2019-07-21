@@ -36,7 +36,7 @@ import java.io.IOException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-class UrbanDictionary : Command(
+object UrbanDictionary : Command(
     name = "define",
     description = "Look up a word or a phrase on UrbanDictionary",
     alias = setOf("ud", "definition", "dictionary", "urban", "urbandictionary"),

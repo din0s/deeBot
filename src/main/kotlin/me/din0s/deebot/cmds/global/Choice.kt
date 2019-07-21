@@ -29,7 +29,7 @@ import me.din0s.deebot.reply
 import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Choice : Command(
+object Choice : Command(
     name = "choice",
     description = "Select a random option out of the given choices",
     alias = setOf("choose", "select"),

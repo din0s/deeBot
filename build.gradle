@@ -15,11 +15,14 @@ repositories {
 }
 
 dependencies {
-    implementation "net.dv8tion:JDA:4.BETA.0_19"
+    implementation "net.dv8tion:JDA:4.BETA.0_24"
+
+    implementation "org.jetbrains.exposed:exposed:0.16.2"
+    implementation "org.mariadb.jdbc:mariadb-java-client:2.4.2"
 
     implementation "org.reflections:reflections:0.9.11"
     implementation "org.json:json:20180813"
-    implementation('com.patreon:patreon:0.4.2') {
+    implementation("com.patreon:patreon:0.4.2") {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 

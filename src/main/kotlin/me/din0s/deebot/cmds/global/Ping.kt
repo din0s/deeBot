@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Ping : Command(
+object Ping : Command(
     name = "ping",
     description = "Get the latency of the bot to Discord's servers",
     alias = setOf("pong")

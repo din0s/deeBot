@@ -34,18 +34,19 @@ import kotlin.system.exitProcess
 
 object Config {
     private val log = LogManager.getLogger(Config::class.java)
-
     private val cfgFile = File("config.json")
+    private val keys = arrayOf(
+        "token", "prefix",
+        "google_key", "google_search",
+        "patreon",
+        "sql_db", "sql_user", "sql_pwd"
+    )
 
     init {
         if (!cfgFile.exists()) {
             if (cfgFile.createNewFile()) {
                 val jsonObj = JSONObject()
-                jsonObj.put("token", "")
-                jsonObj.put("prefix", "")
-                jsonObj.put("google_key", "")
-                jsonObj.put("google_search", "")
-                jsonObj.put("patreon", "")
+                keys.forEach { jsonObj.put(it, "") }
                 cfgFile.writeText(jsonObj.toString(4))
 
                 log.info("Created config.json! Please fill in your credentials.")
@@ -71,9 +72,12 @@ object Config {
     val googleKey: String = cfgJson.getString("google_key")
     val googleSearch: String = cfgJson.getString("google_search")
     val patreon: String = cfgJson.getString("patreon")
+    val sqlDb: String = cfgJson.getString("sql_db")
+    val sqlUser: String = cfgJson.getString("sql_user")
+    val sqlPwd: String = cfgJson.getString("sql_pwd")
 
     private fun verify(jsonObj: JSONObject) : JSONObject {
-        for (key in setOf("token", "prefix", "google_key", "google_search", "patreon")) {
+        for (key in keys) {
             if (!jsonObj.has(key) || jsonObj.get(key).toString().isEmpty()) {
                 log.warn(Errors.CONFIG_MISSING_VAL, key)
 
@@ -91,6 +95,9 @@ object Config {
     }
 
     private enum class DefaultValues(val value: String) {
-        PREFIX("!!")
+        PREFIX("!!"),
+        SQL_DB("discord"),
+        SQL_USER("root"),
+        SQL_PWD("root")
     }
 }

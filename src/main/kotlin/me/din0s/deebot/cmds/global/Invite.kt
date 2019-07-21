@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Invite : Command(
+object Invite : Command(
     name = "invite",
     description = "Get a link to invite the bot to your server"
 ) {

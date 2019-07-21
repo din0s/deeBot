@@ -30,7 +30,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.random.Random
 
-class EightBall : Command(
+object EightBall : Command(
     name = "8ball",
     description = "Ask a question to the almighty 8ball",
     minArgs = 1,

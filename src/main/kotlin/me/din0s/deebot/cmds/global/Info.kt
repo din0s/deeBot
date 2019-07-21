@@ -32,7 +32,7 @@ import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.lang.management.ManagementFactory
 
-class Info : Command(
+object Info : Command(
     name = "info",
     description = "Get information related to the bot"
 ) {

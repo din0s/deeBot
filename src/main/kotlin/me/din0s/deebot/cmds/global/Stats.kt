@@ -29,7 +29,7 @@ import me.din0s.deebot.handlers.StatsHandler
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Stats : Command(
+object Stats : Command(
     name = "stats",
     description = "Display the bot's statistics",
     alias = setOf("statistics")

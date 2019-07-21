@@ -22,30 +22,19 @@
  * SOFTWARE.
  */
 
-package me.din0s.deebot.cmds.dev
+package me.din0s.deebot.entities.sql
 
-import me.din0s.Variables
-import me.din0s.deebot.entities.Command
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import org.apache.logging.log4j.LogManager
-import kotlin.system.exitProcess
+import org.jetbrains.exposed.sql.Table
 
-object Shutdown : Command(
-    name = "shutdown",
-    description = "Shuts down the current instance of the bot",
-    devOnly = true,
-    minArgs = 1,
-    requiredParams = arrayOf("version")
-) {
-    private val log = LogManager.getLogger(Shutdown::class.java)
+object Guilds : Table() {
+    val id = long("guild_id").primaryKey()
 
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        if (args[0].equals(Variables.VERSION.value, true)) {
-            log.info("Shutting down")
-            event.jda.shardManager!!.shutdown()
-            exitProcess(0)
-        } else {
-            log.debug("Version mismatch {} != {}", args[0], Variables.VERSION.value)
-        }
-    }
+    val prefix = varchar("prefix", 10).nullable()
+    val autoRole = long("autorole_id").nullable()
+
+    val joinChannel = long("join_channel_id").nullable()
+    val joinMessage = varchar("join_msg", 2000).nullable()
+
+    val leaveChannel = long("leave_channel_id").nullable()
+    val leaveMessage = varchar("leave_msg", 2000).nullable()
 }

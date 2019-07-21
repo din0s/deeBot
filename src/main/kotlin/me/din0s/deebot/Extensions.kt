@@ -27,7 +27,7 @@ package me.din0s.deebot
 import me.din0s.const.Regex
 import me.din0s.const.Unicode
 import me.din0s.deebot.entities.Command
-import me.din0s.deebot.managers.ServerManager
+import me.din0s.deebot.managers.GuildInfoManager
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -36,6 +36,13 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import java.util.function.UnaryOperator
+
+fun MessageReceivedEvent.getPrefix() : String {
+    return when {
+        isFromGuild -> GuildInfoManager.getPrefix(guild)
+        else -> Config.defaultPrefix
+    }
+}
 
 fun MessageChannel.send(msg: String) {
     val safeMsg = msg.replace("@everyone", "@${Unicode.ZWSP}everyone")
@@ -54,11 +61,7 @@ fun MessageReceivedEvent.reply(msg: String) {
 }
 
 fun MessageReceivedEvent.showUsage(cmd: Command) {
-    val prefix = when {
-        isFromGuild -> ServerManager.get(guild.id)?.prefix ?: Config.defaultPrefix
-        else -> Config.defaultPrefix
-    }
-    reply("**Usage:** ${prefix.strip()}${cmd.usage}")
+    reply("**Usage:** ${getPrefix().strip()}${cmd.usage}")
 }
 
 fun User.whisper(msg: String) {
@@ -162,4 +165,8 @@ fun String.strip() : String {
         .replace("_", "\\_")
         .replace("~~", "\\~\\~")
         .replace(">", "\u180E>")
+}
+
+fun Class<out Any>.getObject() : Any {
+    return getDeclaredField("INSTANCE").get(null)
 }

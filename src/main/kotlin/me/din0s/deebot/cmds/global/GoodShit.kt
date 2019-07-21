@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class GoodShit : Command(
+object GoodShit : Command(
     name = "goodshit",
     description = "The original 'good shit' copypasta",
     alias = setOf("shit")

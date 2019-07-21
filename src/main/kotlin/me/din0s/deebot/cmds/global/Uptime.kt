@@ -30,7 +30,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.lang.management.ManagementFactory
 
-class Uptime : Command(
+object Uptime : Command(
     name = "uptime",
     description = "Get the bot's current uptime",
     alias = setOf("up")

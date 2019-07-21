@@ -25,19 +25,18 @@
 package me.din0s.deebot.cmds.guild
 
 import me.din0s.const.Regex
-import me.din0s.deebot.Config
 import me.din0s.deebot.entities.Command
 import me.din0s.deebot.entities.CustomCommand
 import me.din0s.deebot.entities.Registry
+import me.din0s.deebot.getPrefix
 import me.din0s.deebot.managers.CustomCmdManager
-import me.din0s.deebot.managers.ServerManager
 import me.din0s.deebot.reply
 import me.din0s.deebot.strip
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
-class CustomCmds : Command(
+object CustomCmds : Command(
     name = "customcommands",
     description = "Create or manage a Custom Command for your server",
     alias = setOf("custom", "customcmds", "customcmd", "customcommand"),
@@ -60,6 +59,7 @@ class CustomCmds : Command(
 ) {
     private val log = LogManager.getLogger(CustomCmds::class.java)
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
+        val prefix = event.getPrefix().strip()
         when (args[0].toLowerCase()) {
             "create" -> {
                 event.createOrEdit(args, true)
@@ -88,8 +88,7 @@ class CustomCmds : Command(
                         event.reply("**Custom Commands:**\n${cmds.keys.joinToString(", ")}")
                     }
                     else -> {
-                        val prefix = ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
-                        event.reply("**Usage:** ${prefix.strip()}customcommands list (command name)")
+                        event.reply("**Usage:** ${prefix}customcommands list (command name)")
                     }
                 }
             }
@@ -99,8 +98,7 @@ class CustomCmds : Command(
             "delete" -> {
                 when {
                     args.size != 2 -> {
-                        val prefix = ServerManager.get(event.guild.id)?.prefix ?: Config.defaultPrefix
-                        event.reply("**Usage:** ${prefix.strip()}customcommands delete [command name]")
+                        event.reply("**Usage:** ${prefix}customcommands delete [command name]")
                     }
                     CustomCmdManager.delete(args[1], event.guild) -> event.reply("*Successfully deleted that custom command!*")
                     else -> event.reply("That custom command doesn't exist!")
@@ -126,8 +124,7 @@ class CustomCmds : Command(
                 create -> "create"
                 else -> "modify"
             }
-            val prefix = ServerManager.get(guild.id)?.prefix ?: Config.defaultPrefix
-            reply("**Usage:** ${prefix.strip()}customcommands $sub [command name] | [random responses separated by |]")
+            reply("**Usage:** ${getPrefix().strip()}customcommands $sub [command name] | [random responses separated by |]")
             return
         }
         val label = split[0]
@@ -149,10 +146,6 @@ class CustomCmds : Command(
                         reply("**That command doesn't exist!**")
                         return
                     }
-                    create -> {
-                        // deleting old in order to save the updated one
-                        CustomCmdManager.delete(label, guild)
-                    }
                 }
 
                 var flags = 0
@@ -173,7 +166,7 @@ class CustomCmds : Command(
                 val list = mutableListOf<CustomCommand>()
                 responses = responses.dropLast(flags)
                 responses.forEach {
-                    list.add(CustomCommand(label, it, guild.idLong, private, delete))
+                    list.add(CustomCommand(it, private, delete))
                 }
                 CustomCmdManager.add(label, list, guild)
                 log.debug("Cmd: {}, Responses: {}", label, responses)

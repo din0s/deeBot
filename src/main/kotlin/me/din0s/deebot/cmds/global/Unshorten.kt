@@ -29,7 +29,7 @@ import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
-class Unshorten : Command(
+object Unshorten : Command(
     name = "shorten",
     description = "Shorten a URL"
 ) {

@@ -25,18 +25,15 @@
 package me.din0s.deebot.handlers
 
 import me.din0s.const.Regex
-import me.din0s.deebot.Config
 import me.din0s.deebot.entities.CustomCommand
 import me.din0s.deebot.managers.CustomCmdManager
-import me.din0s.deebot.managers.ServerManager
+import me.din0s.deebot.managers.GuildInfoManager
 import me.din0s.deebot.send
 import me.din0s.deebot.whisper
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
 class CustomCmdHandler : ListenerAdapter() {
-    private val defaultPrefix = Config.defaultPrefix
-
     private fun String.handleRandom() : String {
         var field = this
         Regex.RANDOM.findAll(this).forEach {
@@ -68,9 +65,9 @@ class CustomCmdHandler : ListenerAdapter() {
         }
 
         val rawMessage = event.message.contentRaw
-        val serverPrefix = ServerManager.get(event.guild.id)?.prefix ?: defaultPrefix
-        if (rawMessage.startsWith(serverPrefix) && rawMessage.length > serverPrefix.length) {
-            val allArgs = rawMessage.substring(serverPrefix.length).split(Regex.WHITESPACE)
+        val prefix = GuildInfoManager.getPrefix(event.guild)
+        if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
+            val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
             val label = allArgs[0].toLowerCase()
             val cmd = CustomCmdManager.getByLabel(label, event.guild)?.random() ?: return
             if (cmd.delete) {

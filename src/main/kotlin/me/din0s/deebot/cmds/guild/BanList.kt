@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.util.function.UnaryOperator
 
-class BanList: Command(
+object BanList: Command(
     name = "banlist",
     description = "Get a list of all banned users",
     alias = setOf("bans"),

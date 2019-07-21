@@ -31,7 +31,7 @@ import me.din0s.deebot.reply
 import me.din0s.deebot.strip
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Whois : Command(
+object Whois : Command(
     name = "whois",
     description = "Get information on a user",
     alias = setOf("userinfo", "user"),

@@ -25,9 +25,7 @@
 package me.din0s.deebot.entities
 
 data class CustomCommand(
-    val label: String,
     val response: String,
-    val guildId: Long,
     val private: Boolean = false,
     val delete: Boolean = false
 )

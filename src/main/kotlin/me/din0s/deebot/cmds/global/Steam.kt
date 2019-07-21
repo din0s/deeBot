@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Steam : Command(
+object Steam : Command(
     name = "steam",
     description = "Check the status of Steam's servers",
     alias = setOf("steamstatus", "steamservers"),

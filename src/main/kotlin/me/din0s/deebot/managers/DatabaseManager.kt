@@ -24,51 +24,41 @@
 
 package me.din0s.deebot.managers
 
-import me.din0s.deebot.entities.sql.Blacklist
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
+import me.din0s.deebot.Config
+import me.din0s.deebot.getObject
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.reflections.Reflections
 
-object BlacklistManager : ISqlManager {
-    private val ids = mutableSetOf<Long>()
-    private val log = LogManager.getLogger(BlacklistManager::class.java)
+object DatabaseManager {
+    private val log = LogManager.getLogger(DatabaseManager::class.java)
 
-    override fun init() {
-        log.info("Loading blacklisted channels...")
+    fun init() {
+        log.info("Connecting to SQL database...")
+        Database.connect(
+            url = "jdbc:mysql://localhost/${Config.sqlDb}?useUnicode=true&characterEncoding=utf8",
+            driver = "org.mariadb.jdbc.Driver",
+            user = Config.sqlUser,
+            password = Config.sqlPwd
+        )
+
         transaction {
-            Blacklist.selectAll().forEach {
-                ids.add(it[Blacklist.channelId].toLong())
-            }
+            Reflections("me.din0s.deebot.entities.sql")
+                .getSubTypesOf(Table::class.java)
+                .forEach {
+                    val instance = it.getObject() as Table
+                    SchemaUtils.createMissingTablesAndColumns(instance)
+                }
+
+            Reflections("me.din0s.deebot.managers")
+                .getSubTypesOf(ISqlManager::class.java)
+                .forEach {
+                    val instance = it.getObject() as ISqlManager
+                    instance.init()
+                }
         }
-    }
-
-    fun toggle(id: Long) : Boolean {
-        return if (ids.contains(id)) {
-            transaction {
-                Blacklist.deleteWhere { Blacklist.channelId eq id }
-            }
-            ids.remove(id)
-            false
-        } else {
-            transaction {
-                Blacklist.insert { it[channelId] = id }
-            }
-            ids.add(id)
-            true
-        }
-    }
-
-    fun isBlacklisted(id: Long) : Boolean {
-        return ids.contains(id)
-    }
-
-    fun getForGuild(guild: Guild) : Set<TextChannel> {
-        return guild.textChannels
-            .filter { ids.contains(it.idLong) }
-            .toSet()
     }
 }

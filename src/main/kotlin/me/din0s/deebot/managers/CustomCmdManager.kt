@@ -25,13 +25,42 @@
 package me.din0s.deebot.managers
 
 import me.din0s.deebot.entities.CustomCommand
+import me.din0s.deebot.entities.sql.Commands
 import net.dv8tion.jda.api.entities.Guild
+import org.apache.logging.log4j.LogManager
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 
-object CustomCmdManager {
-    private val guilds = mutableMapOf<Long, MutableMap<String, List<CustomCommand>>>()
+object CustomCmdManager : ISqlManager {
+    private val guilds = mutableMapOf<Long, MutableMap<String, MutableList<CustomCommand>>>()
+    private val log = LogManager.getLogger(CustomCmdManager::class.java)
 
-    init {
-        // TODO: init
+    override fun init() {
+        log.info("Loading custom commands...")
+        transaction {
+            Commands.selectAll().forEach {
+                val label = it[Commands.label]
+                val response = it[Commands.response]
+                val guildId = it[Commands.guildId]
+                val private = it[Commands.private]
+                val delete = it[Commands.delete]
+                val cmd = CustomCommand(response, private, delete)
+                log.trace("Registering command {} for G({})", label, guildId)
+
+                if (!guilds.containsKey(guildId)) {
+                    guilds[guildId] = mutableMapOf()
+                }
+
+                val map = guilds[guildId]!!
+                if (!map.containsKey(label)) {
+                    map[label] = mutableListOf(cmd)
+                } else{
+                    map[label]!!.add(cmd)
+                }
+            }
+        }
     }
 
     fun hasEntries(guild: Guild) : Boolean {
@@ -47,24 +76,46 @@ object CustomCmdManager {
     }
 
     fun delete(label: String, guild: Guild) : Boolean {
-        return when (guilds[guild.idLong]?.remove(label.toLowerCase())) {
+        val name = label.toLowerCase()
+        return when (guilds[guild.idLong]?.remove(name)) {
             null -> false
-            else -> true
+            else -> {
+                transaction { Commands.deleteWhere { Commands.label eq name } }
+                true
+            }
         }
     }
 
     fun deleteAll(guild: Guild) : Boolean {
         return when (guilds.remove(guild.idLong)) {
             null -> false
-            else -> true
+            else -> {
+                transaction { Commands.deleteWhere { Commands.guildId eq guild.idLong } }
+                true
+            }
         }
     }
 
-    fun add(label: String, list: List<CustomCommand>, guild: Guild) {
+    fun add(name: String, list: List<CustomCommand>, guild: Guild) {
         if (!hasEntries(guild)) {
             guilds[guild.idLong] = mutableMapOf()
+        } else {
+            deleteAll(guild)
         }
+
         val map = guilds[guild.idLong]!!
-        map[label.toLowerCase()] = list
+        map[name.toLowerCase()] = list.toMutableList()
+
+        transaction {
+            list.forEach { command ->
+                Commands.insert {
+                    it[label] = name.toLowerCase()
+                    it[response] = command.response
+                    it[guildId] = guild.idLong
+                    it[private] = command.private
+                    it[delete] = command.delete
+                }
+            }
+        }
     }
 }

@@ -28,7 +28,7 @@ import me.din0s.deebot.entities.Command
 import me.din0s.deebot.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Salt : Command(
+object Salt : Command(
     name = "salt",
     description = "Salt copypasta",
     alias = setOf("salty")

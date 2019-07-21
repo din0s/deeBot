@@ -31,7 +31,7 @@ import me.din0s.deebot.showUsage
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
-class Blacklist : Command(
+object Blacklist : Command(
     name = "blacklist",
     description = "Disable the bot in a specific channel",
     guildOnly = true,

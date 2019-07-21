@@ -26,6 +26,7 @@ package me.din0s.deebot
 
 import me.din0s.Variables
 import me.din0s.deebot.entities.Registry
+import me.din0s.deebot.managers.DatabaseManager
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -68,5 +69,6 @@ private object OnReadyListener : ListenerAdapter() {
 }
 
 fun main() {
+    DatabaseManager.init()
     Bot.init()
 }

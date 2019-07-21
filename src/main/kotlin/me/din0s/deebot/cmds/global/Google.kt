@@ -37,7 +37,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class Google : Command(
+object Google : Command(
     name = "google",
     description = "Search for a term on Google",
     alias = setOf("g", "bing"),

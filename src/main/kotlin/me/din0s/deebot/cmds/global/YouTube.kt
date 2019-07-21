@@ -36,7 +36,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
-class YouTube : Command(
+object YouTube : Command(
     name = "youtube",
     description = "Search for a YouTube video",
     alias = setOf("yt", "vid", "video"),
