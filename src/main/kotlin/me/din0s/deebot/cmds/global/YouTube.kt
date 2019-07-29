@@ -24,18 +24,25 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.Config
+import me.din0s.config.Config
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
 import java.io.IOException
 
+/**
+ * Uses the YouTube search API to search for a video.
+ * TODO: Consider ytdl or lavaplayer.
+ *
+ * @author Dinos Papakostas
+ */
 object YouTube : Command(
     name = "youtube",
     description = "Search for a YouTube video",
@@ -44,7 +51,8 @@ object YouTube : Command(
     requiredParams = arrayOf("video title"),
     examples = arrayOf("elon musk meme review")
 ) {
-    private val BASE_URL = "https://www.googleapis.com/youtube/v3/search"
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "https://www.googleapis.com/youtube/v3/search"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val url = HttpUrl.parse(BASE_URL)!!.newBuilder()
@@ -54,6 +62,7 @@ object YouTube : Command(
             .addQueryParameter("key", Config.googleKey)
             .addQueryParameter("q", args.joinToString(" "))
             .build()
+
         event.channel.sendTyping().queue {
             HttpUtil.get(url, cb = object : BaseCallback() {
                 override fun onFailure(call: Call, e: IOException) {
@@ -61,10 +70,10 @@ object YouTube : Command(
                     event.reply("An error has occurred. Please try again later.")
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     if (!json.has("items")) {
+                        log.info("Reached max searches.")
                         // TODO possibly better error msg
                         event.reply(
                             "__The bot has reached its maximum YouTube Searches for the day!__\n" +
@@ -72,15 +81,14 @@ object YouTube : Command(
                         )
                         return
                     }
-
                     val results = json.getJSONArray("items")
                     if (results.length() == 0) {
                         event.reply("_Your query returned zero results from YouTube!_")
                         return
                     }
-
                     val firstResult = results[0] as JSONObject
-                    event.reply("https://youtube.com/watch?v=${firstResult.getJSONObject("id").getString("videoId")}")
+                    val id = firstResult.getJSONObject("id").getString("videoId")
+                    event.reply("https://youtube.com/watch?v=$id")
                 }
             })
         }

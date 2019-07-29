@@ -26,16 +26,21 @@ package me.din0s.deebot.cmds.global
 
 import com.patreon.PatreonAPI
 import com.patreon.resources.Campaign
-import me.din0s.deebot.Config
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.config.Config
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Uses the Patreon API to display info from the bot's patreon page.
+ *
+ * @author Dinos Papakostas
+ */
 object Patreon : Command(
     name = "patreon",
     description = "Learn how to support the development of this bot"
 ) {
-    private val URL = "<http://patreon.deebot.xyz>"
+    private const val URL = "<http://patreon.deebot.xyz>"
     private val enabled = Config.patreon.isNotBlank()
     private val campaign : Campaign?
 
@@ -49,7 +54,7 @@ object Patreon : Command(
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (campaign == null) {
-            event.reply("Patreon API currently unavailable!\nClick on this link: $URL")
+            event.reply("Click on this link: $URL")
         } else {
             val sb = StringBuilder(event.author.asMention).append("\n")
             sb.append("Patrons: **").append(campaign.patronCount).append("** (thank you!)\n")

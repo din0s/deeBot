@@ -25,23 +25,28 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Unicode
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
 
+/**
+ * Polls Discord's status page for the current state of the API and the servers.
+ *
+ * @author Dinos Papakostas
+ */
 object DiscordStatus : Command(
     name = "discordstatus",
     description = "Get info about discord's servers' status",
     alias = setOf("api", "apistatus", "status")
 ) {
-    private val BASE_URL = "https://srhpyqt94yxb.statuspage.io/api/v2/summary.json"
-    private val STATUS_URL = "**https://status.discordapp.com**"
+    private const val BASE_URL = "https://srhpyqt94yxb.statuspage.io/api/v2/summary.json"
+    private const val STATUS_URL = "**https://status.discordapp.com**"
     private val componentSet = setOf("API", "Gateway", "CloudFlare", "Media Proxy", "Voice")
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
@@ -52,8 +57,7 @@ object DiscordStatus : Command(
                     event.reply("The status page is down as well... Tragedy!")
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     val sb = StringBuilder(STATUS_URL).append("\n")
                     val status = json.getJSONObject("status")
@@ -109,7 +113,7 @@ object DiscordStatus : Command(
                     if (sb.length <= 2000) {
                         event.reply(sb.toString())
                     } else {
-                        event.reply("The detailed report is too long!\n Please visit $STATUS_URL")
+                        event.reply("The detailed report is too long!\nPlease visit $STATUS_URL")
                     }
                 }
             })

@@ -24,22 +24,28 @@
 
 package me.din0s.deebot.cmds.global
 
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import java.io.IOException
 
+/**
+ * Polls a cat fact API for a random fact.
+ *
+ * @author Dinos Papakostas
+ */
 object Cat : Command(
     name = "cat",
     description = "Gets the random cat fact of the day",
     alias = setOf("catfact")
 ) {
-    private val BASE_URL = "https://catfact.ninja/fact"
-//    private val log = LogManager.getLogger(Cat::class.java)
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "https://catfact.ninja/fact"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.channel.sendTyping().queue {
@@ -49,13 +55,13 @@ object Cat : Command(
                     noCat()
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
 
                     if (json.has("fact")) {
                         event.reply(json.getString("fact"))
                     } else {
+                        log.warn("Response from API didn't contain a fact!\n{}", json)
                         noCat()
                     }
                 }

@@ -24,38 +24,47 @@
 
 package me.din0s.deebot.cmds.global
 
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import java.io.IOException
 
+/**
+ * Polls a Chuck Norris API for a random fact.
+ *
+ * @author Dinos Papakostas
+ */
 object ChuckNorris : Command(
     name = "chucknorris",
     description = "Gets the random fact about Chuck Norris",
     alias = setOf("chuck", "norris")
 ) {
-    private val BASE_URL = "http://api.icndb.com/jokes/random"
-//    private val log = LogManager.getLogger(ChuckNorris::class.java)
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "http://api.icndb.com/jokes/random"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        event.channel.sendTyping().queue() {
+        event.channel.sendTyping().queue {
             HttpUtil.get(BASE_URL, cb = object : BaseCallback() {
                 override fun onFailure(call: Call, e: IOException) {
                     super.onFailure(call, e)
                     noChuck()
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
 
                     if (json.has("value") && json.getJSONObject("value").has("joke")) {
-                        event.reply(json.getJSONObject("value").getString("joke"))
+                        val joke = json.getJSONObject("value")
+                            .getString("joke")
+                            .replace("&quot;", "\"")
+                        event.reply(joke)
                     } else {
+                        log.warn("Response from API didn't contain a value!\n{}", json)
                         noChuck()
                     }
                 }

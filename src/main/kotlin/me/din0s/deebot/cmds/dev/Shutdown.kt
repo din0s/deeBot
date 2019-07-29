@@ -25,11 +25,16 @@
 package me.din0s.deebot.cmds.dev
 
 import me.din0s.Variables
-import me.din0s.deebot.entities.Command
+import me.din0s.deebot.cmds.Command
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 import kotlin.system.exitProcess
 
+/**
+ * Shuts down the bot, completely.
+ *
+ * @author Dinos Papakostas
+ */
 object Shutdown : Command(
     name = "shutdown",
     description = "Shuts down the current instance of the bot",
@@ -37,7 +42,7 @@ object Shutdown : Command(
     minArgs = 1,
     requiredParams = arrayOf("version")
 ) {
-    private val log = LogManager.getLogger(Shutdown::class.java)
+    private val log = LogManager.getLogger()
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (args[0].equals(Variables.VERSION.value, true)) {

@@ -24,16 +24,21 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Responds with a random lenny face.
+ *
+ * @author Dinos Papakostas
+ */
 object Lenny : Command(
     name = "lenny",
     description = "Get a random lennyface",
     alias = setOf("lennyface")
 ) {
-    private val faces = setOf(
+    private val faces = arrayOf(
         "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
         "( \u0361\u2609 \u035c\u0296 \u0361\u2609)",
         "[ \u0361\u00b0 \u035c\u0296 \u0361\u00b0 ]",
@@ -45,6 +50,7 @@ object Lenny : Command(
         "( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)>\u2310\u25a0-\u25a0",
         "[\u0332\u0305$\u0332\u0305(\u0332\u0305 \u0361\u00b0 \u035c\u0296 \u0361\u00b0\u0332\u0305)\u0332\u0305$\u0332\u0305]"
     )
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.reply(faces.random())
     }

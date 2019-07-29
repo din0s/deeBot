@@ -24,79 +24,25 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.const.Regex
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.entities.Registry
-import me.din0s.deebot.getPrefix
-import me.din0s.deebot.paginate
-import me.din0s.deebot.reply
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.UnaryOperator
+import me.din0s.deebot.cmds.Command
+import me.din0s.deebot.cmds.guild.role.RoleHelp
+import me.din0s.deebot.cmds.guild.role.impl.RoleSub
+import me.din0s.deebot.cmds.impl.Helper
+import me.din0s.deebot.handlers.CommandHandler
 
-object Help : Command(
-    name = "help",
-    description = "Display information about any command",
-    alias = setOf("h", "commands", "cmds"),
-    maxArgs =  1,
-    optionalParams = arrayOf("command / page number"),
-    examples = arrayOf("2", "choice")
-) {
-    private lateinit var helpPages : List<String>
-    private val PAGE_SIZE = 5
-
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val prefix = event.getPrefix()
-        val sb = StringBuilder("```diff\n")
-        val index = when {
-            args.isEmpty() -> {
-                sb.append(helpPages[0].withPrefix(prefix))
-                1
-            }
-            args[0].matches(Regex.INTEGER) -> {
-                val index = args[0].toInt()
-                if (index > helpPages.size || index <= 0) {
-                    event.reply("That help page doesn't exist!")
-                    return
-                }
-                sb.append(helpPages[index - 1].withPrefix(prefix))
-                index
-            }
-            else -> {
-                val cmd = Registry.getCommand(args[0])
-                if (cmd == null) {
-                    event.reply("That command doesn't exist!")
-                } else {
-                    val info = StringBuilder()
-                        .append("**")
-                        .append(prefix)
-                        .append(cmd.usage)
-                        .append("**\n")
-                        .append(cmd.description)
-                        .append(".")
-                    // TODO: add examples, flags, vars
-                    event.reply(info.toString())
-                }
-                return
-            }
-        }
-        if (index != helpPages.size) {
-            sb.append("\nUse ${prefix}help ").append(index + 1).append(" to see the next page")
-        }
-        sb.append("\n```")
-        event.reply(sb.toString())
-    }
-
-    fun generate() {
-        helpPages = Registry.getCommands()
-            .filter { !it.devOnly }
-            .sortedBy { it.name }
-            .paginate(UnaryOperator { it as Command
-                "+ %PREFIX%${it.usage}\n- ${it.description}\n"
-            }, PAGE_SIZE)
-    }
-
-    private fun String.withPrefix(prefix: String) : String {
-        return replace("%PREFIX%", prefix)
-    }
-
-}
+/**
+ * Displays help info for all other commands.
+ *
+ * @see [Helper]
+ * @author Dinos Papakostas
+ */
+object Help : Helper(
+    cmdName = "help",
+    cmdDescription = "Display information about any command",
+    cmdAlias = setOf("h", "commands", "cmds"),
+    cmdExamples = arrayOf("2", "choice"),
+    path = "me.din0s.deebot.cmds",
+    clazz = Command::class.java,
+    filter = { !it.devOnly && it !is RoleSub && it !is RoleHelp },
+    getCmd = { CommandHandler.getCommand(it) }
+)

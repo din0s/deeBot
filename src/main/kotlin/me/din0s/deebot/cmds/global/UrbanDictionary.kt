@@ -24,26 +24,34 @@
 
 package me.din0s.deebot.cmds.global
 
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
+/**
+ * Uses an UrbanDictionary API to get word/phrase definitions.
+ *
+ * @author Dinos Papakostas
+ */
 object UrbanDictionary : Command(
     name = "define",
     description = "Look up a word or a phrase on UrbanDictionary",
     alias = setOf("ud", "definition", "dictionary", "urban", "urbandictionary"),
     minArgs = 1,
-    requiredParams = arrayOf("word or phrase")
+    requiredParams = arrayOf("word or phrase"),
+    examples = arrayOf("konami code")
 ) {
-    private val BASE_URL = "https://api.urbandictionary.com/v0/define?term="
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "https://api.urbandictionary.com/v0/define?term="
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val allArgs = args.joinToString(" ").replace("+", "%2B")
@@ -55,8 +63,7 @@ object UrbanDictionary : Command(
                     event.reply("Uh oh, there was an error reaching the UrbanDictionary API!")
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     if (!json.has("list") || json.getJSONArray("list").isEmpty) {
                         event.reply("Your search returned no results! Zero.")
@@ -76,7 +83,7 @@ object UrbanDictionary : Command(
 
                     val sb = StringBuilder("__**`-=UrbanDictionary: ").append(word).append("=-`**__\n")
                         .append("\n**Definition:**\n").append(def.noBrackets()).append("\n")
-                    if (!example.isEmpty()) {
+                    if (example.isNotEmpty()) {
                         sb.append("\n**Example:**\n").append(example.noBrackets()).append("\n")
                     }
                     sb.append("\n[**+**] ").append(up).append(" / [**-**] ").append(down)

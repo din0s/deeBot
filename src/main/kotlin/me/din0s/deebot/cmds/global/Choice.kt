@@ -24,18 +24,25 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.showUsage
+import me.din0s.const.Unicode
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.noBackTicks
+import me.din0s.util.reply
+import me.din0s.util.showUsage
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Returns a random selection from a list of choices.
+ *
+ * @author Dinos Papakostas
+ */
 object Choice : Command(
     name = "choice",
     description = "Select a random option out of the given choices",
     alias = setOf("choose", "select"),
     minArgs = 1,
     requiredParams = arrayOf("choices separated by ;"),
-    examples = arrayOf("pizza; burger; cookies", "roblox; minecraft; fortnite")
+    examples = arrayOf("pizza; burger; cookies")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val params = args.joinToString(" ")
@@ -43,14 +50,11 @@ object Choice : Command(
             event.showUsage(this)
             return
         }
-
         val options = params.split(';').map { it.trim() }.filter { it.isNotEmpty() }
         when (options.size) {
             0 -> event.showUsage(this)
             1 -> event.reply("Give me more options to choose from!")
-            else -> {
-                event.reply("\uD83E\uDD14 *I'd say:* `${options.shuffled()[0].replace("`", "")}`")
-            }
+            else -> event.reply("${Unicode.THINK} *I'd say:* `${options.shuffled()[0].noBackTicks()}`")
         }
     }
 }

@@ -24,13 +24,42 @@
 
 package me.din0s.const
 
+/**
+ * This file contains various unicode characters that are used for the bot's messages.
+ *
+ * @author Dinos Papakostas
+ */
 object Unicode {
+    const val BACK_TICK = "\u0314 "
+    const val CALENDAR = "\uD83D\uDDD3"
     const val CHECK = "\u2705"
+    const val CLOCK = "\u23F0"
+    const val COP = "\uD83D\uDC6E"
+    const val CROWN = "\uD83D\uDC51"
+    const val DEAD = "\uD83D\uDE35"
     const val EIGHT_BALL = "\uD83C\uDFB1"
     const val EXCLAMATION = "\u2757"
     const val GLASS_BALL = "\uD83D\uDD2E"
+    const val LOUDSPEAKER = "\uD83D\uDCE2"
+    const val MAP = "\uD83D\uDDFA"
+    const val MUTE = "\uD83D\uDD07"
+    const val NOTE = "\uD83D\uDCDD"
+    const val PICTURE = "\uD83D\uDDBC"
+    const val SILHOUETTES = "\uD83D\uDC65"
+    const val SKIN_BLACK = "\uD83C\uDFFF"
+    const val SKIN_DARK = "\uD83C\uDFFE"
+    const val SKIN_LIGHT = "\uD83C\uDFFD"
+    const val SKIN_PALE = "\uD83C\uDFFB"
+     const val SOS = "\uD83C\uDD98"
+    const val SQUARE_DOT = "\u00b7"
     const val START_CENTER = "\uD83C\uDF1F"
-    const val START_CIRLE = "\uD83D\uDCAB"
+    const val START_CIRCLE = "\uD83D\uDCAB"
     const val THINK = "\uD83E\uDD14"
-    const val ZWSP = "\u180E"
+    const val WAVE = "\uD83D\uDC4B"
+
+    /**
+     * Extremely useful for breaking @mentions,
+     * such as @everyone, @here or even @user.
+     */
+    const val ZERO_WIDTH = "\u180E"
 }

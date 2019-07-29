@@ -25,89 +25,83 @@
 package me.din0s.deebot.cmds.guild
 
 import me.din0s.const.Regex
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.getUser
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.*
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import org.apache.logging.log4j.LogManager
 
+/**
+ * Bans a (list of) user(s).
+ *
+ * @author Dinos Papakostas
+ */
 object Ban : Command(
     name = "ban",
     description = "Ban a user",
     guildOnly = true,
     minArgs = 1,
-    maxArgs = 2,
     botPermissions = arrayOf(Permission.BAN_MEMBERS),
     userPermissions = arrayOf(Permission.BAN_MEMBERS),
     requiredParams = arrayOf("user"),
     optionalParams = arrayOf("days to purge"),
-    examples = arrayOf("spammer#1234 1", "squeaker#6969")
+    examples = arrayOf("spam#1234 1", "hacker#6969")
 ) {
+    private val log = LogManager.getLogger()
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val users = when (event.message.mentionedUsers.size) {
-            0 -> event.guild.getUser(args[0])
-            else -> event.message.mentionedUsers
+        val hasDays = args.last().matches(Regex.INTEGER)
+        val days = when {
+            hasDays -> args.last().toInt()
+            else -> 0
         }
-        val user : User?
-        val id = when (users.size) {
-            0 -> {
-                if (args[0].matches(Regex.DISCORD_ID)) {
-                    user = null
-                    args[0]
+        if (days !in 0..7) {
+            event.reply("**That's not a valid amount of days! You can select a value between 1 and 7.**")
+            return
+        }
+        val allArgs = event.getAllArgs()
+        val usersString = when {
+            hasDays -> allArgs.substringBeforeLast(args.last()).trim()
+            else -> allArgs
+        }
+        val ids = event.jda.matchUserIds(usersString)
+        when {
+            ids.isEmpty() -> {
+                event.reply("*No users were found that meet the given criteria!*")
+                return
+            }
+            ids.size > 5 -> {
+                event.reply("*For safety reasons, you cannot ban more than 5 users at a time.*")
+                return
+            }
+        }
+        Thread {
+            log.info("New ban thread for G#{}", event.guild.id)
+            val sb = StringBuilder()
+            ids.forEach {
+                val member = event.guild.getMemberById(it)
+                when (member) {
+                    null -> sb.append("User#").append(it).append(": ")
+                    else -> sb.append(member.user.asTag.escaped()).append(": ")
+                }
+                if (member != null && !event.member!!.canInteract(member)) {
+                    sb.appendln("Couldn't be banned since they are higher in hierarchy than you!")
+                } else if (member != null &&  !event.guild.selfMember.canInteract(member)) {
+                    sb.appendln("Couldn't be banned since they are higher in hierarchy than the bot!")
+                } else if (member != null && member == event.guild.selfMember) {
+                    sb.appendln("Please use ${event.getPrefix().escaped()} to kick me!")
                 } else {
-                    event.reply("*I didn't find any users matching that criteria!*")
-                    return
-                }
-            }
-            1 -> {
-                user = users[0]
-                users[0].id
-            }
-            else -> {
-                event.reply("**Too many users were found! Please narrow that down.**")
-                return
-            }
-        }
-
-        val days = if (args.size == 2 && args[1].matches(Regex.INTEGER)) {
-            val num = args[1].toInt()
-            if (num in 1..7) {
-                num
-            } else {
-                event.reply("**That's not a valid amount of days! You can select a value between 1 and 7.**")
-                return
-            }
-        } else {
-            0
-        }
-
-        if (user != null) {
-            val target = event.guild.getMember(user)
-            if (target != null) {
-                if (!event.member!!.canInteract(target)) {
-                    event.reply("**You are not allowed to ban this user!**")
-                    return
-                }
-                if (!event.guild.selfMember.canInteract(target)) {
-                    event.reply("**The bot's role is lower in hierarchy than the user's role.**\n" +
-                            "__Please drag the role to the top of the list to bypass this!__")
-                    return
-                }
-            }
-        }
-        event.guild.ban(id, days, "Ban by ${event.author.asMention}")
-            .queue(
-                {
-                    val userMention = when (user) {
-                        null -> "U($id)"
-                        else -> user.asMention
+                    try {
+                        event.guild.ban(it, days)
+                            .reason("Banned by ${event.author.asTag} (${event.author.id})")
+                            .complete()
+                        sb.appendln("**Banned successfully!**")
+                    } catch (e: Exception) {
+                        sb.appendln("**That's not a valid user!**")
                     }
-                    event.reply("$userMention was **banned** by ${event.author.asMention}")
-                },
-                {
-                    event.reply("**That's not a valid user!**")
                 }
-            )
+            }
+            event.reply(sb.toString())
+        }.start()
     }
 }

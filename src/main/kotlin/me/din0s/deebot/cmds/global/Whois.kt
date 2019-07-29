@@ -24,49 +24,36 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.format
-import me.din0s.deebot.getUser
-import me.din0s.deebot.reply
-import me.din0s.deebot.strip
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Returns info related to a user, and any info relevant to this guild,
+ * if this command was issued within a guild context.
+ *
+ * @author Dinos Papakostas
+ */
 object Whois : Command(
     name = "whois",
     description = "Get information on a user",
     alias = setOf("userinfo", "user"),
-    maxArgs = 1,
     optionalParams = arrayOf("@user / username / user#tag"),
-    examples = arrayOf("@deeBot", "deeBot", "deeBot#0996")
+    examples = arrayOf("deeBot#0996")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val user = when (event.message.mentionedUsers.size) {
+        val members = when {
+            args.isEmpty() -> setOf(event.member)
+            else -> event.guild.matchMembers(event.getAllArgs())
+        }
+        val user = when (members.size) {
             0 -> {
-                when {
-                    args.isEmpty() -> event.message.author
-                    event.isFromGuild -> {
-                        val list = event.guild.getUser(args[0])
-                        when (list.size) {
-                            0 -> {
-                                event.reply("*I couldn't find that user!*")
-                                return
-                            }
-                            1 -> list[0]
-                            else -> {
-                                event.reply("**Too many users matched that criteria! Be more specific.**")
-                                return
-                            }
-                        }
-                    }
-                    else -> {
-                        event.reply("*You can only search for another user in a server!*")
-                        return
-                    }
-                }
+                event.reply("*I couldn't find that user!*")
+                return
             }
-            1 -> event.message.mentionedUsers[0]
+            1 -> members.first()!!.user
             else -> {
-                event.reply("**You mentioned too many users! Try again with just one mention.**")
+                event.reply("**Too many users matched that criteria! Be more specific.**")
                 return
             }
         }
@@ -74,20 +61,20 @@ object Whois : Command(
         val sb = StringBuilder("**__User Info__**\n")
             .append("**Username:** ").append(user.asTag).append("\n")
             .append("**ID**: ").append(user.id).append("\n")
-            .append("**Creation Date:** ").append(user.timeCreated.format()).append("\n")
+            .append("**Creation Date:** ").append(user.timeCreated.asString()).append("\n")
 
         val avatar = user.avatarUrl
         if (avatar != null) {
-            sb.append("**Avatar:** ").append(avatar)
+            sb.append("**Avatar:** ").append(avatar).append("\n")
         }
         if (event.isFromGuild) {
-            sb.append("\n\n**__Server Info__**\n")
+            sb.append("\n**__Server Info__**\n")
             val member = event.guild.getMember(user)!!
             val nick = member.nickname
             if (nick != null) {
-                sb.append("**Nickname:** ").append(nick.strip()).append("\n")
+                sb.append("**Nickname:** ").append(nick.escaped()).append("\n")
             }
-            sb.append("**Join Date:** ").append(member.timeJoined.format()).append("\n")
+            sb.append("**Join Date:** ").append(member.timeJoined.asString()).append("\n")
                 .append("**Roles:** ").append(member.roles.joinToString(", ") { it.name }.ifEmpty { "@\u180Eeveryone" })
         }
         event.reply(sb.toString())

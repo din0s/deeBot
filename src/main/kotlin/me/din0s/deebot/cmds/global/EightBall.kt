@@ -25,19 +25,25 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Unicode
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.noBackTicks
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import kotlin.random.Random
 
+/**
+ * Responds with a random reply from a predefined list.
+ *
+ * @author Dinos Papakostas
+ */
 object EightBall : Command(
     name = "8ball",
     description = "Ask a question to the almighty 8ball",
     minArgs = 1,
     requiredParams = arrayOf("your question"),
-    examples = arrayOf("Will I win the lottery?", "Am I the greatest?")
+    examples = arrayOf("Am I the greatest?")
 ) {
-    private val replies = listOf(
+    private val replies = arrayOf(
         "Yes, definitely!",
         "No way..",
         "Absolutely!",
@@ -54,7 +60,7 @@ object EightBall : Command(
     )
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val questionOriginal = args.joinToString(" ").replace("`", "")
+        val questionOriginal = args.joinToString(" ").noBackTicks()
         val questionFinal = when {
             questionOriginal.endsWith('?') -> questionOriginal
             else -> "$questionOriginal?"
@@ -62,7 +68,7 @@ object EightBall : Command(
         val reply = replies.random()
         val emoji1 = when (Random.nextBoolean()) {
             true -> Unicode.START_CENTER
-            else -> Unicode.START_CIRLE
+            else -> Unicode.START_CIRCLE
         }
         val emoji2 = when (Random.nextBoolean()) {
             true -> Unicode.EIGHT_BALL

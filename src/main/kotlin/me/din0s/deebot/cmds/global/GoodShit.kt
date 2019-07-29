@@ -24,10 +24,15 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Copypasta command.
+ *
+ * @author Dinos Papakostas
+ */
 object GoodShit : Command(
     name = "goodshit",
     description = "The original 'good shit' copypasta",

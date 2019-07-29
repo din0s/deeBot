@@ -24,17 +24,22 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.Bot
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Sends an invite to the support guild.
+ *
+ * @author Dinos Papakostas
+ */
 object Support : Command(
     name = "support",
     description = "Get an invite link to the support server",
     alias = setOf("getsupport", "bug", "foundbug")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        event.reply("${event.author.asMention}: Follow the invite below to join my support server:\n" +
-                "https://discord.gg/0wEZsVCXid2URhDY")
+        event.reply("${event.author.asMention}: Follow the invite below to join my support server:\n${Bot.SERVER_INVITE}")
     }
 }

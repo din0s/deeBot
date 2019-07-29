@@ -25,50 +25,73 @@
 package me.din0s.deebot
 
 import me.din0s.Variables
-import me.din0s.deebot.entities.Registry
-import me.din0s.deebot.managers.DatabaseManager
+import me.din0s.config.Config
+import me.din0s.deebot.handlers.CommandHandler
+import me.din0s.sql.Database
+import me.din0s.util.loadClasses
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.sharding.ShardManager
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
-import org.reflections.Reflections
-import java.lang.reflect.Modifier
 import java.util.*
 
-object Bot {
-    private val DISABLED_FLAGS = EnumSet.allOf(CacheFlag::class.java)
+/**
+ * Contains static fields to be used in various commands, managers and handlers.
+ *
+ * @author Dinos Papakostas
+ */
+object Bot : ListenerAdapter() {
+    private val log = LogManager.getLogger()!!
+    private val disabledFlags = EnumSet.allOf(CacheFlag::class.java)
+    private var shardsReady = 0
 
     val DEV_ID = Variables.DEV_ID.value.toLong()
-    val LOG: Logger = LogManager.getLogger(Bot::class.java)
+    val SERVER_INVITE = Variables.SERVER_INVITE.value!!
 
+    lateinit var DEV: User
+    lateinit var SHARD_MANAGER: ShardManager
+
+    /**
+     * Initializes the bot, which includes setting up the Database,
+     * registering Event Handlers, and connecting to Discord.
+     */
     fun init() {
-        DefaultShardManagerBuilder()
+        Database.init()
+
+        val builder = DefaultShardManagerBuilder(Config.token)
             .setBulkDeleteSplittingEnabled(false)
-            .setDisabledCacheFlags(DISABLED_FLAGS)
-            .setToken(Config.token)
-            .setShardsTotal(2)
-            .addEventListeners(OnReadyListener)
-            .build()
-    }
-}
+            .setDisabledCacheFlags(disabledFlags)
+            .addEventListeners(this)
 
-private object OnReadyListener : ListenerAdapter() {
+        log.info("Registering Event Handlers")
+        loadClasses("me.din0s.deebot.handlers", ListenerAdapter::class.java).forEach {
+            log.debug("Registering {}", it.javaClass.simpleName)
+            builder.addEventListeners(it)
+        }
+
+        log.info("Connecting to Discord")
+        builder.build()
+    }
+
     override fun onReady(event: ReadyEvent) {
-        Bot.LOG.debug("Received READY on shard #{}", event.jda.shardInfo.shardId)
-        Reflections("me.din0s.deebot.handlers")
-            .getSubTypesOf(ListenerAdapter::class.java)
-            .filter { !Modifier.isAbstract(it.modifiers) }
-            .forEach {
-                val handler = it.getDeclaredConstructor().newInstance()
-                event.jda.addEventListener(handler)
-            }
-        event.jda.addEventListener(Registry)
+        log.info("Shard #{} READY", event.jda.shardInfo.shardId)
+        shardsReady++
+
+        val sm = event.jda.shardManager!!
+        if (shardsReady == sm.shardsTotal) {
+            SHARD_MANAGER = sm
+            Database.postReady()
+            CommandHandler.init()
+
+            DEV = sm.getUserById(DEV_ID)!!
+        }
     }
 }
 
-fun main() {
-    DatabaseManager.init()
-    Bot.init()
-}
+/**
+ * Main method. Execution starts here.
+ */
+fun main() = Bot.init()

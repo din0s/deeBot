@@ -24,17 +24,23 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.canDelete
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
 import java.io.IOException
 
+/**
+ * Creates a new paste using the HasteBin API.
+ *
+ * @author Dinos Papakostas
+ */
 object Hastebin : Command(
     name = "hastebin",
     description = "Upload a text snippet to Hastebin",
@@ -45,10 +51,13 @@ object Hastebin : Command(
     flags = mapOf(Pair("language", "the programming language to display the color formatting for")),
     examples = arrayOf("not my password", "print('hi') --py")
 ) {
-    private val BASE_URL = "https://hastebin.com/documents"
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "https://hastebin.com/documents"
     private val VALID_FLAGS = setOf("-l", "--lang", "--language")
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val (paste, flag) = parseArgs(args)
+
         event.channel.sendTyping().queue {
             HttpUtil.post(BASE_URL, paste, cb = object : BaseCallback() {
                 override fun onFailure(call: Call, e: IOException) {
@@ -56,14 +65,14 @@ object Hastebin : Command(
                     failed()
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     if (!json.has("key")) {
+                        log.warn("Response from API didn't contain a key!\n{}", json)
                         failed()
                         return
                     }
-                    if (event.isFromGuild && event.guild.selfMember.canDelete(event.textChannel)) {
+                    if (event.isFromGuild && event.guild.selfMember.hasPermission(event.textChannel, Permission.MESSAGE_MANAGE)) {
                         event.message.delete().queue {
                             success(json, flag)
                         }
@@ -87,6 +96,13 @@ object Hastebin : Command(
         }
     }
 
+    /**
+     * Parse the input in order to find a language flag, either as the
+     * first or the last element of the command's arguments.
+     *
+     * @param args The command's argument list.
+     * @return A pair of the normal paste content and an optional language flag.
+     */
     private fun parseArgs(args: List<String>) : Pair<String, String?> {
         if (args.size > 1) {
             if (VALID_FLAGS.contains(args[0].toLowerCase())) {

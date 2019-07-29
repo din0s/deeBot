@@ -24,12 +24,17 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.asTime
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.asTime
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.lang.management.ManagementFactory
 
+/**
+ * Displays the current session's uptime.
+ *
+ * @author Dinos Papakostas
+ */
 object Uptime : Command(
     name = "uptime",
     description = "Get the bot's current uptime",

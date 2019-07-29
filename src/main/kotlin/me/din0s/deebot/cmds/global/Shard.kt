@@ -25,33 +25,41 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Regex
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.sharding.ShardManager
 
+/**
+ * Displays info for a/all shard(s).
+ *
+ * @author Dinos Papakostas
+ */
 object Shard : Command(
     name = "shard",
     description = "Get information for the bot's shards",
     alias = setOf("sharding", "shards", "shardmanager"),
     maxArgs = 1,
-    optionalParams = arrayOf("shard id")
+    optionalParams = arrayOf("shard id"),
+    examples = arrayOf("2", "*")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val sm = event.jda.shardManager!!
-        if (args.isEmpty()) {
-            event.reply(sm.getInfo(event.jda.shardInfo.shardId))
-        } else if (args[0] != "*" && !args[0].matches(Regex.INTEGER)) {
-            event.reply("That's not a valid shard number!")
-        } else {
-            val id = when {
-                args[0] == "*" -> null
-                else -> args[0].toInt()
-            }
-            event.reply(sm.getInfo(id))
+        when {
+            args.isEmpty() -> event.reply(sm.getInfo(event.jda.shardInfo.shardId))
+            args[0] == "*" -> event.reply(sm.getInfo())
+            args[0].matches(Regex.INTEGER) -> event.reply(sm.getInfo(args[0].toInt()))
+            else -> event.reply("That's not a valid shard number!")
         }
     }
 
+    /**
+     * Returns an info message related to either all shards or a specific shard
+     *
+     * @param id The shard ID to get info for. If not present, the result
+     * will contain info for all of this bot's shards.
+     * @return An info message.
+     */
     private fun ShardManager.getInfo(id: Int? = null) : String {
         val shardList = when {
             id == null -> shards

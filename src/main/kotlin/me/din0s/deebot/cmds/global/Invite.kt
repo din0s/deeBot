@@ -24,21 +24,28 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.Bot
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Sends links to invite the bot & join the support guild.
+ *
+ * @author Dinos Papakostas
+ */
 object Invite : Command(
     name = "invite",
     description = "Get a link to invite the bot to your server"
 ) {
-    private val INVITE_URL = "http://invite.deebot.xyz"
+    private const val INVITE_URL = "http://invite.deebot.xyz"
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.reply("""
             ${event.author.asMention}:
             If you want to invite me to your server, click on this link: <$INVITE_URL>
             In case anything goes wrong, feel free to join my support server.
-            https://discord.gg/0wEZsVCXid2URhDY
+            ${Bot.SERVER_INVITE}
         """.trimIndent())
     }
 }

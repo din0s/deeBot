@@ -24,15 +24,21 @@
 
 package me.din0s.deebot.cmds.global
 
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import java.io.IOException
 
+/**
+ * Uses a Your Mom Joke API to get a random offensive joke.
+ *
+ * @author Dinos Papakostas
+ */
 object YourMom : Command(
     name = "joke",
     description = "Get a 'Your Mom' joke",
@@ -42,7 +48,8 @@ object YourMom : Command(
         "yourmama", "urmama", "yomama"
     )
 ) {
-    private val API_URL = "https://api.yomomma.info/"
+    private val log = LogManager.getLogger()
+    private const val API_URL = "https://api.yomomma.info/"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.channel.sendTyping().queue {
@@ -52,10 +59,10 @@ object YourMom : Command(
                     fail()
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     if (!json.has("joke")) {
+                        log.warn("The API response didn't contain a joke!\n{}", json)
                         fail()
                     } else {
                         event.reply(json.getString("joke"))

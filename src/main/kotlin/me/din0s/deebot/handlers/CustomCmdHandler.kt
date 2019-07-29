@@ -25,15 +25,47 @@
 package me.din0s.deebot.handlers
 
 import me.din0s.const.Regex
-import me.din0s.deebot.entities.CustomCommand
-import me.din0s.deebot.managers.CustomCmdManager
-import me.din0s.deebot.managers.GuildInfoManager
-import me.din0s.deebot.send
-import me.din0s.deebot.whisper
+import me.din0s.deebot.entities.CustomCmdResponse
+import me.din0s.sql.managers.CustomCmdManager
+import me.din0s.sql.managers.GuildDataManager
+import me.din0s.util.send
+import me.din0s.util.whisper
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.apache.logging.log4j.LogManager
 
-class CustomCmdHandler : ListenerAdapter() {
+/**
+ * Handles the custom commands for guilds that have registered some.
+ *
+ * @author Dinos Papakostas
+ */
+object CustomCmdHandler : ListenerAdapter() {
+    private val log = LogManager.getLogger()
+
+    override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
+        if (!CustomCmdManager.hasEntries(event.guild) || event.author.isBot) {
+            return
+        }
+        val rawMessage = event.message.contentRaw
+        val prefix = GuildDataManager.getPrefix(event.guild)
+        if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
+            val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
+            val label = allArgs[0].toLowerCase()
+            val cmd = CustomCmdManager.getByLabel(label, event.guild)?.random() ?: return
+            log.trace("TC#{} {}: {}", event.channel.id, event.author.asTag, label)
+            if (cmd.delete) {
+                event.message.delete().queue { event.execute(cmd) }
+            } else {
+                event.execute(cmd)
+            }
+        }
+    }
+
+    /**
+     * Parses the $random{} element that may exist in a command response.
+     *
+     * @return The response without any $random{} elements.
+     */
     private fun String.handleRandom() : String {
         var field = this
         Regex.RANDOM.findAll(this).forEach {
@@ -42,39 +74,43 @@ class CustomCmdHandler : ListenerAdapter() {
         return field
     }
 
+    /**
+     * Returns all arguments specified by the user after the custom command.
+     *
+     * @return All arguments that follow the command.
+     */
+    private fun GuildMessageReceivedEvent.getAllArgsOptional() : String {
+        return message.contentRaw
+            .substringAfter(GuildDataManager.getPrefix(guild), "")
+            .substringAfter(' ')
+            .trim()
+    }
+
+    /**
+     * Parses the variable placeholders from the response.
+     *
+     * @param event The event that was fired for the custom command
+     * @return The response after parsing every placeholder variable.
+     */
     private fun String.parseVars(event: GuildMessageReceivedEvent) : String {
         return replace("%user%", event.author.name)
             .replace("%userid%", event.author.id)
             .replace("%nickname%", event.member!!.nickname ?: event.author.name)
             .replace("%mention%", event.author.asMention)
-            .replace("%input%", event.message.contentRaw.substringAfter(' ', ""))
+            .replace("%input%", event.getAllArgsOptional())
     }
 
-    private fun GuildMessageReceivedEvent.execute(cmd: CustomCommand) {
+    /**
+     * Sends the response of the custom command, either in private or not, depending on the command's flag.
+     *
+     * @param cmd The custom command to execute.
+     */
+    private fun GuildMessageReceivedEvent.execute(cmd: CustomCmdResponse) {
         val msg = cmd.response.handleRandom().parseVars(this)
         if (cmd.private) {
             author.whisper(msg)
         } else {
-            channel.send(msg)
-        }
-    }
-
-    override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-        if (!CustomCmdManager.hasEntries(event.guild) || event.author.isBot) {
-            return
-        }
-
-        val rawMessage = event.message.contentRaw
-        val prefix = GuildInfoManager.getPrefix(event.guild)
-        if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
-            val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
-            val label = allArgs[0].toLowerCase()
-            val cmd = CustomCmdManager.getByLabel(label, event.guild)?.random() ?: return
-            if (cmd.delete) {
-                event.message.delete().queue { event.execute(cmd) }
-            } else {
-                event.execute(cmd)
-            }
+            channel.send(msg, false)
         }
     }
 }

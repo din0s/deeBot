@@ -25,15 +25,19 @@
 package me.din0s.deebot.cmds.guild
 
 import me.din0s.const.Regex
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.paginate
-import me.din0s.deebot.reply
-import me.din0s.deebot.strip
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.escaped
+import me.din0s.util.paginate
+import me.din0s.util.reply
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.UnaryOperator
+import java.util.function.Function
 
+/**
+ * Returns the current guild's bans.
+ *
+ * @author Dinos Papakostas
+ */
 object BanList: Command(
     name = "banlist",
     description = "Get a list of all banned users",
@@ -41,17 +45,19 @@ object BanList: Command(
     maxArgs = 1,
     botPermissions = arrayOf(Permission.BAN_MEMBERS),
     userPermissions = arrayOf(Permission.BAN_MEMBERS),
-    optionalParams = arrayOf("page")
+    optionalParams = arrayOf("page"),
+    examples = arrayOf("1")
 ) {
-    private val USERS_PER_PAGE = 5
+    private const val USERS_PER_PAGE = 5
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.guild.retrieveBanList().queue { bans ->
             if (bans.isEmpty()) {
                 event.reply("*There are no banned users on this server!*")
                 return@queue
             }
-            val pages = bans.paginate(UnaryOperator { it as Guild.Ban
-                "- ${it.user.asTag.strip()}\n"
+            val pages = bans.paginate(Function {
+                "- ${it.user.asTag.escaped()}\n"
             }, USERS_PER_PAGE)
             val page = when {
                 args.isEmpty() -> 0

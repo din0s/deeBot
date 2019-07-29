@@ -24,22 +24,12 @@
 
 package me.din0s.deebot.cmds.guild
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import org.apache.logging.log4j.LogManager
+import me.din0s.deebot.cmds.impl.Timer
 
-object Announce : Command(
-    name = "announce",
-    description = "Set a timer to send a message in a server channel",
-    alias = setOf("announcement"),
-    guildOnly = true,
-    examples = arrayOf("30 mins Join the Minecraft server!")
-) {
-    private val log = LogManager.getLogger(Announce::class.java)
-
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        event.reply("This command has been temporarily disabled")
-        log.info("")
-    }
-}
+/**
+ * Sends a public message using a timer.
+ *
+ * @see [Timer]
+ * @author Dinos Papakostas
+ */
+object Announce : Timer(true)

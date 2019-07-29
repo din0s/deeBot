@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'din0s'
-version '1.0'
+version '3.0'
 
 sourceCompatibility = 1.8
 
@@ -15,8 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation "net.dv8tion:JDA:4.BETA.0_24"
+    implementation "net.dv8tion:JDA:4.BETA.0_30"
 
+    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
     implementation "org.jetbrains.exposed:exposed:0.16.2"
     implementation "org.mariadb.jdbc:mariadb-java-client:2.4.2"
 

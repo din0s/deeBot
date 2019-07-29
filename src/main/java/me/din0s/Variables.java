@@ -22,15 +22,47 @@
  * SOFTWARE.
  */
 
-package me.din0s;public enum Variables {
+package me.din0s;
+
+/**
+ * This enum contains variables available to all other classes.
+ *
+ * @author Dinos Papakostas
+ */
+@SuppressWarnings("unused")
+public enum Variables {
+    /**
+     * The Discord ID of the developer who wrote this bot (that's me!).
+     */
     DEV_ID("98457903660269568"),
+
+    /**
+     * An invite to the bot's support server.
+     */
+    SERVER_INVITE("https://discord.gg/0wEZsVCXid2URhDY"),
+
+    /**
+     * A placeholder for the bot's current version.
+     * This gets replaced from the gradle build script.
+     */
     VERSION("@version@");
 
     private final String value;
+
+    /**
+     * Constructor.
+     *
+     * @param value The value to set for the variable.
+     */
     Variables(String value) {
         this.value = value;
     }
 
+    /**
+     * Returns the value of this variable.
+     *
+     * @return The variable's value.
+     */
     public String getValue() {
         return value;
     }

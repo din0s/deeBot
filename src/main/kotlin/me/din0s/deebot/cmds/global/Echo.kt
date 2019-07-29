@@ -24,17 +24,22 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Repeats the user's input.
+ *
+ * @author Dinos Papakostas
+ */
 object Echo : Command(
     name = "say",
     description = "Make the bot repeat your message",
     alias = setOf("echo", "repeat"),
     minArgs = 1,
     requiredParams = arrayOf("your message"),
-    examples = arrayOf("Hello World!", "2+2=4")
+    examples = arrayOf("Hello World!")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (event.message.mentionedUsers.size > 5) {

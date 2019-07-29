@@ -24,28 +24,36 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.Config
+import me.din0s.config.Config
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import me.din0s.deebot.strip
-import me.din0s.deebot.util.HttpUtil
+import me.din0s.util.HttpUtil
+import me.din0s.util.escaped
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.HttpUrl
 import okhttp3.Response
+import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
 import java.io.IOException
 
+/**
+ * Uses the Google Custom Search API to perform a search.
+ * TODO: Think about scraping.
+ *
+ * @author Dinos Papakostas
+ */
 object Google : Command(
     name = "google",
     description = "Search for a term on Google",
     alias = setOf("g", "bing"),
     minArgs = 1,
     requiredParams = arrayOf("your query"),
-    examples = arrayOf("tallest tower", "oldest man", "elon musk")
+    examples = arrayOf("elon musk")
 ) {
-    private val BASE_URL = "https://www.googleapis.com/customsearch/v1"
+    private val log = LogManager.getLogger()
+    private const val BASE_URL = "https://www.googleapis.com/customsearch/v1"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val query = args.joinToString(" ")
@@ -55,6 +63,7 @@ object Google : Command(
             .addQueryParameter("key", Config.googleKey)
             .addQueryParameter("cx", Config.googleSearch)
             .build()
+
         event.channel.sendTyping().queue {
             HttpUtil.get(url, cb = object : BaseCallback() {
                 override fun onFailure(call: Call, e: IOException) {
@@ -62,10 +71,10 @@ object Google : Command(
                     event.reply("An error has occurred. Please try again later.")
                 }
 
-                override fun onResponse(call: Call, response: Response) {
-                    super.onResponse(call, response)
+                override fun handleResponse(call: Call, response: Response) {
                     val json = response.asJson()
                     if (!json.has("items")) {
+                        log.warn("Reached max searches.")
                         // TODO possibly better error msg
                         event.reply(
                             "__The bot has reached its maximum Google Searches for the day!__\n" +
@@ -79,11 +88,10 @@ object Google : Command(
                         event.reply("_Your query returned zero results from Google!_")
                         return
                     }
-
                     val firstResult = results[0] as JSONObject
-                    val snippet = firstResult.getString("snippet").replace("\n", "").strip()
+                    val snippet = firstResult.getString("snippet").replace("\n", "").escaped()
                     val link = firstResult.getString("link")
-                    val msg = "**`Google Search Result for:`** ${query.strip()}\n<$link>\n$snippet"
+                    val msg = "**`Google Search Result for:`** ${query.escaped()}\n<$link>\n$snippet"
                     event.reply(msg)
                 }
             })

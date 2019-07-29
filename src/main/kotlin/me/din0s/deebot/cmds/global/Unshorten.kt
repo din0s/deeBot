@@ -24,16 +24,23 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
+/**
+ * Uses the Google URL Shortening API to unshorten a link.
+ * Killed by Google as well.
+ *
+ * @see [Shorten]
+ * @author Dinos Papakostas
+ */
 object Unshorten : Command(
-    name = "shorten",
-    description = "Shorten a URL"
+    name = "unshorten",
+    description = "Unshorten a URL"
 ) {
-    private val log = LogManager.getLogger(Unshorten::class.java)
+    private val log = LogManager.getLogger()
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.reply("This feature was disabled by Google ):")

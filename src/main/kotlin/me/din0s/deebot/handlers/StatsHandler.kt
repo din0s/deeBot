@@ -24,20 +24,43 @@
 
 package me.din0s.deebot.handlers
 
+import me.din0s.config.Config
+import me.din0s.util.HttpUtil
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import org.apache.logging.log4j.LogManager
+import org.json.JSONObject
 
-class StatsHandler : ListenerAdapter() {
-    companion object {
-        var read = 0
-        var sent = 0
+/**
+ * Handles the bot's stats.
+ *
+ * @author Dinos Papakostas
+ */
+object StatsHandler : ListenerAdapter() {
+    private val log = LogManager.getLogger()
+    private const val CARBON_URL = "https://www.carbonitex.net/discord/data/botdata.php"
+
+    var sent = 0
+    var read = 0
+
+    override fun onGuildJoin(event: GuildJoinEvent) {
+        log.info("Joined new server {}", event.guild.id)
+        val carbonKey = Config.carbonKey
+        if (carbonKey.isNotEmpty()) {
+            val data = JSONObject()
+                .put("server_count", event.jda.shardManager!!.guildCache.size())
+//                .put("shard_id", event.jda.shardInfo.shardId)
+//                .put("shard_count", event.jda.shardInfo.shardTotal)
+                .put("key", carbonKey)
+            HttpUtil.post(CARBON_URL, data.toString())
+        }
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
-        if (event.author == event.jda.selfUser) {
-            sent++
-        } else {
-            read++
+        when (event.author == event.jda.selfUser) {
+            true -> sent++
+            false -> read++
         }
     }
 }

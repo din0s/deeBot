@@ -24,10 +24,17 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import org.apache.logging.log4j.LogManager
 
+/**
+ * Uses a Steam Status API to display relevant info.
+ * This API used to work but seems like it's inaccurate now.
+ *
+ * @author Dinos Papakostas
+ */
 object Steam : Command(
     name = "steam",
     description = "Check the status of Steam's servers",
@@ -35,9 +42,11 @@ object Steam : Command(
     maxArgs = 1,
     optionalParams = arrayOf("tf2 / dota2 / csgo")
 ) {
-    private val URL = "https://steamgaug.es/api/v2"
+    private val log = LogManager.getLogger()
+    private const val URL = "https://steamgaug.es/api/v2"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.reply("This command has been temporarily disabled")
+        log.info("")
     }
 }

@@ -24,16 +24,22 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import org.apache.logging.log4j.LogManager
 
+/**
+ * Uses the Google URL Shortening API.
+ * Unfortunately Google shut down this feature in 2019.
+ *
+ * @author Dinos Papakostas
+ */
 object Shorten : Command(
     name = "shorten",
     description = "Shorten a URL"
 ) {
-    private val log = LogManager.getLogger(Shorten::class.java)
+    private val log = LogManager.getLogger()
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.reply("This feature was disabled by Google ):")

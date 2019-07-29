@@ -24,20 +24,26 @@
 
 package me.din0s.deebot.cmds.guild
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.managers.BlacklistManager
-import me.din0s.deebot.reply
-import me.din0s.deebot.showUsage
+import me.din0s.deebot.cmds.Command
+import me.din0s.sql.managers.BlacklistManager
+import me.din0s.util.reply
+import me.din0s.util.showUsage
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Adds a channel to the blacklist, where commands will be ignored.
+ *
+ * @author Dinos Papakostas
+ */
 object Blacklist : Command(
     name = "blacklist",
     description = "Disable the bot in a specific channel",
     guildOnly = true,
     maxArgs = 1,
     userPermissions = arrayOf(Permission.ADMINISTRATOR),
-    optionalParams = arrayOf("info / #channel")
+    optionalParams = arrayOf("info / #channel"),
+    examples = arrayOf("#new-people", "info")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (args.isEmpty() || args[0].equals("info", true)) {
@@ -47,7 +53,6 @@ object Blacklist : Command(
                 event.reply("Blacklisted Channels: __None__")
                 return
             }
-
             val sb = StringBuilder("Blacklisted Channels:")
             channels.forEach { sb.append(it) }
             if (sb.length > 2000) {

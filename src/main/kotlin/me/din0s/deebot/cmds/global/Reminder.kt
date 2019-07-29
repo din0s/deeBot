@@ -24,21 +24,12 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import org.apache.logging.log4j.LogManager
+import me.din0s.deebot.cmds.impl.Timer
 
-object Reminder : Command(
-    name = "reminder",
-    description = "Set a reminder to be notified in private",
-    alias = setOf("timer"),
-    examples = arrayOf("2 hours Go to sleep!")
-) {
-    private val log = LogManager.getLogger(Reminder::class.java)
-
-    override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        event.reply("This command has been temporarily disabled")
-        log.info("")
-    }
-}
+/**
+ * Sends a reminder in private.
+ *
+ * @see [Timer]
+ * @author Dinos Papakostas
+ */
+object Reminder : Timer(false)

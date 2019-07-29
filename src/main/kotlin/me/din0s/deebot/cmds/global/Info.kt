@@ -25,18 +25,25 @@
 package me.din0s.deebot.cmds.global
 
 import me.din0s.Variables
-import me.din0s.deebot.asTime
-import me.din0s.deebot.entities.Command
-import me.din0s.deebot.reply
+import me.din0s.deebot.Bot
+import me.din0s.deebot.cmds.Command
+import me.din0s.util.asTime
+import me.din0s.util.reply
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import java.lang.management.ManagementFactory
 
+/**
+ * Displays info & stats related to the bot.
+ *
+ * @author Dinos Papakostas
+ */
 object Info : Command(
     name = "info",
     description = "Get information related to the bot"
 ) {
-    private val UNIT = 1024
+    private const val UNIT = 1024
+
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val runtime = Runtime.getRuntime()
         val totalMemory = runtime.totalMemory() / UNIT
@@ -45,14 +52,14 @@ object Info : Command(
         event.reply("""
             __Bot Info__:
             **Bot Creator**: dinos#0649
-            **Bot Version**: ${Variables.VERSION}
+            **Bot Version**: ${Variables.VERSION.value}
             **API Library**: JDA ${JDAInfo.VERSION}
             **RAM Used**: ${usedMemory / UNIT}/${totalMemory / UNIT} MB
             **Bot Uptime**: ${ManagementFactory.getRuntimeMXBean().uptime.asTime()}
             
             Do you have any suggestions for the bot?
             Join the official server and let me know!
-            https://discord.gg/0wEZsVCXid2URhDY
+            ${Bot.SERVER_INVITE}
         """.trimIndent())
     }
 }

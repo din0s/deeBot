@@ -24,30 +24,34 @@
 
 package me.din0s.deebot.cmds.global
 
-import me.din0s.deebot.entities.Command
+import me.din0s.const.Unicode
+import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.handlers.StatsHandler
-import me.din0s.deebot.reply
+import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
+/**
+ * Displays the bot's current statistics.
+ *
+ * @author Dinos Papakostas
+ */
 object Stats : Command(
     name = "stats",
     description = "Display the bot's statistics",
     alias = setOf("statistics")
 ) {
-    private val c = "\u00b7"
-
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val sm = event.jda.shardManager!!
         event.reply("""
             __Connections__
-            **$c ${sm.guildCache.size()}** total servers
-            **$c ${sm.textChannelCache.size()}** text channels
-            **$c ${sm.voiceChannelCache.size()}** voice channels
-            **$c ${sm.userCache.size()}** unique users
+            **${Unicode.SQUARE_DOT} ${sm.guildCache.size()}** total servers
+            **${Unicode.SQUARE_DOT} ${sm.textChannelCache.size()}** text channels
+            **${Unicode.SQUARE_DOT} ${sm.voiceChannelCache.size()}** voice channels
+            **${Unicode.SQUARE_DOT} ${sm.userCache.size()}** unique users
             
             __Callbacks__
-            **$c ${StatsHandler.read}** read messages
-            **$c ${StatsHandler.sent}** sent messages
+            **${Unicode.SQUARE_DOT} ${StatsHandler.read}** read messages
+            **${Unicode.SQUARE_DOT} ${StatsHandler.sent}** sent messages
         """.trimIndent())
     }
 }
