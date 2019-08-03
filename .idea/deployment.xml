@@ -2,10 +2,10 @@
 <project version="4">
   <component name="PublishConfigData">
     <serverData>
-      <paths name="Socialize">
+      <paths name="deeBot">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/bot/deploy" local="$PROJECT_DIR$/build/libs" web="/" />
           </mappings>
         </serverdata>
       </paths>
