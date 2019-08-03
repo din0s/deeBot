@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'din0s'
-version '3.0'
+version '3.1'
 
 sourceCompatibility = 1.8
 
