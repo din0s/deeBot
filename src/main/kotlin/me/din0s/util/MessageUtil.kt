@@ -26,6 +26,7 @@ package me.din0s.util
 
 import me.din0s.const.Unicode
 import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
@@ -52,6 +53,10 @@ fun MessageReceivedEvent.reply(msg: String, safe: Boolean = true) {
  * @param safe Whether all instances of mass mentions should be stripped.
  */
 fun MessageChannel.send(msg: String, safe: Boolean) {
+    if (this is TextChannel && !canTalk()) {
+        return
+    }
+
     val message = when {
         safe -> msg
             .replace("@everyone", "@${Unicode.ZERO_WIDTH}everyone")
