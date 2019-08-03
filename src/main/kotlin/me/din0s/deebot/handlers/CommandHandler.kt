@@ -73,7 +73,9 @@ object CommandHandler : ListenerAdapter() {
         }
         val prefix = event.getPrefix()
         val rawMessage = event.message.contentRaw
-        if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
+        if (rawMessage == event.jda.selfUser.asMention) {
+            event.reply("The prefix is: ${prefix.escaped()}")
+        } else if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
             val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
             val label = allArgs[0].toLowerCase()
             val command = commandList[label] ?: return
