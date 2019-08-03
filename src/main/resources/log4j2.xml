@@ -27,6 +27,30 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false" pattern="%d{MM/dd HH:mm:ss} [%highlight{%c{1}}] %m%n"/>
         </Console>
+        <RollingFile
+                name="JDAErrors"
+                fileName="logs/jda/errors.log"
+                filePattern="logs/jda/%d{MM_dd}.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss} [%c{1}] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile
+                name="BotErrors"
+                fileName="logs/bot/errors.log"
+                filePattern="logs/bot/%d{MM_dd}.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss} [%c{1}] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="info">
@@ -34,6 +58,11 @@
         </Root>
         <Logger name="me.din0s" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
+            <AppenderRef ref="BotErrors" level="error"/>
+        </Logger>
+        <Logger name="net.dv8tion" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="JDAErrors" level="error"/>
         </Logger>
         <Logger name="Exposed" level="WARN" additivity="false">
             <AppenderRef ref="Console"/>
