@@ -27,12 +27,18 @@ package me.din0s.deebot.handlers
 import me.din0s.const.Unicode
 import me.din0s.sql.managers.GuildDataManager
 import me.din0s.util.send
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import org.apache.logging.log4j.LogManager
 
+/**
+ * Handles events related to members joining or leaving the guild.
+ *
+ * @author Dinos Papakostas
+ */
 object MemberHandler : ListenerAdapter() {
     private val log = LogManager.getLogger()
 
@@ -67,6 +73,10 @@ object MemberHandler : ListenerAdapter() {
 
         if (join) {
             val autoRole = GuildDataManager.getAutoRole(guild) ?: return
+            if (!guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
+                guild.defaultChannel?.send("${Unicode.SOS} **The bot cannot interact with the autorole due to missing permissions!**", false)
+                return
+            }
             if (!guild.selfMember.canInteract(autoRole)) {
                 guild.defaultChannel?.send("${Unicode.SOS} **The bot cannot interact with the autorole due to hierarchy!**", false)
                 return
