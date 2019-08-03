@@ -37,19 +37,17 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
  *
  * @author Dinos Papakostas
  */
-abstract class Timer(
-    private val private: Boolean
-) : Command(
+abstract class Timer(private val isPrivate: Boolean) : Command(
     name = when {
-        private -> "reminder"
+        isPrivate -> "reminder"
         else -> "announcement"
     },
     description =  "Set a countdown timer to send a message in the future",
     alias = when {
-        private -> setOf("remindme", "reminders")
+        isPrivate -> setOf("remindme", "reminders")
         else -> setOf("announce", "announcements")
     },
-    guildOnly = !private,
+    guildOnly = !isPrivate,
     optionalParams = arrayOf("info / cancel [id] / [message] | [duration]"),
     flags = mapOf(Pair("repeat", "Set this timer to repeat")),
     examples = arrayOf(
@@ -72,10 +70,10 @@ abstract class Timer(
                 event.reply("You don't have any ${name}s set!")
             } else {
                 val timers = set
-                    .filter { private && it.private || !private && !it.private }
+                    .filter { isPrivate && it.private || !isPrivate && !it.private }
                     .sortedBy { it.next }
                     .mapNotNull {
-                        if (private) {
+                        if (isPrivate) {
                             "**`#${it.uuid}`** __${it.next.asString()}__\n${it.message}"
                         } else {
                             val channel = event.guild.getTextChannelById(it.channelId)
@@ -119,7 +117,7 @@ abstract class Timer(
         }
         val message = allArgs.substringBeforeLast('|').trim()
         event.handleUserError {
-            if (private) {
+            if (isPrivate) {
                 event.author.openPrivateChannel().queue {
                     event.createTimer(message, it, duration, repeat)
                 }
@@ -149,7 +147,7 @@ abstract class Timer(
             channel = channel,
             durationStr = duration,
             repeat = repeat,
-            inPrivate = private
+            inPrivate = isPrivate
         )
         reply("Set a timer for __${timer.next.asString()}__")
     }

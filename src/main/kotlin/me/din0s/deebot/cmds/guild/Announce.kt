@@ -32,4 +32,4 @@ import me.din0s.deebot.cmds.impl.Timer
  * @see [Timer]
  * @author Dinos Papakostas
  */
-object Announce : Timer(true)
+object Announce : Timer(false)

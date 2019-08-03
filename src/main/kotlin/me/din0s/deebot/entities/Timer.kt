@@ -28,7 +28,6 @@ import me.din0s.deebot.handlers.TimerHandler
 import me.din0s.sql.managers.TimerManager
 import me.din0s.sql.tables.Timers
 import org.apache.logging.log4j.LogManager
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.Duration
@@ -67,9 +66,7 @@ data class Timer(
      */
     fun deleteFromDb() {
         log.debug("Deleting T#{}", uuid)
-        transaction {
-            Timers.deleteWhere { Timers.uuid eq uuid }
-        }
+        TimerManager.delete(userId, uuid)
     }
 
     /**
