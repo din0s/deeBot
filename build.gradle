@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation "net.dv8tion:JDA:4.BETA.0_30"
+    implementation "net.dv8tion:JDA:4.BETA.0_32"
 
     implementation 'com.squareup.okhttp3:okhttp:3.14.2'
     implementation "org.jetbrains.exposed:exposed:0.16.2"
