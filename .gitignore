@@ -109,3 +109,4 @@ hs_err_pid*
 
 ###Custom
 *.json
+*.log.gz
