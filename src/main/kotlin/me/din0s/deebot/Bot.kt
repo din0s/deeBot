@@ -30,7 +30,9 @@ import me.din0s.deebot.handlers.CommandHandler
 import me.din0s.sql.Database
 import me.din0s.util.loadClasses
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.events.DisconnectEvent
 import net.dv8tion.jda.api.events.ReadyEvent
+import net.dv8tion.jda.api.events.ReconnectedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
@@ -88,6 +90,14 @@ object Bot : ListenerAdapter() {
 
             DEV = sm.getUserById(DEV_ID)!!
         }
+    }
+
+    override fun onDisconnect(event: DisconnectEvent) {
+        log.info("Shard #{} DISCONNECTED", event.jda.shardInfo.shardId)
+    }
+
+    override fun onReconnect(event: ReconnectedEvent) {
+        log.info("Shard #{} RECONNECTED", event.jda.shardInfo.shardId)
     }
 }
 
