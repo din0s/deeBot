@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -112,7 +112,13 @@ abstract class Timer(private val isPrivate: Boolean) : Command(
         }
         val repeat = repeatFlags.contains(args.last().toLowerCase())
         val duration = when {
-            repeat -> params.last().substringBeforeLast('-').trim()
+            repeat -> {
+                if (params.last().endsWith("-r")) {
+                    params.last().substringBeforeLast('-').trim()
+                } else {
+                    params.last().substringBeforeLast("--").trim()
+                }
+            }
             else -> params.last()
         }
         val message = allArgs.substringBeforeLast('|').trim()
