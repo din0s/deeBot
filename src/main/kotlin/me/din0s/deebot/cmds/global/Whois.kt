@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ object Whois : Command(
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val members = when {
-            args.isEmpty() -> setOf(event.member)
+            args.isEmpty() || !event.isFromGuild -> setOf(event.member)
             else -> event.guild.matchMembers(event.getAllArgs())
         }
         val user = when (members.size) {

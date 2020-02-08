@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -56,9 +56,9 @@ object Regex {
     val HEX = "^#?((?:[0-9a-fA-F]{3}){1,2})$".toRegex()
 
     /**
-     * This represents a positive integer.
+     * This represents a positive integer up until 999,999,999.
      */
-    val INTEGER = "\\d+".toRegex()
+    val INTEGER = "\\d{1,6}".toRegex()
 
     /**
      * This is used to split a string around the '|' character.

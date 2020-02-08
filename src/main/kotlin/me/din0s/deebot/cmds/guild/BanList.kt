@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,7 @@ object BanList: Command(
     name = "banlist",
     description = "Get a list of all banned users",
     alias = setOf("bans"),
+    guildOnly = true,
     maxArgs = 1,
     botPermissions = arrayOf(Permission.BAN_MEMBERS),
     userPermissions = arrayOf(Permission.BAN_MEMBERS),

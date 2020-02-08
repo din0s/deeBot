@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -96,7 +96,7 @@ object Meme : Command(
                             templateHelp[it] = "$URL$example.jpg"
 
                             if (templateHelp.size == templates.size) {
-                                log.debug("Loaded all template help URLs")
+                                log.info("Loaded all template help URLs")
                             }
                         }
                     })
@@ -115,8 +115,8 @@ object Meme : Command(
             }
 
             val index = when {
-                args.size == 1 || !arg1.matches(Regex.INTEGER) -> 1
-                else -> arg1.toInt()
+                args.size == 2 && args[1].matches(Regex.INTEGER) -> args[1].toInt()
+                else -> 1
             }
 
             if (index > templatePages.size || index <= 0) {
