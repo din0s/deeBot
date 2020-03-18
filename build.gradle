@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'din0s'
-version '3.2'
+version '3.3'
 
 sourceCompatibility = 1.8
 
@@ -15,11 +15,11 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:4.1.1_107") {
+    implementation("net.dv8tion:JDA:4.1.1_121") {
         exclude module: 'opus-java'
     }
 
-    implementation 'com.squareup.okhttp3:okhttp:3.14.6'
+    implementation 'com.squareup.okhttp3:okhttp:3.14.7'
     implementation "org.jetbrains.exposed:exposed:0.17.7"
     implementation "org.mariadb.jdbc:mariadb-java-client:2.5.4"
 
@@ -29,9 +29,9 @@ dependencies {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 
-    implementation "org.apache.logging.log4j:log4j-api:2.13.0"
-    implementation "org.apache.logging.log4j:log4j-core:2.13.0"
-    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.13.0"
+    implementation "org.apache.logging.log4j:log4j-api:2.13.1"
+    implementation "org.apache.logging.log4j:log4j-core:2.13.1"
+    implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.13.1"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
