@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,7 @@ object Kick : Command(
     minArgs = 1,
     botPermissions = arrayOf(Permission.KICK_MEMBERS),
     userPermissions = arrayOf(Permission.KICK_MEMBERS),
+    requiredParams = arrayOf("user"),
     examples = arrayOf("bad guy#1111")
 ) {
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
