@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2019 Dinos Papakostas
+ * Copyright (c) 2020 Dinos Papakostas
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,11 @@ import net.dv8tion.jda.api.events.DisconnectEvent
 import net.dv8tion.jda.api.events.ReadyEvent
 import net.dv8tion.jda.api.events.ReconnectedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.api.utils.ChunkingFilter
 import org.apache.logging.log4j.LogManager
-import java.util.*
 
 /**
  * Contains static fields to be used in various commands, managers and handlers.
@@ -47,7 +47,6 @@ import java.util.*
  */
 object Bot : ListenerAdapter() {
     private val log = LogManager.getLogger()!!
-    private val disabledFlags = EnumSet.allOf(CacheFlag::class.java)
     private var shardsReady = 0
 
     val DEV_ID = Variables.DEV_ID.value.toLong()
@@ -63,9 +62,11 @@ object Bot : ListenerAdapter() {
     fun init() {
         Database.init()
 
-        val builder = DefaultShardManagerBuilder(Config.token)
+        val builder = DefaultShardManagerBuilder
+            .createDefault(Config.token)
+            .enableIntents(GatewayIntent.GUILD_MEMBERS)
+            .setChunkingFilter(ChunkingFilter.ALL)
             .setBulkDeleteSplittingEnabled(false)
-            .setDisabledCacheFlags(disabledFlags)
             .addEventListeners(this)
 
         log.info("Registering Event Handlers")
@@ -88,7 +89,9 @@ object Bot : ListenerAdapter() {
             Database.postReady()
             CommandHandler.init()
 
-            DEV = sm.getUserById(DEV_ID)!!
+            sm.retrieveUserById(DEV_ID).queue {
+                DEV = it
+            }
         }
     }
 
