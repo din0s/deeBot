@@ -63,7 +63,7 @@ object Bot : ListenerAdapter() {
         Database.init()
 
         val builder = DefaultShardManagerBuilder
-            .createDefault(Config.token)
+            .createLight(Config.token)
             .enableIntents(GatewayIntent.GUILD_MEMBERS)
             .setChunkingFilter(ChunkingFilter.ALL)
             .setBulkDeleteSplittingEnabled(false)
