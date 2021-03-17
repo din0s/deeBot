@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
 import okhttp3.Response
 import org.apache.logging.log4j.LogManager
+import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -56,11 +57,11 @@ object Meme : Command(
     private val helpCmds = setOf("help", "list", "templates", "info")
     private val templateHelp = mutableMapOf<String, String>()
     private lateinit var templatePages: List<String>
-    private lateinit var templates: Set<String>
+    private val templates = mutableSetOf<String>()
 
-    private const val URL = "https://memegen.link/"
-    private const val GENERATOR_URL = "$URL%s/%s/%s.jpg"
-    private const val TEMPLATE_URL = "${URL}api/templates/"
+    private const val URL = "https://api.memegen.link/"
+    private const val GENERATOR_URL = "${URL}images/%s/%s/%s.png"
+    private const val TEMPLATE_URL = "${URL}templates/"
     private const val PAGE_SIZE = 10
 
     override fun postRegister() {
@@ -72,35 +73,21 @@ object Meme : Command(
             }
 
             override fun handleResponse(call: Call, response: Response) {
-                val json = response.asJson()
-                val set = mutableSetOf<String>()
+                val arr = response.body()!!.string()
+                val json = JSONObject("{\"arr\": ${arr}}")
 
-                templatePages = json.keySet()
+                templatePages = json.getJSONArray("arr")
+                    .map { it as JSONObject
+                        val id = it.getString("id")
+                        val name = it.getString("name")
+                        val template = it.getString("example")
+                        templates.add(id)
+                        templateHelp[id] = template
+                        "+ $name ($id)"
+                    }
                     .sorted()
                     .filter { it.isNotBlank() }
-                    .paginate(Function {
-                        val template = json.getString(it).substringAfterLast("/")
-                        set.add(template)
-                        "+ $it ($template)\n"
-                    }, PAGE_SIZE)
-                templates = set
-
-                templates.forEach {
-                    HttpUtil.get("$TEMPLATE_URL$it", cb = object : BaseCallback() {
-                        override fun handleResponse(call: Call, response: Response) {
-                            val exampleJson = response.asJson()
-                            if (!exampleJson.has("example")) {
-                                return
-                            }
-                            val example = exampleJson.getString("example").substringAfter("/api/templates/")
-                            templateHelp[it] = "$URL$example.jpg"
-
-                            if (templateHelp.size == templates.size) {
-                                log.info("Loaded all template help URLs")
-                            }
-                        }
-                    })
-                }
+                    .paginate(Function { it }, PAGE_SIZE)
             }
         })
     }
