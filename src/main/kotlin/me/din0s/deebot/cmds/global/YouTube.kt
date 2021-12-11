@@ -31,7 +31,7 @@ import me.din0s.util.HttpUtil
 import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Response
 import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
@@ -55,7 +55,7 @@ object YouTube : Command(
     private const val BASE_URL = "https://www.googleapis.com/youtube/v3/search"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        val url = HttpUrl.parse(BASE_URL)!!.newBuilder()
+        val url = BASE_URL.toHttpUrl().newBuilder()
             .addQueryParameter("part", "snippet")
             .addQueryParameter("maxResults", "1")
             .addQueryParameter("type", "video")

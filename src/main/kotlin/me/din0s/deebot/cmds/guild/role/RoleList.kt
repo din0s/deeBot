@@ -30,7 +30,6 @@ import me.din0s.util.noBackTicks
 import me.din0s.util.paginate
 import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.Function
 
 /**
  * Lists all of the guild's roles.
@@ -70,7 +69,7 @@ object RoleList : RoleSub(
             .filter { !it.isPublicRole }
             .sortedBy { it.name }
             .toList()
-            .paginate(Function {
+            .paginate({
                 "+ ${it.name.noBackTicks()} (${it.id})"
             }, ROLES_PER_PAGE)
         if (index >= rolePages.size) {

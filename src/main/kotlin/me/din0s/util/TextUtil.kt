@@ -121,3 +121,8 @@ fun <T> Collection<T>.paginate(func: Function<T, String>, size: Int) : List<Stri
     }
     return pages
 }
+
+/**
+ * Capitalizes a string.
+ */
+fun String.firstCaps() = replaceFirstChar { it.uppercase() }

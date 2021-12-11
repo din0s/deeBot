@@ -26,6 +26,7 @@ package me.din0s.deebot.cmds.global
 
 import me.din0s.const.Unicode
 import me.din0s.deebot.cmds.Command
+import me.din0s.util.firstCaps
 import me.din0s.util.noBackTicks
 import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -74,7 +75,7 @@ object EightBall : Command(
             true -> Unicode.EIGHT_BALL
             else -> Unicode.GLASS_BALL
         }
-        val msg = "$emoji1 `${questionFinal.capitalize()}` $reply $emoji2"
+        val msg = "$emoji1 `${questionFinal.firstCaps()}` $reply $emoji2"
         if (msg.length <= 2000) {
             event.reply(msg)
         } else {

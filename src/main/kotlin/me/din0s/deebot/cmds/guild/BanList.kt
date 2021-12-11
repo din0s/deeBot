@@ -31,7 +31,6 @@ import me.din0s.util.paginate
 import me.din0s.util.reply
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.Function
 
 /**
  * Returns the current guild's bans.
@@ -57,7 +56,7 @@ object BanList: Command(
                 event.reply("*There are no banned users on this server!*")
                 return@queue
             }
-            val pages = bans.paginate(Function {
+            val pages = bans.paginate({
                 "- ${it.user.asTag.escaped()}\n"
             }, USERS_PER_PAGE)
             val page = when {

@@ -37,7 +37,6 @@ import org.json.JSONObject
 import java.io.IOException
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import java.util.function.Function
 
 /**
  * Uses the MemeGen API to create a custom meme.
@@ -73,7 +72,7 @@ object Meme : Command(
             }
 
             override fun handleResponse(call: Call, response: Response) {
-                val arr = response.body()!!.string()
+                val arr = response.body!!.string()
                 val json = JSONObject("{\"arr\": ${arr}}")
 
                 templatePages = json.getJSONArray("arr")
@@ -87,15 +86,15 @@ object Meme : Command(
                     }
                     .sorted()
                     .filter { it.isNotBlank() }
-                    .paginate(Function { it }, PAGE_SIZE)
+                    .paginate({ it }, PAGE_SIZE)
             }
         })
     }
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val prefix = event.getPrefix().escaped()
-        if (helpCmds.contains(args[0].toLowerCase())) {
-            val arg1 = args[0].toLowerCase()
+        if (helpCmds.contains(args[0].lowercase())) {
+            val arg1 = args[0].lowercase()
             if (templates.contains(arg1)) {
                 event.sendExample(arg1)
                 return
@@ -123,7 +122,7 @@ object Meme : Command(
             return
         }
         val allArgs = event.getAllArgs()
-        val template = args[0].toLowerCase()
+        val template = args[0].lowercase()
         if (!allArgs.contains('|')) {
             if (templates.contains(template)) {
                 event.sendExample(template)
@@ -140,8 +139,8 @@ object Meme : Command(
                     return
                 }
                 val top = lines[0].encode()
-                val bot = when {
-                    lines.size == 1 -> "_"
+                val bot = when (lines.size) {
+                    1 -> "_"
                     else -> lines[1].encode()
                 }
 

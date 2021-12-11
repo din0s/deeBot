@@ -32,7 +32,7 @@ import me.din0s.util.escaped
 import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Response
 import org.apache.logging.log4j.LogManager
 import org.json.JSONObject
@@ -57,7 +57,7 @@ object Google : Command(
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val query = args.joinToString(" ")
-        val url = HttpUrl.parse(BASE_URL)!!.newBuilder()
+        val url = BASE_URL.toHttpUrl().newBuilder()
             .addQueryParameter("q", query)
             .addQueryParameter("num", "1")
             .addQueryParameter("key", Config.googleKey)

@@ -40,12 +40,12 @@ open class BaseCallback : Callback {
     private val log = LogManager.getLogger()
 
     override fun onFailure(call: Call, e: IOException) {
-        log.warn("Request to {} failed", call.request().url().host())
+        log.warn("Request to {} failed", call.request().url.host)
         e.printStackTrace()
     }
 
     override fun onResponse(call: Call, response: Response) {
-        log.trace("Request to {} returned {}", call.request().url().host(), response.code())
+        log.trace("Request to {} returned {}", call.request().url.host, response.code)
         handleResponse(call, response)
         response.close()
     }
@@ -64,7 +64,7 @@ open class BaseCallback : Callback {
      * @return The parsed JSONObject from the response body.
      */
     fun Response.asJson() : JSONObject {
-        val bodyContent = body()!!.string()
+        val bodyContent = body!!.string()
         log.trace(bodyContent)
         return JSONObject(bodyContent)
     }
@@ -75,7 +75,7 @@ open class BaseCallback : Callback {
      * @return A byte array of the response's body contents.
      */
     fun Response.toBytes() : ByteArray {
-        val stream = body()!!.byteStream()
+        val stream = body!!.byteStream()
         val bytes = stream.readBytes()
         stream.close()
         return bytes

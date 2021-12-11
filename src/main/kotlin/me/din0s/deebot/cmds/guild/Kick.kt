@@ -61,14 +61,14 @@ object Kick : Command(
         members.forEach {
             sb.append(it.user.asTag.escaped()).append(": ")
             if (!event.member!!.canInteract(it)) {
-                sb.appendln("Couldn't be kicked since they are higher in hierarchy than you!")
+                sb.appendLine("Couldn't be kicked since they are higher in hierarchy than you!")
             } else if (!event.guild.selfMember.canInteract(it)) {
-                sb.appendln("Couldn't be kicked since they are higher in hierarchy than the bot!")
+                sb.appendLine("Couldn't be kicked since they are higher in hierarchy than the bot!")
             } else if (it == event.guild.selfMember) {
-                sb.appendln("Please use ${event.getPrefix().escaped()} to kick me!")
+                sb.appendLine("Please use ${event.getPrefix().escaped()} to kick me!")
             } else {
                 event.guild.kick(it).reason("Kicked by ${event.author.asTag} (${event.author.id})").queue()
-                sb.appendln("**Kicked successfully!**")
+                sb.appendLine("**Kicked successfully!**")
             }
         }
         event.reply(sb.toString())

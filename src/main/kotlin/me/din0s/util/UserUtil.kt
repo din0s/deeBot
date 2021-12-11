@@ -69,7 +69,7 @@ fun List<User>.matchUserIds(str: String) : Set<String> {
         .forEach { set.add(it) }
 
     Regex.DISCORD_ID.findAll(str)
-        .mapNotNull { it.value }
+        .map { it.value }
         .forEach { set.add(it) }
 
     if (set.isEmpty()) {

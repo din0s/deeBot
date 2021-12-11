@@ -60,12 +60,12 @@ object RoleBase : Command(
      * @return The command if it exists, null otherwise.
      */
     fun getSub(label: String) : Command? {
-        return subMap[label.toLowerCase()]
+        return subMap[label.lowercase()]
     }
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         if (args.isNotEmpty()) {
-            val subLabel = "$name ${args[0].toLowerCase()}"
+            val subLabel = "$name ${args[0].lowercase()}"
             val sub = subMap[subLabel]
             when {
                 sub == null -> event.reply("*That subcommand doesn't exist!*")

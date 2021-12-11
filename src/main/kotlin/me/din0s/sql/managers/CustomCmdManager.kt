@@ -98,7 +98,7 @@ object CustomCmdManager : ISqlManager {
      * or null if that label is not found for this guild.
      */
     fun getByLabel(label: String, guild: Guild) : List<CustomCmdResponse>? {
-        return guilds[guild.idLong]?.get(label.toLowerCase())
+        return guilds[guild.idLong]?.get(label.lowercase())
     }
 
     /**
@@ -110,7 +110,7 @@ object CustomCmdManager : ISqlManager {
      * @return True if the command was found and was deleted, false otherwise.
      */
     fun delete(label: String, guild: Guild, logEntry: Boolean = true) : Boolean {
-        val name = label.toLowerCase()
+        val name = label.lowercase()
         return when (guilds[guild.idLong]?.remove(name)) {
             null -> false
             else -> {
@@ -154,13 +154,13 @@ object CustomCmdManager : ISqlManager {
             delete(name, guild, false)
         }
         val map = guilds[guild.idLong]!!
-        val nameLower = name.toLowerCase()
+        val nameLower = name.lowercase()
         map[nameLower] = list.toMutableList()
         log.info("Adding command {} for G#{}", nameLower, guild.id)
         transaction {
             list.forEach { command ->
                 Commands.insert {
-                    it[label] = name.toLowerCase()
+                    it[label] = name.lowercase()
                     it[response] = command.response
                     it[guildId] = guild.idLong
                     it[private] = command.private

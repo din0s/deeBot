@@ -112,7 +112,7 @@ object TimerManager : ISqlManager {
         repeat: Boolean,
         inPrivate: Boolean
     ) : Timer {
-        if (userMap[user.idLong]?.size ?: 0 >= MAX_ENTRIES_PER_USER) {
+        if ((userMap[user.idLong]?.size ?: 0) >= MAX_ENTRIES_PER_USER) {
             throw TooManyEntriesException
         }
 
@@ -193,7 +193,7 @@ object TimerManager : ISqlManager {
             val dayOffset = groups[1].toDayOffset(now)
             val hour = groups[2].toInt()
             val mins = groups[3].toInt()
-            val modifier = groups[4].toLowerCase()
+            val modifier = groups[4].lowercase()
 
             val isAm = modifier.startsWith('a')
             val isPm = modifier.startsWith('p')
@@ -231,7 +231,7 @@ object TimerManager : ISqlManager {
      * @throws InvalidDurationException If the string doesn't contain a valid unit.
      */
     private fun String.toUnit() : ChronoUnit {
-        val identifier = toLowerCase()
+        val identifier = lowercase()
         return when {
             MINUTES.contains(identifier) -> ChronoUnit.MINUTES
             HOURS.contains(identifier) -> ChronoUnit.HOURS
@@ -248,7 +248,7 @@ object TimerManager : ISqlManager {
      * or GMT if no timezone matches the input.
      */
     private fun String.toTimeZone() : ZoneId {
-        return TimeZone.getTimeZone(toUpperCase()).toZoneId()
+        return TimeZone.getTimeZone(uppercase()).toZoneId()
     }
 
     /**
@@ -267,7 +267,7 @@ object TimerManager : ISqlManager {
 
         val currentDay = now.dayOfWeek
         return try {
-            val targetDay = DayOfWeek.valueOf(trim().toUpperCase())
+            val targetDay = DayOfWeek.valueOf(trim().uppercase())
             abs(targetDay.value - currentDay.value)
         } catch (e: IllegalArgumentException) {
             throw InvalidDurationException

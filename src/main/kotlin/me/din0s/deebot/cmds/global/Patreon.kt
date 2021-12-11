@@ -42,14 +42,10 @@ object Patreon : Command(
 ) {
     private const val URL = "<http://patreon.deebot.xyz>"
     private val enabled = Config.patreon.isNotBlank()
-    private val campaign : Campaign?
-
-    init {
-        if (enabled) {
-            campaign = PatreonAPI(Config.patreon).fetchCampaigns().get()[0]
-        } else {
-            campaign = null
-        }
+    private val campaign : Campaign? = if (enabled) {
+        PatreonAPI(Config.patreon).fetchCampaigns().get()[0]
+    } else {
+        null
     }
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {

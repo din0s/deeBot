@@ -85,19 +85,19 @@ object Ban : Command(
                     else -> sb.append(member.user.asTag.escaped()).append(": ")
                 }
                 if (member != null && !event.member!!.canInteract(member)) {
-                    sb.appendln("Couldn't be banned since they are higher in hierarchy than you!")
+                    sb.appendLine("Couldn't be banned since they are higher in hierarchy than you!")
                 } else if (member != null &&  !event.guild.selfMember.canInteract(member)) {
-                    sb.appendln("Couldn't be banned since they are higher in hierarchy than the bot!")
+                    sb.appendLine("Couldn't be banned since they are higher in hierarchy than the bot!")
                 } else if (member != null && member == event.guild.selfMember) {
-                    sb.appendln("Please use ${event.getPrefix().escaped()} to kick me!")
+                    sb.appendLine("Please use ${event.getPrefix().escaped()} to kick me!")
                 } else {
                     try {
                         event.guild.ban(it, days)
                             .reason("Banned by ${event.author.asTag} (${event.author.id})")
                             .complete()
-                        sb.appendln("**Banned successfully!**")
+                        sb.appendLine("**Banned successfully!**")
                     } catch (e: Exception) {
-                        sb.appendln("**That's not a valid user!**")
+                        sb.appendLine("**That's not a valid user!**")
                     }
                 }
             }

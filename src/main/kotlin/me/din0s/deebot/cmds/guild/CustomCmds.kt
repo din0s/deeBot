@@ -73,7 +73,7 @@ object CustomCmds : Command(
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val prefix = event.getPrefix().escaped()
-        when (args[0].toLowerCase()) {
+        when (args[0].lowercase()) {
             "create" -> {
                 event.createOrEdit(args, true)
             }
@@ -188,7 +188,7 @@ object CustomCmds : Command(
                     }
                     flags++
                     val flag = it.substring(2)
-                    when (flag.toLowerCase()) {
+                    when (flag.lowercase()) {
                         "private" -> private = true
                         "delete" -> delete = true
                     }

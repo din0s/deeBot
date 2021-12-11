@@ -28,7 +28,6 @@ import me.din0s.const.Regex
 import me.din0s.deebot.cmds.Command
 import me.din0s.util.*
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
-import java.util.function.Function
 
 /**
  * Collects all commands of a given type and creates
@@ -63,7 +62,7 @@ abstract class Helper(
     init {
         helpPages = loadClasses(path, clazz)
             .filter { filter.invoke(it) }
-            .paginate(Function {
+            .paginate({
                 "+ %PREFIX%${it.usage}\n- ${it.description}\n"
             }, pageSize)
     }

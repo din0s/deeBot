@@ -105,10 +105,10 @@ object Hastebin : Command(
      */
     private fun parseArgs(args: List<String>) : Pair<String, String?> {
         if (args.size > 1) {
-            if (VALID_FLAGS.contains(args[0].toLowerCase())) {
+            if (VALID_FLAGS.contains(args[0].lowercase())) {
                 return Pair(args.drop(2).joinToString(" "), args[1])
             }
-            if (VALID_FLAGS.contains(args[args.size - 2].toLowerCase())) {
+            if (VALID_FLAGS.contains(args[args.size - 2].lowercase())) {
                 return Pair(args.dropLast(2).joinToString(" "), args.last())
             }
         }

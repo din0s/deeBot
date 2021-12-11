@@ -45,7 +45,7 @@ object ChuckNorris : Command(
     alias = setOf("chuck", "norris")
 ) {
     private val log = LogManager.getLogger()
-    private const val BASE_URL = "http://api.icndb.com/jokes/random"
+    private const val BASE_URL = "https://api.icndb.com/jokes/random"
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         event.channel.sendTyping().queue {

@@ -46,7 +46,7 @@ abstract class RolePermModify(val add: Boolean) : RoleSub(
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
         val role = event.getMentionedRoleOrError(dropLast = true) ?: return
         val perm = try {
-            Permission.valueOf(args.last().toUpperCase())
+            Permission.valueOf(args.last().uppercase())
         } catch (e : IllegalArgumentException) {
             event.reply("**That's not a valid permission!**")
             return

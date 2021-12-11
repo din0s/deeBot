@@ -28,6 +28,7 @@ import me.din0s.const.Unicode
 import me.din0s.deebot.cmds.Command
 import me.din0s.deebot.entities.BaseCallback
 import me.din0s.util.HttpUtil
+import me.din0s.util.firstCaps
 import me.din0s.util.reply
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import okhttp3.Call
@@ -101,7 +102,7 @@ object DiscordStatus : Command(
                         .forEach {
                             sb.append("__**").append(it.first).append("**__: ")
                             val componentStatus = it.second
-                            sb.append(componentStatus.capitalize()).append(" ")
+                            sb.append(componentStatus.firstCaps()).append(" ")
                             if (componentStatus == "operational") {
                                 sb.append(Unicode.CHECK)
                             } else {
@@ -125,7 +126,7 @@ object DiscordStatus : Command(
     }
 
     private fun StringBuilder.addImpact(indicator: String) : StringBuilder {
-        append(" - `").append(indicator.capitalize()).append(" Impact`")
+        append(" - `").append(indicator.firstCaps()).append(" Impact`")
         return this
     }
 }

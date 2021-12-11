@@ -64,7 +64,7 @@ object CommandHandler : ListenerAdapter() {
      * or null if one doesn't exist.
      */
     fun getCommand(label: String) : Command? {
-        return commandList[label.toLowerCase()]
+        return commandList[label.lowercase()]
     }
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
@@ -77,7 +77,7 @@ object CommandHandler : ListenerAdapter() {
             event.reply("The prefix is: ${prefix.escaped()}")
         } else if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
             val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
-            val label = allArgs[0].toLowerCase()
+            val label = allArgs[0].lowercase()
             val command = commandList[label] ?: return
 
             if (log.isTraceEnabled) {

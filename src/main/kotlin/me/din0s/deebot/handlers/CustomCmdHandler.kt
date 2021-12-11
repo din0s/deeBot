@@ -50,7 +50,7 @@ object CustomCmdHandler : ListenerAdapter() {
         val prefix = GuildDataManager.getPrefix(event.guild)
         if (rawMessage.startsWith(prefix) && rawMessage.length > prefix.length) {
             val allArgs = rawMessage.substring(prefix.length).split(Regex.WHITESPACE)
-            val label = allArgs[0].toLowerCase()
+            val label = allArgs[0].lowercase()
             val cmd = CustomCmdManager.getByLabel(label, event.guild)?.random() ?: return
             log.trace("TC#{} {}: {}", event.channel.id, event.author.asTag, label)
             if (cmd.delete) {

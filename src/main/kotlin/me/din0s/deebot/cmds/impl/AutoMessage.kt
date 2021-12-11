@@ -26,6 +26,7 @@ package me.din0s.deebot.cmds.impl
 
 import me.din0s.const.Regex
 import me.din0s.deebot.cmds.Command
+import me.din0s.util.firstCaps
 import me.din0s.util.getAllArgs
 import me.din0s.util.reply
 import net.dv8tion.jda.api.Permission
@@ -62,7 +63,7 @@ abstract class AutoMessage(
         Pair("usercount", "The server's user count")
     ),
     examples = arrayOf(
-        "${action.capitalize()}: %tag%",
+        "${action.firstCaps()}: %tag%",
         "channel #my-channel",
         "reset",
         "channel reset"

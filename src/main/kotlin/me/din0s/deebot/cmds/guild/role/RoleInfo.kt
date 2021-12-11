@@ -67,6 +67,6 @@ object RoleInfo : RoleSub(
      * @return The hex value, such as #FF00FF.
      */
     private fun Color.getHex() : String {
-        return "#${Integer.toHexString(rgb).substring(2).toUpperCase()}"
+        return "#${Integer.toHexString(rgb).substring(2).uppercase()}"
     }
 }

@@ -48,7 +48,7 @@ object UserSearch : Command(
         val name = event.getAllArgs()
         val list = event.jda.shardManager!!.matchUsers(name).map { it.discriminator }.sorted().toList()
         when {
-            list.isNullOrEmpty() -> event.reply("*No users matched that criteria!*")
+            list.isEmpty() -> event.reply("*No users matched that criteria!*")
             list.size == 1 -> event.reply("__Found 1 user__: ${name.escaped()}#${list[0]}")
             else -> event.reply("__Found ${list.size} users.__\nTags: ```py\n${list.joinToString(", ")}\n```")
         }

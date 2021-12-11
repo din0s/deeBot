@@ -28,13 +28,16 @@ package me.din0s.util
 
 import me.din0s.deebot.entities.BaseCallback
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.apache.logging.log4j.LogManager
 import java.util.*
 
 object HttpUtil {
     private val client = OkHttpClient()
     private val log = LogManager.getLogger()
-    private val JSON = MediaType.parse("application/json; charset=utf-8")
+    private val JSON = "application/json; charset=utf-8".toMediaType()
 
     /**
      * GETs the specified url and invokes the callback provided.
@@ -45,7 +48,7 @@ object HttpUtil {
      * @param cb The callback that gets executed after a response.
      */
     fun get(url: String, auth: Pair<String, String>? = null, cb: Callback) {
-        val httpUrl = HttpUrl.parse(url)!!.newBuilder().build()
+        val httpUrl = url.toHttpUrl().newBuilder().build()
         get(httpUrl, auth, cb)
     }
 
@@ -73,7 +76,7 @@ object HttpUtil {
      * @param cb The callback that gets executed after a response.
      */
     fun post(url: String, body: String, auth: Pair<String, String>? = null, cb: Callback = BaseCallback()) {
-        val httpUrl = HttpUrl.parse(url)!!.newBuilder().build()
+        val httpUrl = url.toHttpUrl().newBuilder().build()
         post(httpUrl, body, auth, cb)
     }
 
@@ -88,7 +91,7 @@ object HttpUtil {
      */
     fun post(url: HttpUrl, body: String, auth: Pair<String, String>? = null, cb: Callback = BaseCallback()) {
         log.trace("POST Request to {}", url)
-        val postBody = RequestBody.create(JSON, body)
+        val postBody = body.toRequestBody(JSON)
         val request = Request.Builder().url(url).post(postBody).auth(auth)
         call(request, cb)
     }

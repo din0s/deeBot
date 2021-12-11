@@ -99,7 +99,7 @@ object Config {
                 if (!json.has(cfgKey) || json.getString(cfgKey).isEmpty()) {
                     val cfgError = ConfigValueError(cfgKey)
                     try {
-                        val default = DefaultValues.valueOf(cfgKey.toUpperCase()).value
+                        val default = DefaultValues.valueOf(cfgKey.uppercase()).value
                         log.showWarning(cfgError)
                         log.warn("Using default value for {}: '{}'", cfgKey, default)
                         json.put(cfgKey, default)

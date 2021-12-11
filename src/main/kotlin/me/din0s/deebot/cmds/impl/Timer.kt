@@ -64,7 +64,7 @@ abstract class Timer(private val isPrivate: Boolean) : Command(
     private val maxPreviewLength = 100
 
     override fun execute(event: MessageReceivedEvent, args: List<String>) {
-        if (args.isEmpty() || (args.size == 1 && listKeywords.contains(args[0].toLowerCase()))) {
+        if (args.isEmpty() || (args.size == 1 && listKeywords.contains(args[0].lowercase()))) {
             val set = TimerManager.get(event.author)
             if (set.isEmpty()) {
                 event.reply("You don't have any ${name}s set!")
@@ -88,7 +88,7 @@ abstract class Timer(private val isPrivate: Boolean) : Command(
                 event.reply("**Your timers:**\n${timers.ifBlank { "None." }}")
             }
             return
-        } else if (args.size == 2 && deleteKeywords.contains(args[0].toLowerCase())) {
+        } else if (args.size == 2 && deleteKeywords.contains(args[0].lowercase())) {
             if (!args[1].matches(Regex.INTEGER)) {
                 event.reply("**That's not a valid timer ID.**")
             } else {
@@ -110,7 +110,7 @@ abstract class Timer(private val isPrivate: Boolean) : Command(
             event.showUsage(this)
             return
         }
-        val repeat = repeatFlags.contains(args.last().toLowerCase())
+        val repeat = repeatFlags.contains(args.last().lowercase())
         val duration = when {
             repeat -> {
                 if (params.last().endsWith("-r")) {

@@ -25,10 +25,7 @@
 package me.din0s.deebot.cmds.impl
 
 import me.din0s.deebot.cmds.Command
-import me.din0s.util.escaped
-import me.din0s.util.getAllArgs
-import me.din0s.util.getRoleOrShowError
-import me.din0s.util.reply
+import me.din0s.util.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
@@ -62,7 +59,7 @@ abstract class ModifyRole(
                 val roleName = event.getAllArgs().substringAfter('>').trim()
                 val role = event.getRoleOrShowError(roleName) ?: return
                 restAction(member, role)
-                    .reason("${action.capitalize()} by ${event.author.asTag} (${event.author.id})")
+                    .reason("${action.firstCaps()} by ${event.author.asTag} (${event.author.id})")
                     .queue()
                 event.reply("${role.name.escaped()} was ${getAction()} ${member.user.asTag.escaped()}!")
             }
